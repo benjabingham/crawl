@@ -1,15 +1,11 @@
-let height = 20;
-let width = 20;
 let entityCounter = 0;
 turnCounter = 0;
 let entities = {};
-let board = [];
-let staminaMax = 10;
-let stamina = staminaMax;
-let healthMax = 10;
-let health = healthMax;
+let board = new Board();
+let player = new Player();
 
 $(document).ready(function(){
+    board.placeEntities(entities);
     characterInit();
     entityInit('O','chase',5,5);
     entityInit('O','chase',6,5);
@@ -19,7 +15,8 @@ $(document).ready(function(){
     //switchWeapon('longsword');
     populateWeaponSelectDropdown();
     enemyControlInit();
-    printBoard(board);
+    board.placeEntities(entities);
+    printBoard(board.boardArray);
     //console.log(entities);
     $(document).on("keydown", function(e){
         if($(':focus').attr('id') != 'board'){
@@ -28,10 +25,10 @@ $(document).ready(function(){
         //console.log(e);
         e.preventDefault;
         let key = e.originalEvent.key;
-        if(stamina < 0 ){
-            stamina = Math.min(20,stamina + 2);
+        if(player.stamina <= 0 ){
+            player.changeStamina(2);
         }else{
-            console.log(key);
+            //console.log(key);
             switch(key){
                 case "6":
                     moveEntity("player",1,0);
@@ -64,40 +61,27 @@ $(document).ready(function(){
                     rotateSword(entities.player.sword,1);
                     break;
                 default:
-                    stamina = Math.min(staminaMax,stamina + 2);
+                    player.changeStamina(2);
             }
         }
-        placeEntities();
+        board.placeEntities(entities);
         placeSword(entities.player.sword);
         reapWounded();
-        placeEntities();
+        board.placeEntities(entities);
         triggerBehaviors();
-        printBoard();
+        board.placeEntities(entities);
+        printBoard(board.boardArray);
         fillBars();
         turnCounter++;
     });
 });
 
-
-
-function boardInit(height=10,width=10){
-    for(let i=0;i<height;i++){
-        board[i] = [];
-        for(let j=0;j<width;j++){
-            board[i][j] = false;
-        }
-    }
-
-    return board;
-}
-
-function printBoard(){
-    placeEntities();
+function printBoard(boardArray){
     let boardString = "";
-    for(let i=0; i<board.length; i++){
-        for(let j=0; j<board[i].length; j++){
-            if(board[i][j]){
-                boardString += board[i][j].symbol;
+    for(let i=0; i<boardArray.length; i++){
+        for(let j=0; j<boardArray[i].length; j++){
+            if(boardArray[i][j]){
+                boardString += boardArray[i][j].symbol;
             }else{
                 boardString += '.';
             }
@@ -107,20 +91,6 @@ function printBoard(){
     }
     //console.log(boardString);
     $("#board").text(boardString);
-}
-
-function placeEntities(){
-    board = boardInit(height, width);
-    for (const [k,entity] of Object.entries(entities)){
-        let x = entity.x;
-        let y = entity.y;
-        if(isSpace(x,y) && !board[y][x]){
-            board[y][x] = entity;
-        }else{
-            //console.log("ENTITY OVERWRITE");
-        }
-        
-    };
 }
 
 function characterInit(x=0,y=0){
@@ -200,8 +170,8 @@ function placeSword(id){
     entities[id].y = y
 
 
-    if(isSpace(x,y) && board[y][x]){
-        knockID = board[y][x].id;
+    if(board.isOccupiedSpace(x,y)){
+        knockID = board.itemAt(x,y).id;
         if(knockID != id){
             knock(knockID, id);
         }
@@ -225,7 +195,7 @@ function knock(id, swordID){
     let y = entities[id].y + translations[direction].y;
 
     let tries = 0;
-    while(!isOpenSpace(x,y) && tries < 8){
+    while(!board.isOpenSpace(x,y) && tries < 8){
         direction = (direction+1) % 8;
         x = entities[id].x + translations[direction].x;
         y = entities[id].y + translations[direction].y;
@@ -245,7 +215,7 @@ function knock(id, swordID){
     }
 
     if(swordID == entities.player.sword){
-        stamina-= entities[swordID].weight;
+        player.changeStamina(0-entities[swordID].weight);
     }
 
 }
@@ -262,7 +232,7 @@ function moveEntity(id, x, y){
     x += entities[id].x;
     y += entities[id].y;
 
-    if(board[y] && (isOpenSpace(x,y) || (board[y][x] && board[y][x].owner == id))){
+    if(board.isSpace(x,y) && (board.isOpenSpace(x,y) || board.itemAt(x,y).owner == id)){
         entities[id].x = x;
         entities[id].y = y;
     }
@@ -282,9 +252,9 @@ function chase(id){
         y = 1;
     }
 
-    if(board[entities[id].y+y][entities[id].x+x].id == 'player'){
+    if(board.itemAt(entities[id].x+x,entities[id].y+y).id == 'player'){
         console.log('You are attacked!');
-        health -= roll(1,4);
+        player.changeHealth(0-roll(1,4));
     }
     moveEntity(id, x, y);
     
@@ -318,9 +288,9 @@ function chaseNatural(id){
     let targetX = entities[id].x+x;
     let targetY = entities[id].y+y
 
-    if(isSpace(targetX,targetY) && board[targetY][targetX].id == 'player'){
+    if(board.isSpace(targetX,targetY) && board.itemAt(targetX,targetY).id == 'player'){
         console.log('You are attacked!');
-        health -= roll(1,4);
+        player.changeHealth(0-roll(1,4));
     }
 
     moveEntity(id, 0, y);
@@ -353,36 +323,29 @@ function triggerBehaviors(){
         }else{
             entity.symbol = 'x';
         }
-        placeEntities();
     }
 }
 
-function isOpenSpace(x,y){
-    return (isSpace(x,y) && !board[y][x]);
-}
-
-function isSpace(x,y){
-    return (y >= 0 && x >= 0 && y < board.length && x < board[0].length);
-}
 
 function reapWounded(){
     for (const [k,entity] of Object.entries(entities)){
         if (entity.stunned+entity.mortal > entity.threshold){
-            console.log('enemy is dead!');
+            //console.log('enemy is dead!');
             entities[k].behavior = 'dead';
             entities[k].symbol = 'x';
             entities[k].stun = 0;
         }
     }
 
-    if(stamina < 0){
-        health--;
+    if(player.stamina < 0){
+        //player.health--;
     }
-    if(health <= 0){
+    //console.log(player.health);
+    if(player.health <= 0){
         entities['player'].symbol = 'x';
     }
-    console.log('Stamina: ' +stamina);
-    console.log('Health: ' + health);
+    //console.log('Stamina: ' +player.stamina);
+    //console.log('Health: ' + player.health);
 }
 
 function roll(min,max){
@@ -441,9 +404,10 @@ function switchWeapon(weaponName){
 }
 
 function fillBars(){
-    let staminaPercent = Math.floor((stamina/staminaMax)*100);
+    let staminaPercent = player.staminaPercent;
     $('#stamina-level').css('width',staminaPercent+"px");
-    let healthPercent = Math.floor((health/healthMax)*100);
+    let healthPercent = player.healthPercent;
+    //console.log(healthPercent);
     $('#health-level').css('width',healthPercent+"px");
 }
 
@@ -465,13 +429,13 @@ function enemyControlInit(){
         let x = parseInt($('#enemy-x-input').val());
         let y = parseInt($('#enemy-y-input').val());
         let hp = parseInt($('#enemy-hp-input').val());
-        if(!isSpace(x,y)){
+        if(!board.isSpace(x,y)){
             return;
         }
 
         let id = entityInit('O','chase',x,y,hp);
         console.log(entities[id]);
-        printBoard(board);
+        printBoard(board.boardArray);
 
     })
 }
