@@ -1,0 +1,45 @@
+#board{
+    white-space:pre-line;
+    font-family: monospace;
+    font-size:x-large;
+    width:fit-content;
+}
+
+#board:focus{
+    border:1px solid black;
+}
+
+#stamina-bar{
+    border:1px solid black;
+    height:20px;
+    width:100px;
+}
+
+#stamina-level{
+    background-color: yellow;
+    height:20px;
+    width:100px;
+    border:1px solid gray;
+}
+
+#health-bar{
+    border:1px solid black;
+    height:20px;
+    width:100px;
+}
+
+#health-level{
+    background-color: red;
+    height:20px;
+    width:100px;
+    border:1px solid gray;
+}
+
+#enemy-control-div{
+    padding:10px;
+    input{
+        width:20px;
+    }
+}
+
+test
