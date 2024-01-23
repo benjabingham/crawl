@@ -12,6 +12,8 @@ class EntityManager{
             {x:-1,y:0},
             {x:-1,y:-1}
         ];
+        this.board = new Board();
+
     }
 
     playerInit(board, player, x=0,y=0){
@@ -136,6 +138,7 @@ class EntityManager{
     
         if(board.isSpace(x,y) && (board.isOpenSpace(x,y) || board.itemAt(x,y).owner == id)){
             this.setPosition(id,x,y)
+            this.board.boardArray[y][x] = entity;
         }
     }
 
@@ -174,7 +177,7 @@ class EntityManager{
         
     }
 
-    chaseNatural(id, player, board){
+    chaseNatural(id, player){
         let entity = this.getEntity(id);
         let playerEntity = this.getEntity('player');
         let x = 0;
@@ -213,22 +216,21 @@ class EntityManager{
             player.changeHealth(this.roll(1,entity.damage) * -1);
         }
     
-        this.moveEntity(id, 0, y, board);
-        this.moveEntity(id, x, 0, board);
+        this.moveEntity(id, 0, y, this.board);
+        this.moveEntity(id, x, 0, this.board);
     }
 
     triggerBehaviors(board, player){
+        this.board = board;
         for (const [k,entity] of Object.entries(this.entities)){
             //console.log(entity);
             if (!entity.stunned){
                 switch(entity.behavior){
                     case "chase":
-                        this.chaseNatural(k, player, board);
-                        //TODO - this is pretty inefficient...
-                        board.placeEntities(this.entities);
+                        this.chaseNatural(k, player);
                         break;
                     case "sword":
-                        player = this.placeSword(k,board, player);
+                        //player = this.placeSword(k,board, player);
                         break;
                     case "dead":
                         entity.symbol = 'x';
