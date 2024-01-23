@@ -221,6 +221,7 @@ class EntityManager{
     }
 
     triggerBehaviors(board, player){
+        //console.log(board);
         this.board = board;
         for (const [k,entity] of Object.entries(this.entities)){
             //console.log(entity);
@@ -361,7 +362,6 @@ class EntityManager{
     }
 
     addStunTime(id, stunTime){
-        console.log(stunTime);
         stunTime +=this.getProperty(id, 'stunned');
         this.setProperty(id, 'stunned', stunTime);
     }

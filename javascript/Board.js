@@ -4,6 +4,7 @@ class Board{
         this.height = height;
 
         this.boardArray = [];
+        this.boardInit();
     }
 
     boardInit(){
