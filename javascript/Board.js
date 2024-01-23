@@ -24,6 +24,8 @@ class Board{
                 this.boardArray[y][x] = entity;
             }else{
                 console.log("ENTITY OVERWRITE");
+                console.log(entity);
+                console.log(this.boardArray[y][x]);
             }    
         };
     }

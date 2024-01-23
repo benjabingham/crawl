@@ -224,6 +224,8 @@ class EntityManager{
                 switch(entity.behavior){
                     case "chase":
                         this.chaseNatural(k, player, board);
+                        //TODO - this is pretty inefficient...
+                        board.placeEntities(this.entities);
                         break;
                     case "sword":
                         player = this.placeSword(k,board, player);
