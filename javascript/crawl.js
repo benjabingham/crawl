@@ -1,23 +1,22 @@
-let entityCounter = 0;
 turnCounter = 0;
-let entities = {};
+let entityManager = new EntityManager();
 let board = new Board();
 let player = new Player();
 
 $(document).ready(function(){
-    board.placeEntities(entities);
-    characterInit();
-    entityInit('O','chase',5,5);
-    entityInit('O','chase',6,5);
-    entityInit('O','chase',6,6);
-    entityInit('O','chase',7,6);
-    entityInit('O','chase',6,7);
+    board.placeEntities(entityManager.entities);
+    entityManager.playerInit(board, player, 0, 0);
+    let swordId = entityManager.getProperty('player','sword')
+    entityManager.entityInit('O','chase',5,5);
+    entityManager.entityInit('O','chase',6,5);
+    entityManager.entityInit('O','chase',6,6);
+    entityManager.entityInit('O','chase',7,6);
+    entityManager.entityInit('O','chase',6,7);
     //switchWeapon('longsword');
     populateWeaponSelectDropdown();
     enemyControlInit();
-    board.placeEntities(entities);
+    board.placeEntities(entityManager.entities);
     printBoard(board.boardArray);
-    //console.log(entities);
     $(document).on("keydown", function(e){
         if($(':focus').attr('id') != 'board'){
             return;
@@ -31,45 +30,45 @@ $(document).ready(function(){
             //console.log(key);
             switch(key){
                 case "6":
-                    moveEntity("player",1,0);
+                    entityManager.moveEntity("player", 1, 0, board);
                     break;
                 case "4":
-                    moveEntity("player",-1,0);
+                    entityManager.moveEntity("player", -1, 0, board);
                     break;
                 case "8":
-                    moveEntity("player",0,-1);
+                    entityManager.moveEntity("player", 0, -1, board);
                     break;
                 case "2":
-                    moveEntity("player",0,1);
+                    entityManager.moveEntity("player", 0, 1, board);
                     break;
                 case "7":
-                    moveEntity("player",-1,-1);
+                    entityManager.moveEntity("player", -1, -1, board);
                     break;
                 case "9":
-                    moveEntity("player",1,-1);
+                    entityManager.moveEntity("player", 1, -1, board);
                     break;
                 case "1":
-                    moveEntity("player",-1,1);
+                    entityManager.moveEntity("player", -1, 1, board);
                     break;
                 case "3":
-                    moveEntity("player",1,1);
+                    entityManager.moveEntity("player", 1, 1, board);
                     break; 
                 case "q":
-                    rotateSword(entities.player.sword,-1);
+                    entityManager.rotateSword(swordId,-1);
                     break;
                 case "w":
-                    rotateSword(entities.player.sword,1);
+                    entityManager.rotateSword(swordId,1);
                     break;
                 default:
                     player.changeStamina(2);
             }
         }
-        board.placeEntities(entities);
-        placeSword(entities.player.sword);
-        reapWounded();
-        board.placeEntities(entities);
-        triggerBehaviors();
-        board.placeEntities(entities);
+        board.placeEntities(entityManager.entities);
+        entityManager.placeSword(swordId, board, player);
+        entityManager.reapWounded(player);
+        board.placeEntities(entityManager.entities);
+        player = entityManager.triggerBehaviors(board, player);
+        board.placeEntities(entityManager.entities);
         printBoard(board.boardArray);
         fillBars();
         turnCounter++;
@@ -93,315 +92,6 @@ function printBoard(boardArray){
     $("#board").text(boardString);
 }
 
-function characterInit(x=0,y=0){
-    entities.player = {
-        x:x,
-        y:y,
-        symbol:"☺",
-        id: "player"
-    };
-    let swordID = swordInit("player");
-    entities.player.sword = swordID;
-}
-
-function entityInit(symbol, behavior, x=0,y=0,hp=1){
-    let id = entityCounter;
-    entity = {
-        x : x,
-        y: y,
-        symbol: symbol,
-        behavior: behavior,
-        id:id,
-        stunned:0,
-        mortal:0,
-        threshold:rollN(hp,1,8)
-    }
-    entityCounter++;
-    entities[id] = entity;
-
-    return id;
-}
-
-function swordInit(owner, rotation = 3){
-    let symbol = getSwordSymbol(rotation);
-    let id = entityInit(symbol, 'sword');
-    entities[id].owner = owner;
-    entities[id].rotation = rotation;
-    entities[id].damage = 1;
-    entities[id].stunTime = 1;
-    entities[id].weight = 1;
-    entities[owner].sword = id;
-    placeSword(id);
-
-    return id;
-}
-
-function getSwordSymbol(rotation){
-    let symbol = '|'
-    if (rotation % 4 == 1){
-        symbol = '/';
-    }else if (rotation % 4 == 2){
-        symbol = '-';
-    }else if (rotation % 4 == 3){
-        symbol = '\\';
-    }
-
-    return symbol;
-}
-
-function placeSword(id){
-    let owner = entities[id].owner;
-    let rotation = entities[id].rotation;
-    entities[id].symbol = getSwordSymbol(entities[id].rotation);
-    let translations = [
-        {x:0,y:-1},
-        {x:1,y:-1},
-        {x:1,y:0},
-        {x:1,y:1},
-        {x:0,y:1},
-        {x:-1,y:1},
-        {x:-1,y:0},
-        {x:-1,y:-1}
-    ];
-    let translation = translations[rotation];
-    let x = entities[owner].x + translation.x;
-    let y = entities[owner].y + translation.y;
-    entities[id].x = x
-    entities[id].y = y
-
-
-    if(board.isOccupiedSpace(x,y)){
-        knockID = board.itemAt(x,y).id;
-        if(knockID != id){
-            knock(knockID, id);
-        }
-    }
-
-}
-
-function knock(id, swordID){
-    let direction = roll(0,7);
-    let translations = [
-        {x:0,y:-1},
-        {x:1,y:-1},
-        {x:1,y:0},
-        {x:1,y:1},
-        {x:0,y:1},
-        {x:-1,y:1},
-        {x:-1,y:0},
-        {x:-1,y:-1}
-    ];
-    let x = entities[id].x + translations[direction].x;
-    let y = entities[id].y + translations[direction].y;
-
-    let tries = 0;
-    while(!board.isOpenSpace(x,y) && tries < 8){
-        direction = (direction+1) % 8;
-        x = entities[id].x + translations[direction].x;
-        y = entities[id].y + translations[direction].y;
-        tries++;
-    }
-
-    if(tries < 8){
-        entities[id].x = x;
-        entities[id].y = y;
-        let stunTime = roll(1,entities[swordID].stunTime);
-        let mortality = roll(0,entities[swordID].damage);
-        entities[id].stunned += stunTime;
-        entities[id].mortal += mortality;
-        //console.log('Enemy is knocked!');
-    }else{
-        console.log('SPLATTERED');
-    }
-
-    if(swordID == entities.player.sword){
-        player.changeStamina(0-entities[swordID].weight);
-    }
-
-}
-
-function rotateSword(id, direction){
-    let rotation = entities[id].rotation;
-    rotation += 8 + direction;
-    rotation %= 8;
-
-    entities[id].rotation = rotation;
-}
-
-function moveEntity(id, x, y){
-    x += entities[id].x;
-    y += entities[id].y;
-
-    if(board.isSpace(x,y) && (board.isOpenSpace(x,y) || board.itemAt(x,y).owner == id)){
-        entities[id].x = x;
-        entities[id].y = y;
-    }
-      
-}
-
-function chase(id){
-    let x = 0;
-    let y = 0;
-    if(entities[id].x > entities.player.x){
-        x = -1;
-    }else if (entities[id].x < entities.player.x){
-        x = 1;
-    }else if(entities[id].y > entities.player.y){
-        y = -1;
-    }else if (entities[id].y < entities.player.y){
-        y = 1;
-    }
-
-    if(board.itemAt(entities[id].x+x,entities[id].y+y).id == 'player'){
-        console.log('You are attacked!');
-        player.changeHealth(0-roll(1,4));
-    }
-    moveEntity(id, x, y);
-    
-}
-
-function chaseNatural(id){
-    let x = 0;
-    let y = 0;
-    let random = roll(1,10);
-    if(random == 1){
-        x = -1;
-    }else if (random == 10){
-        x +=1;
-    }else if(entities[id].x > entities.player.x){
-        x = -1;
-    }else if (entities[id].x < entities.player.x){
-        x = 1;
-    }
-    
-    random = roll(1,10);
-    if(random == 1){
-        y = -1;
-    }else if (random == 10){
-        y +=1;
-    }else if(entities[id].y > entities.player.y){
-        y = -1;
-    }else if (entities[id].y < entities.player.y){
-        y = 1;
-    }
-
-    let targetX = entities[id].x+x;
-    let targetY = entities[id].y+y
-
-    if(board.isSpace(targetX,targetY) && board.itemAt(targetX,targetY).id == 'player'){
-        console.log('You are attacked!');
-        player.changeHealth(0-roll(1,4));
-    }
-
-    moveEntity(id, 0, y);
-    moveEntity(id, x, 0);
-}
-
-function triggerBehaviors(){
-    for (const [k,entity] of Object.entries(entities)){
-        if (!entity.stunned){
-            switch(entity.behavior){
-                case "chase":
-                    chaseNatural(k);
-                    break;
-                case "sword":
-                    placeSword(k);
-                    break;
-                case "dead":
-                    entity.symbol = 'x';
-                    break;
-                default:
-            }
-        }else if (entity.behavior != 'dead'){
-            //console.log('enemy is stunned');
-            entity.stunned--;
-            if(entity.stunned > 0){
-                entity.symbol = 0;
-            }else{
-                entity.symbol = 'O';
-            }
-        }else{
-            entity.symbol = 'x';
-        }
-    }
-}
-
-
-function reapWounded(){
-    for (const [k,entity] of Object.entries(entities)){
-        if (entity.stunned+entity.mortal > entity.threshold){
-            //console.log('enemy is dead!');
-            entities[k].behavior = 'dead';
-            entities[k].symbol = 'x';
-            entities[k].stun = 0;
-        }
-    }
-
-    if(player.stamina < 0){
-        //player.health--;
-    }
-    //console.log(player.health);
-    if(player.health <= 0){
-        entities['player'].symbol = 'x';
-    }
-    //console.log('Stamina: ' +player.stamina);
-    //console.log('Health: ' + player.health);
-}
-
-function roll(min,max){
-    return Math.floor(Math.random()*(max+1))+min;
-}
-
-function rollN(n, min,max){
-    let sum = 0;
-    for(let i = 0; i < n; i++){
-        sum += Math.floor(Math.random()*(max+1))+min;
-    }
-    return sum;
-}
-
-function switchWeapon(weaponName){
-    id = entities[entities.player.sword].id;
-    switch(weaponName){
-        case "stick":
-            entities[id].damage = 1;
-            entities[id].stunTime = 1;
-            entities[id].weight = 1;
-            break;
-        case "shortsword":
-            entities[id].damage = 3;
-            entities[id].stunTime = 2;
-            entities[id].weight = 1;
-            break;
-        case "longsword":
-            entities[id].damage = 4;
-            entities[id].stunTime = 3;
-            entities[id].weight = 2;
-            break;
-        case "rapier":
-            entities[id].damage = 5;
-            entities[id].stunTime = 2;
-            entities[id].weight = 0;
-            break;
-        case "greatsword":
-            entities[id].damage = 4;
-            entities[id].stunTime = 6;
-            entities[id].weight = 3;
-            break;
-        case "club":
-            entities[id].damage = 1;
-            entities[id].stunTime = 6;
-            entities[id].weight = 2;
-            break;
-        case "maul":
-            entities[id].damage = 3;
-            entities[id].stunTime = 8;
-            entities[id].weight = 3;
-            break;
-    }
-
-    console.log("weapon: "+weaponName);
-}
 
 function fillBars(){
     let staminaPercent = player.staminaPercent;
@@ -420,7 +110,7 @@ function populateWeaponSelectDropdown(){
     }))
 
     $('#weapon-select').on('change',function(){
-        switchWeapon(this.value);
+        entityManager.switchWeapon(this.value);
     })
 }
 
@@ -433,8 +123,8 @@ function enemyControlInit(){
             return;
         }
 
-        let id = entityInit('O','chase',x,y,hp);
-        console.log(entities[id]);
+        let id = entityManager.entityInit('O','chase',x,y,hp);
+        console.log(entityManager.getEntity(id));
         printBoard(board.boardArray);
 
     })
