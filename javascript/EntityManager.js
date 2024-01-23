@@ -93,7 +93,7 @@ class EntityManager{
     
         if(board.isOccupiedSpace(x,y)){
             let knockedId = board.itemAt(x,y).id;
-            if(knockedId != id){
+            if(knockedId != id && this.getProperty(knockedId, 'behavior') != 'wall'){
                 this.knock(knockedId, id, board);
                 if (ownerId == 'player'){
                     player.changeStamina(sword.weight * -1);

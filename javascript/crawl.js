@@ -12,6 +12,12 @@ $(document).ready(function(){
     entityManager.entityInit('O','chase',6,6);
     entityManager.entityInit('O','chase',7,6);
     entityManager.entityInit('O','chase',6,7);
+
+    entityManager.entityInit('M','wall',1,0);
+    entityManager.entityInit('M','wall',1,1);
+    entityManager.entityInit('M','wall',1,2);
+    entityManager.entityInit('M','wall',1,3);
+    entityManager.entityInit('M','wall',2,3);
     //switchWeapon('longsword');
     populateWeaponSelectDropdown();
     enemyControlInit();
@@ -68,6 +74,7 @@ $(document).ready(function(){
         entityManager.reapWounded(player);
         board.placeEntities(entityManager.entities);
         player = entityManager.triggerBehaviors(board, player);
+        entityManager.reapWounded(player);
         board.placeEntities(entityManager.entities);
         printBoard(board.boardArray);
         fillBars();
