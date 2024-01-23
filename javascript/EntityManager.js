@@ -118,16 +118,19 @@ class EntityManager{
             y = entity.y + this.translations[direction].y;
             tries++;
         }
-    
-        if(tries < 8){
-            this.setPosition(id,x,y)
+
+        if(sword){
             let stunTime = this.roll(1,sword.stunTime);
             let mortality = this.roll(0,sword.damage);
             this.addStunTime(id,stunTime);
             this.addMortality(id, mortality);
+        }
+    
+        if(tries < 8){
+            this.setPosition(id,x,y)
             //console.log('Enemy is knocked!');
         }else{
-            console.log('SPLATTERED');
+            console.log('Cornered!');
         }
     }
 
@@ -210,10 +213,15 @@ class EntityManager{
     
         let targetX = entity.x+x;
         let targetY = entity.y+y
+        let targetItem = this.board.itemAt(targetX, targetY);
     
-        if(playerEntity.x == targetX && playerEntity.y == targetY){
+        if(targetItem && targetItem.id == 'player'){
             console.log('You are attacked!');
             player.changeHealth(this.roll(1,entity.damage) * -1);
+        }else if(targetItem && targetItem.behavior == 'wall'){
+            this.addMortality(targetItem.id,this.roll(1,entity.damage));
+        }else if (targetItem && targetItem.behavior == 'dead'){
+            this.knock(targetItem.id, false, board);
         }
     
         this.moveEntity(id, 0, y, this.board);
