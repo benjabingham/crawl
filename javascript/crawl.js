@@ -35,6 +35,7 @@ $(document).ready(function(){
         }
         //console.log(e);
         e.preventDefault;
+        entityManager.removeEntity(swordId);
         let key = e.originalEvent.key;
         if(player.stamina <= 0 ){
             player.changeStamina(2);

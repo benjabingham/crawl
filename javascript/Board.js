@@ -58,9 +58,7 @@ class Board{
     }
 
     clearSpace(x, y){
-        this.placeEntity(false, x, y)
+        this.placeEntity(false, x, y);
     }
-
-
     
 }

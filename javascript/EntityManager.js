@@ -101,7 +101,7 @@ class EntityManager{
         }
 
         this.setPosition(id,x,y);
-                
+
         return player;
     }
 
@@ -144,7 +144,7 @@ class EntityManager{
         x += entity.x;
         y += entity.y;
     
-        if(this.board.isSpace(x,y) && (this.board.isOpenSpace(x,y) || this.board.itemAt(x,y).owner == id)){
+        if(this.board.isSpace(x,y) && this.board.isOpenSpace(x,y)){
             this.setPosition(id,x,y);
         }
     }
@@ -373,6 +373,12 @@ class EntityManager{
 
     setEntity(id, entity){
         this.entities[id] = entity;
+    }
+
+    removeEntity(id){
+        let entity = this.getEntity(id);
+        this.board.clearSpace(entity.x, entity.y);
+        this.setPosition(id,-1,-1);
     }
 
     addStunTime(id, stunTime){
