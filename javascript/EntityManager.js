@@ -88,6 +88,7 @@ class EntityManager{
         let translation = this.translations[rotation];
         let x = owner.x + translation.x;
         let y = owner.y + translation.y;
+
         this.setPosition(id,x,y);
     
     

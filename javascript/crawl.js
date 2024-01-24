@@ -7,13 +7,13 @@ $(document).ready(function(){
     board.placeEntities(entityManager.entities);
     entityManager.playerInit(board, player, 0, 7);
     let swordId = entityManager.getProperty('player','sword')
-    /*
+    
     entityManager.entityInit('O','chase',5,5);
     entityManager.entityInit('O','chase',6,5);
     entityManager.entityInit('O','chase',6,6);
     entityManager.entityInit('O','chase',7,6);
     entityManager.entityInit('O','chase',6,7);
-    */
+    
     entityManager.entityInit('O','chase',0,0);
 
 

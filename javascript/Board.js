@@ -21,7 +21,7 @@ class Board{
         for (const [k,entity] of Object.entries(entities)){
             let x = entity.x;
             let y = entity.y;
-            if(this.isSpace(x,y) && !this.boardArray[y][x]){
+            if(this.isSpace(x,y) && (!this.boardArray[y][x] || entity.behavior == 'wall')){
                 this.boardArray[y][x] = entity;
             }else{
                 console.log("ENTITY OVERWRITE");
