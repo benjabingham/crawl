@@ -14,7 +14,7 @@ class EntityManager{
         ];
         this.board = new Board();
         this.history = [];
-        this.historyLimit = 3;
+        this.historyLimit = 10;
 
     }
 
@@ -332,12 +332,13 @@ class EntityManager{
             entities:entities,
             player:player
         });
-        if(this.history.length > 3){
+        if(this.history.length > this.historyLimit){
             this.history.shift();
         }
     }
 
     canRewind(){
+        console.log(this.history);
         return this.history.length > 1;
     }
 
