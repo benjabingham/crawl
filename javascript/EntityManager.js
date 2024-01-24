@@ -89,9 +89,6 @@ class EntityManager{
         let translation = this.translations[rotation];
         let x = owner.x + translation.x;
         let y = owner.y + translation.y;
-
-        this.setPosition(id,x,y);
-
     
         if(this.board.isOccupiedSpace(x,y)){
             let knockedId = this.board.itemAt(x,y).id;
@@ -103,8 +100,8 @@ class EntityManager{
             }
         }
 
-        this.board.placeEntity(sword,x,y);
-        
+        this.setPosition(id,x,y);
+                
         return player;
     }
 
@@ -149,7 +146,6 @@ class EntityManager{
     
         if(this.board.isSpace(x,y) && (this.board.isOpenSpace(x,y) || this.board.itemAt(x,y).owner == id)){
             this.setPosition(id,x,y);
-            this.board.placeEntity(this.getEntity(id), x, y);
         }
     }
 
@@ -350,10 +346,10 @@ class EntityManager{
 
     setPosition(id,x,y){
         let entity = this.getEntity(id);
-        //this.board.clearSpace(entity.x,entity.y)
+        this.board.clearSpace(entity.x,entity.y)
         this.setProperty(id, 'x', x);
         this.setProperty(id, 'y', y);
-        //this.board.placeEntity(this.getEntity(id),x,y)
+        this.board.placeEntity(this.getEntity(id),x,y)
     }
 
     getPosition(id){

@@ -75,13 +75,13 @@ $(document).ready(function(){
                     player.changeStamina(2);
             }
         }
-        entityManager.board.placeEntities(entityManager.entities);
+        //entityManager.board.placeEntities(entityManager.entities);
         entityManager.placeSword(swordId, player);
         entityManager.reapWounded(player);
-        entityManager.board.placeEntities(entityManager.entities);
+        //entityManager.board.placeEntities(entityManager.entities);
         player = entityManager.triggerBehaviors(player);
         entityManager.reapWounded(player);
-        entityManager.board.placeEntities(entityManager.entities);
+        //entityManager.board.placeEntities(entityManager.entities);
         printBoard(entityManager.board.boardArray);
         fillBars();
         turnCounter++;
