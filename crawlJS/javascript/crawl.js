@@ -3,6 +3,9 @@ let entityManager = new EntityManager();
 let player = new Player();
 
 $(document).ready(function(){
+    fetch('./rooms/room1.json')
+        .then((response) => response.json())
+        .then((json) => console.log(json));
     entityManager.board.placeEntities(entityManager.entities);
     entityManager.playerInit(player, 0, 7);
     let swordId = entityManager.getProperty('player','sword')
@@ -107,8 +110,8 @@ function printBoard(boardArray){
     entityManager.board.calculateLosArray(entityManager.getEntity('player'));
     let boardString = "";
     for(let i=0; i<boardArray.length; i++){
+        //boardString += '|'
         for(let j=0; j<boardArray[i].length; j++){
-            let playerEntity = entityManager.getEntity('player');
             if(entityManager.board.getLineOfSight(j,i)){
                 if(boardArray[i][j]){
                     boardString += boardArray[i][j].symbol;
@@ -118,7 +121,7 @@ function printBoard(boardArray){
             }else{
                 boardString += '?';
             }
-            boardString += '.';            
+            boardString += ' ';            
         }
         boardString += "\n";
     }
