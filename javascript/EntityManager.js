@@ -374,6 +374,7 @@ class EntityManager{
         this.setProperty(id, 'x', x);
         this.setProperty(id, 'y', y);
         this.board.placeEntity(this.getEntity(id),x,y)
+        console.log(this.entities);
     }
 
     getPosition(id){
@@ -403,6 +404,7 @@ class EntityManager{
         let entity = this.getEntity(id);
         this.board.clearSpace(entity.x, entity.y);
         this.setPosition(id,-1,-1);
+        this.board.placeEntities(this.entities);
     }
 
     addStunTime(id, stunTime){

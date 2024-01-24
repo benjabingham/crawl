@@ -45,7 +45,7 @@ $(document).ready(function(){
         if(player.stamina <= 0 ){
             player.changeStamina(2);
         }else{
-            console.log(key);
+            //console.log(key);
             switch(key){
                 case "6":
                     entityManager.moveEntity("player", 1, 0);
@@ -95,6 +95,7 @@ $(document).ready(function(){
             player = entityManager.triggerBehaviors(player);
             entityManager.reapWounded(player);
         }
+        //entityManager.board.placeEntities(entityManager.entities);
         printBoard(entityManager.board.boardArray);
         fillBars();
         entityManager.saveSnapshot(player);

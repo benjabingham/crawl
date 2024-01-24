@@ -23,13 +23,15 @@ class Board{
         for (const [k,entity] of Object.entries(entities)){
             let x = entity.x;
             let y = entity.y;
-            if(this.isSpace(x,y) && (!this.boardArray[y][x] || entity.behavior == 'wall')){
-                this.placeEntity(entity, x, y);
-            }else{
-                console.log("ENTITY OVERWRITE");
-                console.log(entity);
-                console.log(this.itemAt(x,y));
-            }    
+            if(this.itemAt(x,y).id != entity.id){
+                if(this.isSpace(x,y) && (!this.isOccupiedSpace(x,y))){
+                    this.placeEntity(entity, x, y);
+                }else{
+                    console.log("ENTITY OVERWRITE");
+                    console.log(entity);
+                    console.log(this.itemAt(x,y));
+                }   
+            } 
         };
     }
 
@@ -77,7 +79,7 @@ class Board{
         let targetPoint = {x:x, y:y};
 
         let line = this.getLine(fromPoint,targetPoint);
-
+        
         line.forEach((point) =>{
             //console.log(point);
             if(lineOfSight){
