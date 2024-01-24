@@ -28,6 +28,7 @@ $(document).ready(function(){
     populateWeaponSelectDropdown();
     enemyControlInit();
     entityManager.board.placeEntities(entityManager.entities);
+    entityManager.saveSnapshot(player);
     printBoard(entityManager.board.boardArray);
     $(document).on("keydown", function(e){
         if($(':focus').attr('id') != 'board'){
@@ -74,10 +75,12 @@ $(document).ready(function(){
                     entityManager.rotateSword(swordId,1);
                     break;
                 case "Backspace":
-                    console.log('rewind');
-                    playerInfo = entityManager.rewind();
-                    player.setPlayerInfo(playerInfo);
-                    skipBehaviors = true;
+                    if(entityManager.canRewind()){
+                        console.log('rewind');
+                        playerInfo = entityManager.rewind();
+                        player.setPlayerInfo(playerInfo);
+                        skipBehaviors = true;
+                    }
                     break;
                 default:
                     player.changeStamina(2);

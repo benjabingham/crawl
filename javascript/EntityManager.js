@@ -337,6 +337,10 @@ class EntityManager{
         }
     }
 
+    canRewind(){
+        return this.history.length > 1;
+    }
+
     rewind(){
         this.history.pop();
         let snapshot = this.history.pop();
