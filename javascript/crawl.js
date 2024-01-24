@@ -1,11 +1,10 @@
 turnCounter = 0;
 let entityManager = new EntityManager();
-let board = new Board();
 let player = new Player();
 
 $(document).ready(function(){
-    board.placeEntities(entityManager.entities);
-    entityManager.playerInit(board, player, 0, 7);
+    entityManager.board.placeEntities(entityManager.entities);
+    entityManager.playerInit(player, 0, 7);
     let swordId = entityManager.getProperty('player','sword')
     
     entityManager.entityInit('O','chase',5,5);
@@ -28,8 +27,8 @@ $(document).ready(function(){
     //switchWeapon('longsword');
     populateWeaponSelectDropdown();
     enemyControlInit();
-    board.placeEntities(entityManager.entities);
-    printBoard(board.boardArray);
+    entityManager.board.placeEntities(entityManager.entities);
+    printBoard(entityManager.board.boardArray);
     $(document).on("keydown", function(e){
         if($(':focus').attr('id') != 'board'){
             return;
@@ -43,28 +42,28 @@ $(document).ready(function(){
             //console.log(key);
             switch(key){
                 case "6":
-                    entityManager.moveEntity("player", 1, 0, board);
+                    entityManager.moveEntity("player", 1, 0);
                     break;
                 case "4":
-                    entityManager.moveEntity("player", -1, 0, board);
+                    entityManager.moveEntity("player", -1, 0);
                     break;
                 case "8":
-                    entityManager.moveEntity("player", 0, -1, board);
+                    entityManager.moveEntity("player", 0, -1);
                     break;
                 case "2":
-                    entityManager.moveEntity("player", 0, 1, board);
+                    entityManager.moveEntity("player", 0, 1);
                     break;
                 case "7":
-                    entityManager.moveEntity("player", -1, -1, board);
+                    entityManager.moveEntity("player", -1, -1);
                     break;
                 case "9":
-                    entityManager.moveEntity("player", 1, -1, board);
+                    entityManager.moveEntity("player", 1, -1);
                     break;
                 case "1":
-                    entityManager.moveEntity("player", -1, 1, board);
+                    entityManager.moveEntity("player", -1, 1);
                     break;
                 case "3":
-                    entityManager.moveEntity("player", 1, 1, board);
+                    entityManager.moveEntity("player", 1, 1);
                     break; 
                 case "q":
                     entityManager.rotateSword(swordId,-1);
@@ -76,14 +75,14 @@ $(document).ready(function(){
                     player.changeStamina(2);
             }
         }
-        board.placeEntities(entityManager.entities);
-        entityManager.placeSword(swordId, board, player);
+        entityManager.board.placeEntities(entityManager.entities);
+        entityManager.placeSword(swordId, player);
         entityManager.reapWounded(player);
-        board.placeEntities(entityManager.entities);
-        player = entityManager.triggerBehaviors(board, player);
+        entityManager.board.placeEntities(entityManager.entities);
+        player = entityManager.triggerBehaviors(player);
         entityManager.reapWounded(player);
-        board.placeEntities(entityManager.entities);
-        printBoard(board.boardArray);
+        entityManager.board.placeEntities(entityManager.entities);
+        printBoard(entityManager.board.boardArray);
         fillBars();
         turnCounter++;
     });
@@ -133,13 +132,13 @@ function enemyControlInit(){
         let x = parseInt($('#enemy-x-input').val());
         let y = parseInt($('#enemy-y-input').val());
         let hp = parseInt($('#enemy-hp-input').val());
-        if(!board.isSpace(x,y)){
+        if(!entityManager.board.isSpace(x,y)){
             return;
         }
 
         let id = entityManager.entityInit('O','chase',x,y,hp);
         console.log(entityManager.getEntity(id));
-        printBoard(board.boardArray);
+        printBoard(entityManager.board.boardArray);
 
     })
 }

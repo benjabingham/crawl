@@ -16,14 +16,14 @@ class EntityManager{
 
     }
 
-    playerInit(board, player, x=0,y=0){
+    playerInit(player, x=0,y=0){
         this.entities.player = {
             x:x,
             y:y,
             symbol:"☺",
             id: "player"
         };
-        this.swordInit("player", board, player);
+        this.swordInit("player", player);
     }
     
 
@@ -47,7 +47,7 @@ class EntityManager{
         return id;
     }
 
-    swordInit(owner, board, player, rotation = 3){
+    swordInit(owner, player, rotation = 3){
         let id = this.entityInit('*', 'sword');
         let sword = this.getEntity(id);
 
@@ -59,7 +59,7 @@ class EntityManager{
         this.setProperty(owner,'sword', id);
         
         this.switchWeapon('stick');
-        this.placeSword(id, board, player);
+        this.placeSword(id, player);
     
         return id;
     }
@@ -77,7 +77,8 @@ class EntityManager{
         return symbol;
     }
 
-    placeSword(id, board, player){
+    placeSword(id, player){
+        console.log('placeSword');
         let sword = this.getEntity(id);
         let ownerId = sword.owner;
         let owner = this.getEntity(ownerId);
@@ -90,30 +91,35 @@ class EntityManager{
         let y = owner.y + translation.y;
 
         this.setPosition(id,x,y);
+
     
-    
-        if(board.isOccupiedSpace(x,y)){
-            let knockedId = board.itemAt(x,y).id;
+        if(this.board.isOccupiedSpace(x,y)){
+            let knockedId = this.board.itemAt(x,y).id;
             if(knockedId != id && this.getProperty(knockedId, 'behavior') != 'wall'){
-                this.knock(knockedId, id, board);
+                this.knock(knockedId, id);
                 if (ownerId == 'player'){
                     player.changeStamina(sword.weight * -1);
                 }
             }
         }
+
+        this.board.placeEntity(sword,x,y);
         
         return player;
     }
 
-    knock(id, swordId, board){
+    knock(id, swordId){
+        console.log('knocked');
         let entity = this.getEntity(id);
-        let sword = this.getEntity(swordId)
+        let sword = this.getEntity(swordId);
+        console.log(entity);
+        console.log(sword);
         let direction = this.roll(0,7);
         let x = entity.x + this.translations[direction].x;
         let y = entity.y + this.translations[direction].y;
     
         let tries = 0;
-        while(!board.isOpenSpace(x,y) && tries < 8){
+        while(!this.board.isOpenSpace(x,y) && tries < 8){
             direction = (direction+1) % 8;
             x = entity.x + this.translations[direction].x;
             y = entity.y + this.translations[direction].y;
@@ -125,6 +131,7 @@ class EntityManager{
             let mortality = this.roll(0,sword.damage);
             this.addStunTime(id,stunTime);
             this.addMortality(id, mortality);
+            console.log(this.getEntity(id));
         }
     
         if(tries < 8){
@@ -135,14 +142,14 @@ class EntityManager{
         }
     }
 
-    moveEntity(id, x, y, board){
+    moveEntity(id, x, y){
         let entity = this.getEntity(id);
         x += entity.x;
         y += entity.y;
     
-        if(board.isSpace(x,y) && (board.isOpenSpace(x,y) || board.itemAt(x,y).owner == id)){
-            this.setPosition(id,x,y)
-            this.board.boardArray[y][x] = entity;
+        if(this.board.isSpace(x,y) && (this.board.isOpenSpace(x,y) || this.board.itemAt(x,y).owner == id)){
+            this.setPosition(id,x,y);
+            this.board.placeEntity(this.getEntity(id), x, y);
         }
     }
 
@@ -154,7 +161,7 @@ class EntityManager{
         this.setProperty(id, 'rotation', rotation);
     }
 
-    chase(id, player, board){
+    chase(id, player){
         let entity = this.getEntity(id);
         let playerEntity = this.getEntity('player');
         let x = 0;
@@ -177,7 +184,7 @@ class EntityManager{
             player.changeHealth(this.roll(1,entity.damage) * -1);
         }
 
-        moveEntity(id, x, y, board);
+        moveEntity(id, x, y);
         
     }
 
@@ -222,16 +229,15 @@ class EntityManager{
         }else if(targetItem && targetItem.behavior == 'wall'){
             this.addMortality(targetItem.id,this.roll(1,entity.damage));
         }else if (targetItem && targetItem.behavior == 'dead'){
-            this.knock(targetItem.id, false, board);
+            this.knock(targetItem.id, false);
         }
     
         this.moveEntity(id, 0, y, this.board);
         this.moveEntity(id, x, 0, this.board);
     }
 
-    triggerBehaviors(board, player){
+    triggerBehaviors(player){
         //console.log(board);
-        this.board = board;
         for (const [k,entity] of Object.entries(this.entities)){
             //console.log(entity);
             if (!entity.stunned){
@@ -343,8 +349,11 @@ class EntityManager{
     }
 
     setPosition(id,x,y){
+        let entity = this.getEntity(id);
+        //this.board.clearSpace(entity.x,entity.y)
         this.setProperty(id, 'x', x);
         this.setProperty(id, 'y', y);
+        //this.board.placeEntity(this.getEntity(id),x,y)
     }
 
     getPosition(id){

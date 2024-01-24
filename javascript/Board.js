@@ -22,7 +22,7 @@ class Board{
             let x = entity.x;
             let y = entity.y;
             if(this.isSpace(x,y) && (!this.boardArray[y][x] || entity.behavior == 'wall')){
-                this.boardArray[y][x] = entity;
+                this.placeEntity(entity, x, y);
             }else{
                 console.log("ENTITY OVERWRITE");
                 console.log(entity);
@@ -49,6 +49,16 @@ class Board{
         }else{
             return false;
         }
+    }
+
+    placeEntity(entity, x, y){
+        if (this.isSpace(x,y)){
+            this.boardArray[y][x] = entity;
+        }
+    }
+
+    clearSpace(x, y){
+        this.placeEntity(false, x, y)
     }
 
 
