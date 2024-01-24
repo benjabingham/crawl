@@ -75,9 +75,10 @@ $(document).ready(function(){
                     break;
                 case "Backspace":
                     console.log('rewind');
-                    entityManager.rewind();
+                    playerInfo = entityManager.rewind();
+                    player.setPlayerInfo(playerInfo);
                     skipBehaviors = true;
-
+                    break;
                 default:
                     player.changeStamina(2);
             }
@@ -90,7 +91,7 @@ $(document).ready(function(){
         }
         printBoard(entityManager.board.boardArray);
         fillBars();
-        entityManager.saveSnapshot();
+        entityManager.saveSnapshot(player);
         turnCounter++;
     });
 });

@@ -325,21 +325,26 @@ class EntityManager{
         console.log("weapon: "+weaponName);
     }
 
-    saveSnapshot(){
+    saveSnapshot(player){
         let entities = JSON.parse(JSON.stringify(this.entities));
-        this.history.push(entities);
-        console.log(this.history);
+        player = JSON.parse(JSON.stringify(player));
+        this.history.push({
+            entities:entities,
+            player:player
+        });
         if(this.history.length > 3){
             this.history.shift();
         }
     }
 
     rewind(){
-        console.log(this.entities);
         this.history.pop();
-        this.entities = this.history.pop();
-        console.log(this.entities);
+        let snapshot = this.history.pop();
+        this.entities = snapshot.entities;
         this.board.placeEntities(this.entities);
+        console.log(snapshot.player);
+
+        return snapshot.player;
     }
 
     roll(min,max){

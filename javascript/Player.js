@@ -28,4 +28,10 @@ class Player {
     }
 
 
+    setPlayerInfo(playerInfo){
+        for (const [key, value] of Object.entries(playerInfo)) {
+            this[key] = value;
+          }
+    }
+
 }
