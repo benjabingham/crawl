@@ -107,8 +107,8 @@ function printBoard(boardArray){
     entityManager.board.calculateLosArray(entityManager.getEntity('player'));
     let boardString = "";
     for(let i=0; i<boardArray.length; i++){
+        //boardString += '|'
         for(let j=0; j<boardArray[i].length; j++){
-            let playerEntity = entityManager.getEntity('player');
             if(entityManager.board.getLineOfSight(j,i)){
                 if(boardArray[i][j]){
                     boardString += boardArray[i][j].symbol;
@@ -118,7 +118,7 @@ function printBoard(boardArray){
             }else{
                 boardString += '?';
             }
-            boardString += '.';            
+            boardString += ' ';            
         }
         boardString += "\n";
     }
