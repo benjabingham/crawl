@@ -13,6 +13,8 @@ class EntityManager{
             {x:-1,y:-1}
         ];
         this.board = new Board();
+        this.history = [];
+        this.historyLimit = 3;
 
     }
 
@@ -321,6 +323,23 @@ class EntityManager{
         
         this.setEntity(id, sword);
         console.log("weapon: "+weaponName);
+    }
+
+    saveSnapshot(){
+        let entities = JSON.parse(JSON.stringify(this.entities));
+        this.history.push(entities);
+        console.log(this.history);
+        if(this.history.length > 3){
+            this.history.shift();
+        }
+    }
+
+    rewind(){
+        console.log(this.entities);
+        this.history.pop();
+        this.entities = this.history.pop();
+        console.log(this.entities);
+        this.board.placeEntities(this.entities);
     }
 
     roll(min,max){

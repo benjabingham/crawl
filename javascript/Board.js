@@ -26,7 +26,7 @@ class Board{
             }else{
                 console.log("ENTITY OVERWRITE");
                 console.log(entity);
-                console.log(this.boardArray[y][x]);
+                console.log(this.itemAt(x,y));
             }    
         };
     }

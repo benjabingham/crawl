@@ -37,10 +37,11 @@ $(document).ready(function(){
         e.preventDefault;
         entityManager.removeEntity(swordId);
         let key = e.originalEvent.key;
+        let skipBehaviors = false;
         if(player.stamina <= 0 ){
             player.changeStamina(2);
         }else{
-            //console.log(key);
+            console.log(key);
             switch(key){
                 case "6":
                     entityManager.moveEntity("player", 1, 0);
@@ -72,19 +73,24 @@ $(document).ready(function(){
                 case "w":
                     entityManager.rotateSword(swordId,1);
                     break;
+                case "Backspace":
+                    console.log('rewind');
+                    entityManager.rewind();
+                    skipBehaviors = true;
+
                 default:
                     player.changeStamina(2);
             }
         }
-        //entityManager.board.placeEntities(entityManager.entities);
         entityManager.placeSword(swordId, player);
-        entityManager.reapWounded(player);
-        //entityManager.board.placeEntities(entityManager.entities);
-        player = entityManager.triggerBehaviors(player);
-        entityManager.reapWounded(player);
-        //entityManager.board.placeEntities(entityManager.entities);
+        if(!skipBehaviors){
+            entityManager.reapWounded(player);
+            player = entityManager.triggerBehaviors(player);
+            entityManager.reapWounded(player);
+        }
         printBoard(entityManager.board.boardArray);
         fillBars();
+        entityManager.saveSnapshot();
         turnCounter++;
     });
 });
