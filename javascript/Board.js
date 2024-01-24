@@ -8,6 +8,10 @@ class Board{
         this.boardInit();
     }
 
+    loadMap(JSON){
+        
+    }
+
     boardInit(){
         this.LosInit();
         for(let i=0;i<this.height;i++){

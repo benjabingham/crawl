@@ -3,6 +3,9 @@ let entityManager = new EntityManager();
 let player = new Player();
 
 $(document).ready(function(){
+    fetch('./rooms/room1.json')
+        .then((response) => response.json())
+        .then((json) => console.log(json));
     entityManager.board.placeEntities(entityManager.entities);
     entityManager.playerInit(player, 0, 7);
     let swordId = entityManager.getProperty('player','sword')
