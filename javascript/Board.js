@@ -4,10 +4,12 @@ class Board{
         this.height = height;
 
         this.boardArray = [];
+        this.losArray = [];
         this.boardInit();
     }
 
     boardInit(){
+        this.LosInit();
         for(let i=0;i<this.height;i++){
             this.boardArray[i] = [];
             for(let j=0;j<this.width;j++){
@@ -64,6 +66,99 @@ class Board{
 
     clearSpace(x, y){
         this.placeEntity(false, x, y);
+    }
+
+    drawLos(playerx,playery,x,y){
+        //console.log('NEW SPACE');
+
+        let lineOfSight = true;
+
+        let fromPoint = {x:playerx, y:playery};
+        let targetPoint = {x:x, y:y};
+
+        let line = this.getLine(fromPoint,targetPoint);
+
+        line.forEach((point) =>{
+            //console.log(point);
+            if(lineOfSight){
+                this.setLineOfSight(point.x, point.y, lineOfSight);
+            }
+            
+            if(this.itemAt(point.x,point.y).behavior == 'wall'){
+                lineOfSight = false;
+            }
+
+        })
+
+        if(lineOfSight){
+            this.setLineOfSight(targetPoint.x, targetPoint.y, lineOfSight);
+        }
+
+        return lineOfSight;
+    }
+
+    pointCompare(point1, point2){
+        return (point1.x == point2.x && point1.y == point2.y);
+    }
+
+    LosInit(){
+        for(let i=0;i<this.height;i++){
+            this.losArray[i] = [];
+            for(let j=0;j<this.width;j++){
+                this.losArray[i][j] = false;
+            }
+        }
+    }
+
+    calculateLosArray(player){
+        this.LosInit();
+        for(let y=0;y<this.height;y++){
+            for(let x=0;x<this.width;x++){
+                if(x == 0 || y == 0 || x == this.width-1 || y == this.height-1){
+                    this.drawLos(player.x, player.y, x, y);
+                }
+            }
+        }
+    }
+
+    getLine(point1,point2){
+        let xdif = point2.x - point1.x;
+        let ydif = point2.y - point1.y;
+        
+        let steps = Math.max(
+            Math.abs(xdif),
+            Math.abs(ydif)
+        )
+
+        let line = [point1];
+
+        let xIncrement = xdif/steps;
+        let yIncrement = ydif/steps;
+        
+        let x = point1.x;
+        let y = point1.y;
+
+        for(let i = 0; i < steps; i++){
+            x += xIncrement;
+            y += yIncrement;
+
+            line.push({
+                x:Math.floor(x), y:Math.floor(y)
+            });
+        }
+
+        return line;
+
+    }
+
+    setLineOfSight(x,y, los){
+        if(this.isSpace(x,y)){
+            this.losArray[y][x] = los;
+        }
+    }
+
+    getLineOfSight(x,y){
+        return this.losArray[y][x];
     }
     
 }

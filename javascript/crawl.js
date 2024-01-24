@@ -24,6 +24,9 @@ $(document).ready(function(){
     entityManager.entityInit('M','wall',1,4);
     entityManager.entityInit('M','wall',1,5);
     entityManager.entityInit('M','wall',1,6);
+    entityManager.entityInit('M','wall',10,10);
+    entityManager.entityInit('M','wall',11,10);
+    entityManager.entityInit('M','wall',10,11);
     //switchWeapon('longsword');
     populateWeaponSelectDropdown();
     enemyControlInit();
@@ -100,13 +103,19 @@ $(document).ready(function(){
 });
 
 function printBoard(boardArray){
+    entityManager.board.calculateLosArray(entityManager.getEntity('player'));
     let boardString = "";
     for(let i=0; i<boardArray.length; i++){
         for(let j=0; j<boardArray[i].length; j++){
-            if(boardArray[i][j]){
-                boardString += boardArray[i][j].symbol;
+            let playerEntity = entityManager.getEntity('player');
+            if(entityManager.board.getLineOfSight(j,i)){
+                if(boardArray[i][j]){
+                    boardString += boardArray[i][j].symbol;
+                }else{
+                    boardString += '.';
+                }
             }else{
-                boardString += '.';
+                boardString += '?';
             }
             boardString += '.';            
         }
