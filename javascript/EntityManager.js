@@ -78,7 +78,6 @@ class EntityManager{
     }
 
     placeSword(id, player){
-        console.log('placeSword');
         let sword = this.getEntity(id);
         let ownerId = sword.owner;
         let owner = this.getEntity(ownerId);
@@ -106,11 +105,8 @@ class EntityManager{
     }
 
     knock(id, swordId){
-        console.log('knocked');
         let entity = this.getEntity(id);
         let sword = this.getEntity(swordId);
-        console.log(entity);
-        console.log(sword);
         let direction = this.roll(0,7);
         let x = entity.x + this.translations[direction].x;
         let y = entity.y + this.translations[direction].y;
@@ -128,7 +124,6 @@ class EntityManager{
             let mortality = this.roll(0,sword.damage);
             this.addStunTime(id,stunTime);
             this.addMortality(id, mortality);
-            console.log(this.getEntity(id));
         }
     
         if(tries < 8){
