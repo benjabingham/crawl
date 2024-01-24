@@ -364,6 +364,26 @@ class EntityManager{
         return sum;
     }
 
+    loadRoom(json, player){
+        this.board.setDimensions(json.width,json.height)
+        this.board.boardInit;
+        for(let y=0;y<this.board.height;y++){
+            for(let x=0;x<this.board.width;x++){
+                let entityCode = json.board[y][x];
+                if(entityCode){
+                    let entity = json.values[entityCode];
+                    if(entity == "player"){
+                        this.playerInit(player, x, y)
+                    }else{
+                        this.entityInit(entity.symbol, entity.behavior, x, y, entity.hitDice)
+                    }
+
+                }
+            }
+        }
+        
+    }
+
     setProperty(id, Property, value){
         this.entities[id][Property] = value;
     }

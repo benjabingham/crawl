@@ -5,11 +5,17 @@ let player = new Player();
 $(document).ready(function(){
     fetch('./rooms/room1.json')
         .then((response) => response.json())
-        .then((json) => console.log(json));
-    entityManager.board.placeEntities(entityManager.entities);
-    entityManager.playerInit(player, 0, 7);
-    let swordId = entityManager.getProperty('player','sword')
+        .then((json) => {
+            entityManager.loadRoom(json, player)
+            startGame();
+        })
     
+});
+
+function startGame(){
+    entityManager.board.placeEntities(entityManager.entities);
+    let swordId = entityManager.getProperty('player','sword')
+    /*
     entityManager.entityInit('O','chase',5,5);
     entityManager.entityInit('O','chase',6,5);
     entityManager.entityInit('O','chase',6,6);
@@ -30,6 +36,7 @@ $(document).ready(function(){
     entityManager.entityInit('M','wall',10,10);
     entityManager.entityInit('M','wall',11,10);
     entityManager.entityInit('M','wall',10,11);
+    */
     //switchWeapon('longsword');
     populateWeaponSelectDropdown();
     enemyControlInit();
@@ -104,7 +111,7 @@ $(document).ready(function(){
         entityManager.saveSnapshot(player);
         turnCounter++;
     });
-});
+}
 
 function printBoard(boardArray){
     entityManager.board.calculateLosArray(entityManager.getEntity('player'));

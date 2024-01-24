@@ -8,11 +8,10 @@ class Board{
         this.boardInit();
     }
 
-    loadMap(JSON){
-        
-    }
+    
 
     boardInit(){
+        this.boardArray = [];
         this.LosInit();
         for(let i=0;i<this.height;i++){
             this.boardArray[i] = [];
@@ -165,6 +164,11 @@ class Board{
 
     getLineOfSight(x,y){
         return this.losArray[y][x];
+    }
+
+    setDimensions(width,height){
+        this.width = width;
+        this.height = height;
     }
     
 }
