@@ -3,7 +3,7 @@ let entityManager = new EntityManager();
 let player = new Player();
 
 $(document).ready(function(){
-    fetch('./rooms/room1.json')
+    fetch('./rooms/room2.json')
         .then((response) => response.json())
         .then((json) => {
             entityManager.loadRoom(json, player)
