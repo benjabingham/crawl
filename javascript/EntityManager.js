@@ -98,9 +98,9 @@ class EntityManager{
         let y = owner.y + translation.y;
     
         if(this.board.isOccupiedSpace(x,y)){
-            let knockedId = this.board.itemAt(x,y).id;
-            if(knockedId != id && this.getProperty(knockedId, 'behavior') != 'wall'){
-                this.knock(knockedId, id);
+            let target = this.board.itemAt(x,y);
+            if(target.id != id && target.behavior != 'wall'){
+                this.attack(sword,target);
                 if (ownerId == 'player'){
                     player.changeStamina(sword.weight * -1);
                 }
@@ -110,54 +110,6 @@ class EntityManager{
         this.setPosition(id,x,y);
 
         return player;
-    }
-
-    knock(id, swordId){
-        let entity = this.getEntity(id);
-        let sword = this.getEntity(swordId);
-        let direction = this.roll(0,7);
-        let x = entity.x + this.translations[direction].x;
-        let y = entity.y + this.translations[direction].y;
-    
-        let tries = 0;
-        while(!this.board.isOpenSpace(x,y) && tries < 8){
-            direction = (direction+1) % 8;
-            x = entity.x + this.translations[direction].x;
-            y = entity.y + this.translations[direction].y;
-            tries++;
-        }
-
-        if(sword){
-            this.transmitMessage(entity.name+" is struck!");
-            let stunTime = this.roll(1,sword.stunTime);
-            let mortality = this.roll(0,sword.damage);
-            this.addStunTime(id,stunTime);
-            this.addMortality(id, mortality);
-
-            let enrageChance = entity.behaviorInfo.enrage;
-            let dazeChance = entity.behaviorInfo.daze;
-
-            let random = this.roll(1,100);
-            if(random <= enrageChance){
-                this.transmitMessage(entity.name+" is enraged!");
-                entity.behaviorInfo.focus += 5;
-                entity.behaviorInfo.slow -= 3;
-                entity.stunned -= Math.max(this.roll(0,entity.stunned),0);
-            }
-            random = this.roll(1,100);
-            if(random <= dazeChance){
-                this.transmitMessage(entity.name+" is dazed!");
-                entity.behaviorInfo.focus -= 5;
-                entity.behaviorInfo.slow += 5;
-                entity.stunned ++;
-            }
-        }
-    
-        if(tries < 8){
-            this.setPosition(id,x,y)
-        }else{
-            this.transmitMessage(entity.name + "is cornered!");
-        }
     }
 
     moveEntity(id, x, y){
@@ -248,14 +200,9 @@ class EntityManager{
         let targetX = entity.x+x;
         let targetY = entity.y+y
         let targetItem = this.board.itemAt(targetX, targetY);
-    
-        if(targetItem && targetItem.id == 'player'){
-            this.transmitMessage(entity.name+" attacks you!");
-            player.changeHealth(this.roll(1,entity.damage) * -1);
-        }else if(targetItem && targetItem.behavior == 'wall'){
-            this.addMortality(targetItem.id,this.roll(1,entity.damage));
-        }else if (targetItem && targetItem.behavior == 'dead'){
-            this.knock(targetItem.id, false);
+
+        if(targetItem.id == "player" || targetItem.behavior == "dead" || targetItem.behavior == "wall"){
+            this.attack(entity,targetItem);
         }
     
         if(!this.moveEntity(id, x, y, this.board)){
@@ -263,6 +210,72 @@ class EntityManager{
             this.moveEntity(id, x, 0, this.board);
         }
         
+    }
+
+    attack(attacker,target){
+        let stunTime = 0;
+        if (attacker.stunTime){
+            stunTime = this.roll(1,attacker.stunTime);
+        }
+        let mortality = this.roll(0,attacker.damage);
+
+        if (target.id == 'player'){
+            this.transmitMessage(attacker.name+" attacks you!");
+            player.changeHealth(mortality * -1);
+        }else if(target.behavior == 'wall'){
+            this.addMortality(mortality);
+        }else{
+            this.addStunTime(target.id,stunTime);
+            this.addMortality(target.id, mortality);
+            this.knock(target.id, attacker.id);
+            this.enrageAndDaze(target);   
+        }
+
+        if(attacker.id == 'player' || attacker.owner == 'player'){
+            this.transmitMessage(target.name+" is struck!");
+        }
+    }
+
+    knock(knockedId, knockerId){
+        let knocked = this.getEntity(knockedId);
+        let knocker = this.getEntity(knockerId);
+        let direction = this.roll(0,7);
+        let x = knockedId.x + this.translations[direction].x;
+        let y = knockedId.y + this.translations[direction].y;
+    
+        let tries = 0;
+        while(!this.board.isOpenSpace(x,y) && tries < 8){
+            direction = (direction+1) % 8;
+            x = knocked.x + this.translations[direction].x;
+            y = knocked.y + this.translations[direction].y;
+            tries++;
+        }
+
+        if(tries < 8){
+            this.setPosition(knockedId,x,y)
+        }else{
+            this.transmitMessage(knocked.name + "is cornered!");
+        }
+    }
+
+    enrageAndDaze(entity){
+        let enrageChance = entity.behaviorInfo.enrage;
+        let dazeChance = entity.behaviorInfo.daze;
+
+        let random = this.roll(1,100);
+        if(random <= enrageChance){
+            this.transmitMessage(entity.name+" is enraged!");
+            entity.behaviorInfo.focus += 5;
+            entity.behaviorInfo.slow -= 3;
+            entity.stunned -= Math.max(this.roll(0,entity.stunned),0);
+        }
+        random = this.roll(1,100);
+        if(random <= dazeChance){
+            this.transmitMessage(entity.name+" is dazed!");
+            entity.behaviorInfo.focus -= 5;
+            entity.behaviorInfo.slow += 5;
+            entity.stunned ++;
+        }
     }
 
     triggerBehaviors(player){
@@ -497,7 +510,7 @@ class EntityManager{
                     }else if(entity.monster){
                         this.monsterInit(entity.monster,x,y);
                     }else{
-                        this.entityInit(entity.symbol, entity.behavior, x, y, entity.hitDice)
+                        this.entityInit(entity.symbol, entity.behavior, x, y, entity.hitDice,entity.damage, entity.behaviorInfo, entity.name);
                     }
 
                 }
