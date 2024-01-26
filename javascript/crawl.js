@@ -3,7 +3,7 @@ let entityManager = new EntityManager();
 let player = new Player();
 
 $(document).ready(function(){
-    fetch('./rooms/room2.json')
+    fetch('./rooms/ratnest.json')
         .then((response) => response.json())
         .then((json) => {
             entityManager.loadRoom(json, player)
@@ -112,6 +112,7 @@ function startGame(){
         fillBars();
         entityManager.saveSnapshot(player);
         turnCounter++;
+        entityManager.transmitMessage("-_-_-_-_-_-_-_-")
     });
 }
 

@@ -30,9 +30,9 @@ class Board{
                 if(this.isSpace(x,y) && (!this.isOccupiedSpace(x,y))){
                     this.placeEntity(entity, x, y);
                 }else{
-                    console.log("ENTITY OVERWRITE");
-                    console.log(entity);
-                    console.log(this.itemAt(x,y));
+                    //console.log("ENTITY OVERWRITE");
+                    //console.log(entity);
+                    //console.log(this.itemAt(x,y));
                 }   
             } 
         };
@@ -61,9 +61,9 @@ class Board{
     placeEntity(entity, x, y){
         if (this.isSpace(x,y)){
             if(entity && this.isOccupiedSpace(x,y)){
-                console.log('ENTITY OVERWRITE');
-                console.log(entity);
-                console.log(this.itemAt(x,y));
+                //console.log('ENTITY OVERWRITE');
+                //console.log(entity);
+                //console.log(this.itemAt(x,y));
             }
             this.boardArray[y][x] = entity;
         }
