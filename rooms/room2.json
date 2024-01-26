@@ -35,7 +35,7 @@
         "3":{
             "symbol":"W",
             "behavior":"wall",
-            "hitDice":"3"
+            "hitDice":"5"
         },
         "4":{"monster":"dire wolf"},
         "5":{"monster":"ogre"},

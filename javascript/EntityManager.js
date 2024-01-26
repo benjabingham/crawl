@@ -161,7 +161,10 @@ class EntityManager{
     
         if(this.board.isSpace(x,y) && this.board.isOpenSpace(x,y)){
             this.setPosition(id,x,y);
+            return true;
         }
+
+        return false;
     }
 
     rotateSword(id, direction){
@@ -249,8 +252,11 @@ class EntityManager{
             this.knock(targetItem.id, false);
         }
     
-        this.moveEntity(id, 0, y, this.board);
-        this.moveEntity(id, x, 0, this.board);
+        if(!this.moveEntity(id, x, y, this.board)){
+            this.moveEntity(id, 0, y, this.board);
+            this.moveEntity(id, x, 0, this.board);
+        }
+        
     }
 
     triggerBehaviors(player){

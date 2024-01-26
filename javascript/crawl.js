@@ -95,6 +95,7 @@ function startGame(){
                         playerInfo = entityManager.rewind();
                         player.setPlayerInfo(playerInfo);
                         skipBehaviors = true;
+                        entityManager.board.calculateLosArray(entityManager.getEntity('player'));
                     }
                     break;
                 default:
