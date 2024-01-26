@@ -181,12 +181,16 @@ class EntityManager{
         
     }
 
-    chaseNatural(id, player){
+    chaseNatural(id, player, focus = 10){
         let entity = this.getEntity(id);
         let playerEntity = this.getEntity('player');
+        //creature is less focused the further they are
+        focus -= Math.min(this.getDistance(entity, playerEntity),3);
         let x = 0;
         let y = 0;
-        let random = this.roll(1,10);
+
+        //the higher focus is, the less likely the creature is to move randomly
+        let random = this.roll(1,focus);
         if(random == 1){
             x = -1;
         }else if (random == 2){
@@ -199,7 +203,7 @@ class EntityManager{
             x = 1;
         }
         
-        random = this.roll(1,10);
+        random = this.roll(1,focus);
         if(random == 1){
             y = -1;
         }else if (random == 2){
@@ -435,6 +439,13 @@ class EntityManager{
     addMortality(id, mortal){
         mortal += Math.max(this.getProperty(id, 'mortal'),0);
         this.setProperty(id, 'mortal', mortal);
+    }
+
+    getDistance(point1, point2){
+        let xdif = Math.abs(point1.x - point2.x);
+        let ydif = Math.abs(point1.y - point2.y);
+
+        return Math.max(xdif, ydif);
     }
 
 }
