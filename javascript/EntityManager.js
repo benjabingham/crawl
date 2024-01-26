@@ -294,7 +294,16 @@ class EntityManager{
                     entity.tempSymbol = false;
                 }
             }else{
-                entity.symbol = 'x';
+                entity.tempSymbol = 'x';
+            }
+
+
+
+            if((entity.mortal - entity.threshold) > entity.threshold && !entity.obliterated){
+                console.log('obliterated');
+                entity.obliterated = true;
+                this.setPosition(entity.id,-1,-1);
+
             }
         }
 
