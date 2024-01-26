@@ -117,12 +117,14 @@ function startGame(){
 
 function printBoard(boardArray){
     let boardString = "";
+    let symbol;
     for(let i=0; i<boardArray.length; i++){
         //boardString += '|'
         for(let j=0; j<boardArray[i].length; j++){
             if(entityManager.board.getLineOfSight(j,i)){
                 if(boardArray[i][j]){
-                    boardString += boardArray[i][j].symbol;
+                    symbol = boardArray[i][j].tempSymbol ? boardArray[i][j].tempSymbol : boardArray[i][j].symbol;
+                    boardString += symbol;
                 }else{
                     boardString += '.';
                 }

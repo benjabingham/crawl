@@ -29,18 +29,20 @@ class EntityManager{
     }
     
 
-    entityInit(symbol, behavior, x=0,y=0,hitDice=1){
+    entityInit(symbol, behavior, x=0,y=0, hitDice=1, behaviorInfo = {}){
+        let threshold = Math.max(this.rollN(hitDice,1,8),1);
         let id = this.entityCounter;
         let entity = {
             x : x,
             y: y,
             symbol: symbol,
             behavior: behavior,
+            behaviorInfo: behaviorInfo,
             id:id,
             stunned:0,
             mortal:0,
-            threshold:this.rollN(hitDice,1,8),
-            damage:4
+            threshold:threshold,
+            damage:4,
         }
         this.entityCounter++;
         this.entities[id] = entity;
@@ -126,6 +128,20 @@ class EntityManager{
             let mortality = this.roll(0,sword.damage);
             this.addStunTime(id,stunTime);
             this.addMortality(id, mortality);
+
+            let enrageChance = entity.behaviorInfo.enrage;
+            let dazeChance = entity.behaviorInfo.daze;
+
+            let random = this.roll(1,100);
+            if(random <= enrageChance){
+                entity.behaviorInfo.focus += 10;
+                entity.stunned -= Math.max(this.roll(0,entity.stunned),0);
+            }
+            random = this.roll(1,100);
+            if(random <= dazeChance){
+                entity.behaviorInfo.focus -= 5;
+                entity.stunned ++;
+            }
         }
     
         if(tries < 8){
@@ -181,10 +197,11 @@ class EntityManager{
         
     }
 
-    chaseNatural(id, player, focus = 15){
+    chaseNatural(id, player, behaviorInfo){
         let entity = this.getEntity(id);
         let playerEntity = this.getEntity('player');
         //creature is less focused the further they are
+        let focus = behaviorInfo.focus;
         focus -= this.getDistance(entity, playerEntity);
         focus =  Math.max(focus, 3);
         let x = 0;
@@ -241,13 +258,13 @@ class EntityManager{
             if (!entity.stunned){
                 switch(entity.behavior){
                     case "chase":
-                        this.chaseNatural(k, player);
+                        this.chaseNatural(k, player, entity.behaviorInfo);
                         break;
                     case "sword":
                         //player = this.placeSword(k,board, player);
                         break;
                     case "dead":
-                        entity.symbol = 'x';
+                        entity.tempSymbol = 'x';
                         break;
                     default:
                 }
@@ -255,9 +272,9 @@ class EntityManager{
                 //console.log('enemy is stunned');
                 entity.stunned--;
                 if(entity.stunned > 0){
-                    entity.symbol = 0;
+                    entity.tempSymbol = entity.symbol.toLowerCase();
                 }else{
-                    entity.symbol = 'O';
+                    entity.tempSymbol = false;
                 }
             }else{
                 entity.symbol = 'x';
@@ -330,6 +347,51 @@ class EntityManager{
         console.log("weapon: "+weaponName);
     }
 
+    monsterInit(monsterName,x,y){
+        let behavior = "chase";
+        let symbol;
+        let hitDice;
+        let behaviorInfo;
+        switch(monsterName){
+            case "goblin":
+                symbol = "G";
+                hitDice = 1;
+                behaviorInfo = {
+                    focus:15,
+                    enrage:20,
+                    daze:30
+                }
+                break;
+            case "ogre":
+                symbol = "O";
+                hitDice = 3;
+                behaviorInfo = {
+                    focus:7,
+                    enrage:75,
+                    slow: 20
+                }
+                break;
+            case "rat":
+                symbol = "R";
+                hitDice = 0;
+                behaviorInfo = {
+                    focus:15,   
+                }
+                break;
+            case "dire wolf":
+                symbol = "D";
+                hitDice = 2;
+                behaviorInfo = {
+                    focus:25,
+                    enrage:75,
+                    daze:15
+                }
+                break;
+        }
+
+        let id = this.entityInit(symbol, behavior,x, y, hitDice, behaviorInfo)
+    }
+
     saveSnapshot(player){
         let entities = JSON.parse(JSON.stringify(this.entities));
         player = JSON.parse(JSON.stringify(player));
@@ -343,7 +405,7 @@ class EntityManager{
     }
 
     canRewind(){
-        console.log(this.history);
+        //console.log(this.history);
         return this.history.length > 1;
     }
 
@@ -352,7 +414,7 @@ class EntityManager{
         let snapshot = this.history.pop();
         this.entities = snapshot.entities;
         this.board.placeEntities(this.entities);
-        console.log(snapshot.player);
+        //console.log(snapshot.player);
 
         return snapshot.player;
     }
@@ -379,6 +441,8 @@ class EntityManager{
                     let entity = json.values[entityCode];
                     if(entity == "player"){
                         this.playerInit(player, x, y)
+                    }else if(entity.monster){
+                        this.monsterInit(entity.monster,x,y);
                     }else{
                         this.entityInit(entity.symbol, entity.behavior, x, y, entity.hitDice)
                     }
@@ -399,7 +463,7 @@ class EntityManager{
         this.setProperty(id, 'x', x);
         this.setProperty(id, 'y', y);
         this.board.placeEntity(this.getEntity(id),x,y)
-        console.log(this.entities);
+        //console.log(this.entities);
     }
 
     getPosition(id){
