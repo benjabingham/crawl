@@ -42,6 +42,7 @@ function startGame(){
     enemyControlInit();
     entityManager.board.placeEntities(entityManager.entities);
     entityManager.saveSnapshot(player);
+    entityManager.board.calculateLosArray(entityManager.getEntity('player'));
     printBoard(entityManager.board.boardArray);
     $(document).on("keydown", function(e){
         if($(':focus').attr('id') != 'board'){
@@ -50,6 +51,7 @@ function startGame(){
         //console.log(e);
         e.preventDefault;
         entityManager.removeEntity(swordId);
+        entityManager.board.calculateLosArray(entityManager.getEntity('player'));
         let key = e.originalEvent.key;
         let skipBehaviors = false;
         if(player.stamina <= 0 ){
@@ -114,7 +116,6 @@ function startGame(){
 }
 
 function printBoard(boardArray){
-    entityManager.board.calculateLosArray(entityManager.getEntity('player'));
     let boardString = "";
     for(let i=0; i<boardArray.length; i++){
         //boardString += '|'
