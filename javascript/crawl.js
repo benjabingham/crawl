@@ -15,29 +15,6 @@ $(document).ready(function(){
 function startGame(){
     entityManager.board.placeEntities(entityManager.entities);
     let swordId = entityManager.getProperty('player','sword')
-    /*
-    entityManager.entityInit('O','chase',5,5);
-    entityManager.entityInit('O','chase',6,5);
-    entityManager.entityInit('O','chase',6,6);
-    entityManager.entityInit('O','chase',7,6);
-    entityManager.entityInit('O','chase',6,7);
-    
-    entityManager.entityInit('O','chase',0,0);
-
-
-    entityManager.entityInit('M','wall',1,0);
-    entityManager.entityInit('M','wall',1,1);
-    entityManager.entityInit('M','wall',1,2);
-    entityManager.entityInit('M','wall',1,3);
-    entityManager.entityInit('M','wall',2,3);
-    entityManager.entityInit('M','wall',1,4);
-    entityManager.entityInit('M','wall',1,5);
-    entityManager.entityInit('M','wall',1,6);
-    entityManager.entityInit('M','wall',10,10);
-    entityManager.entityInit('M','wall',11,10);
-    entityManager.entityInit('M','wall',10,11);
-    */
-    //switchWeapon('longsword');
     populateWeaponSelectDropdown();
     enemyControlInit();
     entityManager.board.placeEntities(entityManager.entities);
@@ -117,6 +94,7 @@ function startGame(){
 }
 
 function printBoard(boardArray){
+    entityManager.board.placeEntities(entityManager.entities);
     let boardString = "";
     let symbol;
     for(let i=0; i<boardArray.length; i++){

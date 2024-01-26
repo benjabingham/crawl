@@ -12,7 +12,7 @@ class Board{
 
     boardInit(){
         this.boardArray = [];
-        this.LosInit();
+        //this.LosInit();
         for(let i=0;i<this.height;i++){
             this.boardArray[i] = [];
             for(let j=0;j<this.width;j++){

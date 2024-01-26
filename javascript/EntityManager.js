@@ -98,8 +98,6 @@ class EntityManager{
         let y = owner.y + translation.y;
     
         if(this.board.isOccupiedSpace(x,y)){
-            console.log('is occupied');
-            console.log(this.board.itemAt(x,y));
             let target = this.board.itemAt(x,y);
             if(target.id != id && target.behavior != 'wall'){
                 this.attack(sword,target);
@@ -108,8 +106,10 @@ class EntityManager{
                 }
             }
         }
-
-        this.setPosition(id,x,y);
+        //if sword hasn't been placed somewhere else as result of attack...
+        if(rotation == sword.rotation){
+            this.setPosition(id,x,y);
+        }
 
         return player;
     }
@@ -224,7 +224,7 @@ class EntityManager{
         if (target.id == 'player'){
             this.transmitMessage(attacker.name+" attacks you!");
             player.changeHealth(mortality * -1);
-            this.knockSword(target.sword);
+            //this.knockSword(target.sword);
         }else if(target.behavior == 'wall'){
             this.addMortality(mortality);
         }else{
@@ -258,6 +258,9 @@ class EntityManager{
             this.setPosition(knockedId,x,y)
         }else{
             this.transmitMessage(knocked.name + "is cornered!");
+            if(knocker.behavior == 'sword'){
+                this.knockSword(knockerId);
+            }
         }
     }
 
