@@ -134,12 +134,14 @@ class EntityManager{
 
             let random = this.roll(1,100);
             if(random <= enrageChance){
-                entity.behaviorInfo.focus += 10;
+                entity.behaviorInfo.focus += 5;
+                entity.behaviorInfo.slow -= 3;
                 entity.stunned -= Math.max(this.roll(0,entity.stunned),0);
             }
             random = this.roll(1,100);
             if(random <= dazeChance){
                 entity.behaviorInfo.focus -= 5;
+                entity.behaviorInfo.slow += 5;
                 entity.stunned ++;
             }
         }
@@ -255,7 +257,13 @@ class EntityManager{
         //console.log(board);
         for (const [k,entity] of Object.entries(this.entities)){
             //console.log(entity);
-            if (!entity.stunned){
+            let random = this.roll(1,100);
+            let skip = entity.stunned
+            if(entity.behaviorInfo){
+                skip += (random <= entity.behaviorInfo.slow);
+            }
+            
+            if (!skip){
                 switch(entity.behavior){
                     case "chase":
                         this.chaseNatural(k, player, entity.behaviorInfo);
@@ -268,9 +276,12 @@ class EntityManager{
                         break;
                     default:
                 }
-            }else if (entity.behavior != 'dead'){
+            }
+            if (entity.behavior != 'dead'){
                 //console.log('enemy is stunned');
-                entity.stunned--;
+                if(entity.stunned > 0){
+                    entity.stunned--;
+                }
                 if(entity.stunned > 0){
                     entity.tempSymbol = entity.symbol.toLowerCase();
                 }else{
@@ -368,7 +379,7 @@ class EntityManager{
                 behaviorInfo = {
                     focus:7,
                     enrage:75,
-                    slow: 20
+                    slow: 30
                 }
                 break;
             case "rat":
