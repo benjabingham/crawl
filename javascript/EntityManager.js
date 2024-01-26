@@ -29,7 +29,7 @@ class EntityManager{
     }
     
 
-    entityInit(symbol, behavior, x=0,y=0, hitDice=1, behaviorInfo = {}){
+    entityInit(symbol, behavior, x=0,y=0, hitDice=1, damage=0, behaviorInfo = {}){
         let threshold = Math.max(this.rollN(hitDice,1,8),1);
         let id = this.entityCounter;
         let entity = {
@@ -42,7 +42,7 @@ class EntityManager{
             stunned:0,
             mortal:0,
             threshold:threshold,
-            damage:4,
+            damage:damage,
         }
         this.entityCounter++;
         this.entities[id] = entity;
@@ -369,10 +369,12 @@ class EntityManager{
         let symbol;
         let hitDice;
         let behaviorInfo;
+        let damage;
         switch(monsterName){
             case "goblin":
                 symbol = "G";
                 hitDice = 1;
+                damage = 3;
                 behaviorInfo = {
                     focus:15,
                     enrage:20,
@@ -382,6 +384,7 @@ class EntityManager{
             case "ogre":
                 symbol = "O";
                 hitDice = 3;
+                damage = 8;
                 behaviorInfo = {
                     focus:7,
                     enrage:75,
@@ -391,6 +394,7 @@ class EntityManager{
             case "rat":
                 symbol = "R";
                 hitDice = 0;
+                damage = 1;
                 behaviorInfo = {
                     focus:15,   
                 }
@@ -398,6 +402,7 @@ class EntityManager{
             case "dire wolf":
                 symbol = "D";
                 hitDice = 2;
+                damage = 8;
                 behaviorInfo = {
                     focus:25,
                     enrage:75,
@@ -406,7 +411,7 @@ class EntityManager{
                 break;
         }
 
-        let id = this.entityInit(symbol, behavior,x, y, hitDice, behaviorInfo)
+        let id = this.entityInit(symbol, behavior,x, y, hitDice, damage, behaviorInfo)
     }
 
     saveSnapshot(player){
