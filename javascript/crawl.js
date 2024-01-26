@@ -51,7 +51,6 @@ function startGame(){
         //console.log(e);
         e.preventDefault;
         entityManager.removeEntity(swordId);
-        entityManager.board.calculateLosArray(entityManager.getEntity('player'));
         let key = e.originalEvent.key;
         let skipBehaviors = false;
         if(player.stamina <= 0 ){
@@ -95,13 +94,13 @@ function startGame(){
                         playerInfo = entityManager.rewind();
                         player.setPlayerInfo(playerInfo);
                         skipBehaviors = true;
-                        entityManager.board.calculateLosArray(entityManager.getEntity('player'));
                     }
                     break;
                 default:
                     player.changeStamina(2);
             }
         }
+        entityManager.board.calculateLosArray(entityManager.getEntity('player'));
         entityManager.placeSword(swordId, player);
         if(!skipBehaviors){
             entityManager.reapWounded(player);
