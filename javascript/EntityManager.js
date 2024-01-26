@@ -98,6 +98,8 @@ class EntityManager{
         let y = owner.y + translation.y;
     
         if(this.board.isOccupiedSpace(x,y)){
+            console.log('is occupied');
+            console.log(this.board.itemAt(x,y));
             let target = this.board.itemAt(x,y);
             if(target.id != id && target.behavior != 'wall'){
                 this.attack(sword,target);
@@ -222,6 +224,7 @@ class EntityManager{
         if (target.id == 'player'){
             this.transmitMessage(attacker.name+" attacks you!");
             player.changeHealth(mortality * -1);
+            this.knockSword(target.sword);
         }else if(target.behavior == 'wall'){
             this.addMortality(mortality);
         }else{
@@ -256,6 +259,39 @@ class EntityManager{
         }else{
             this.transmitMessage(knocked.name + "is cornered!");
         }
+    }
+
+    knockSword(swordId){
+        let sword = this.getEntity(swordId);
+        let owner = this.getEntity(sword.owner);
+        //direction is either 1 or -1
+        let direction = (this.roll(0,1) * 2) - 1;
+        let rotation = (sword.rotation + 8 + direction) % 8;
+        let translation = this.translations[rotation];
+        let x = owner.x + translation.x;
+        let y = owner.y + translation.y;
+        let counter = 1;
+        while((this.board.itemAt(x,y).behavior != 'wall' && this.board.itemAt(x,y)) && counter < 3){
+            rotation = (sword.rotation + 8 + direction) % 8;
+            translation = this.translations[rotation];
+            x = owner.x + translation.x;
+            y = owner.y + translation.y;
+            console.log(counter);
+        
+            counter++;
+        }
+
+        if(this.board.itemAt(x,y).behavior == 'wall' || !this.board.itemAt(x,y)){
+            this.transmitMessage('sword knocked!');
+            sword.rotation = rotation;
+            console.log(x);
+            console.log(y);
+            console.log(this.board.itemAt(x,y));
+            this.placeSword(sword.id);
+            
+        }
+
+
     }
 
     enrageAndDaze(entity){
