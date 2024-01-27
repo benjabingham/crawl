@@ -12,19 +12,27 @@
     <script src="javascript/EntityManager.js"></script>
     <script src="javascript/Board.js"></script>
     <script src="javascript/Player.js"></script>
+    <script src="javascript/Log.js"></script>
 	<script src="javascript/crawl.js"></script>
-  
-
-    <div id="board" tabindex="0"></div>
     <div id = "resources">
-        <div id = "stamina-bar">
-            <div id = "stamina-level"></div>
-        </div>
-        <br>
         <div id = "health-bar">
             <div id = "health-level"></div>
         </div>
+        <div id = "stamina-bar">
+            <div id = "stamina-level"></div>
+        </div>
     </div>
+    <div id="game-window">
+        <div>
+            <div id="board" tabindex="0"></div> 
+        </div>
+        <div id="log-window">
+            <div id="log-title">Log</div>
+            <div id="log"></div>
+        </div>
+    </div>
+  
+    
     <div id = 'instructions-div'>
         Welcome to crawlJS!
         use the numpad to move - you can move up, down, left, right, or diagonally.

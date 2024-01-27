@@ -14,6 +14,7 @@ class EntityManager{
         ];
         this.board = new Board();
         this.player = player;
+        this.log = log;
         this.history = [];
         this.historyLimit = 10;
     
@@ -739,6 +740,7 @@ class EntityManager{
     }
 
     transmitMessage(message){
+        this.log.addMessage(message);
         console.log(message);
     }
 

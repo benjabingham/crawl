@@ -1,9 +1,9 @@
 let player = new Player();
-let entityManager = new EntityManager(player);
-
+let log = new Log();
+let entityManager = new EntityManager(player, log);
 
 $(document).ready(function(){
-    fetch('./rooms/trainingHall.json')
+    fetch('./rooms/ratnest.json')
         .then((response) => response.json())
         .then((json) => {
             entityManager.loadRoom(json)
@@ -17,6 +17,7 @@ function startGame(){
     let swordId = entityManager.getProperty('player','sword')
     populateWeaponSelectDropdown();
     enemyControlInit();
+    boardDisplayInit();
     entityManager.board.placeEntities(entityManager.entities);
     entityManager.saveSnapshot();
     entityManager.board.calculateLosArray(entityManager.getEntity('player'));
@@ -68,6 +69,8 @@ function startGame(){
                     console.log('rewind');
                     entityManager.rewind();
                     entityManager.skipBehaviors = true;
+                    log.turnCounter--;
+                    log.messages[log.turnCounter] = false;
                 }
                 break;
             case "5":
@@ -89,8 +92,24 @@ function startGame(){
         printBoard(entityManager.board.boardArray);
         fillBars();
         entityManager.saveSnapshot();
-        entityManager.transmitMessage("-_-_-_-_-_-_-_-")
+        //entityManager.transmitMessage("-_-_-_-_-_-_-_-")
+        if(!entityManager.skipBehaviors){
+            log.turnCounter++;
+        }else{
+            log.rewind();
+        }
+        log.printLog();
+        
+
     });
+}
+
+function boardDisplayInit(){
+    let boardDiv = $("#board");
+    boardDiv.css('width',entityManager.board.width*1.8+"rem");
+    let gameWindow = $("#game-window");
+    gameWindow.css('height',entityManager.board.height*2+"rem");
+    $('#log').css('height',entityManager.board.height*2-1.5+"rem");
 }
 
 function printBoard(boardArray){

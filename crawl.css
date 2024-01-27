@@ -1,5 +1,27 @@
-html{
-    
+#game-window{
+    display:flex;
+}
+
+#log-window{
+    border:1px solid gray;
+    width:300px;
+}
+
+#log-title{
+    text-align:center;
+    font-weight: 600;
+}
+
+#log{
+    overflow-y:scroll;
+
+    p{
+        margin:0;
+    }
+
+    .turn-counter{
+        text-align:center;
+    }
 }
 
 #board{
@@ -10,11 +32,21 @@ html{
     white-space:pre-line;
     font-family: monospace;
     font-size:xx-large;
-    width:fit-content;
+    float:left;
 }
 
 #board:focus{
     border:1px solid #BBBBBB;
+}
+
+#resources{
+    display:flex;
+
+    
+}
+
+#resources>div{
+    margin:5px;
 }
 
 #stamina-bar{
@@ -54,4 +86,8 @@ html{
     input{
         width:20px;
     }
+}
+
+.message-fresh{
+    background-color:rgb(252, 244, 233);
 }
