@@ -257,7 +257,7 @@ class EntityManager{
         }else if (backupSpace){
             this.setPosition(knockedId,backupSpace.x,backupSpace.y);
         }else{
-            this.transmitMessage(knocked.name + "is cornered!");
+            this.transmitMessage(knocked.name + " is cornered!");
             if(knocker.behavior == 'sword'){
                 this.setToLastPosition(knocker.owner);
                 this.setToLastPosition(knockerId);
@@ -451,6 +451,7 @@ class EntityManager{
         for (const [k,entity] of Object.entries(this.entities)){
             if (entity.stunned+entity.mortal > entity.threshold && entity.behavior != 'dead'){
                 this.transmitMessage(entity.name+" is slain!");
+                entity.name += " corpse";
                 this.setProperty(k,'behavior', 'dead');
                 this.setProperty(k,'tempSymbol', 'x');
                 this.setProperty(k,'stunned', 0);
