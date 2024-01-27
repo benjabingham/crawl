@@ -96,6 +96,8 @@ function startGame(){
         if(!entityManager.skipBehaviors){
             log.turnCounter++;
         }else{
+            console.log(log.messages);
+            console.log(log.turnCounter);
             log.rewind();
         }
         log.printLog();
@@ -160,16 +162,18 @@ function populateWeaponSelectDropdown(){
 }
 
 function enemyControlInit(){
-    $('#enemy-spawn-button').on('click',function(){
+    $('#custom-enemy-spawn-button').on('click',function(){
         let x = parseInt($('#enemy-x-input').val());
         let y = parseInt($('#enemy-y-input').val());
         let hp = parseInt($('#enemy-hp-input').val());
+        let damage = parseInt($('#enemy-damage-input').val());
         if(!entityManager.board.isSpace(x,y)){
             return;
         }
 
-        let id = entityManager.entityInit('O','chase',x,y,hp);
+        let id = entityManager.entityInit('O','chase',x,y,hp,damage);
         console.log(entityManager.getEntity(id));
+        entityManager.board.placeEntities(entityManager.entities);
         printBoard(entityManager.board.boardArray);
 
     })

@@ -212,16 +212,12 @@ class EntityManager{
         }else if(target.behavior == 'wall'){
             this.addMortality(mortality);
         }else{
-            console.log(attacker);
+            this.transmitMessage(target.name+" is struck!");
             this.addStunTime(target.id,stunTime);
             this.addMortality(target.id, mortality);
             this.knock(target.id, attacker.id);
             this.enrageAndDaze(target);   
             this.sturdy(attacker,target);
-        }
-
-        if(attacker.id == 'player' || attacker.owner == 'player'){
-            this.transmitMessage(target.name+" is struck!");
         }
     }
 
@@ -462,7 +458,7 @@ class EntityManager{
         if(this.player.health <= 0){
             this.setProperty('player','symbol', 'x');
             this.setProperty('player','behavior', 'dead');
-            this.transmitMessage('you are deaed.');
+            this.transmitMessage('you are dead.');
         }
         //console.log('Stamina: ' +player.stamina);
         //console.log('Health: ' + player.health);

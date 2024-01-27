@@ -33,8 +33,7 @@ class Log{
     }
 
     rewind(){
-        let recent = this.peek();
-        recent = false;
+        this.messages[this.turnCounter] = false;
     }
 
     peek(){
