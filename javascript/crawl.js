@@ -29,56 +29,58 @@ function startGame(){
         e.preventDefault;
         entityManager.removeEntity(swordId);
         let key = e.originalEvent.key;
-        let skipBehaviors = false;
-        if(player.stamina <= 0 ){
-            player.changeStamina(2);
-        }else{
-            //console.log(key);
-            switch(key){
-                case "6":
-                    entityManager.moveEntity("player", 1, 0);
-                    break;
-                case "4":
-                    entityManager.moveEntity("player", -1, 0);
-                    break;
-                case "8":
-                    entityManager.moveEntity("player", 0, -1);
-                    break;
-                case "2":
-                    entityManager.moveEntity("player", 0, 1);
-                    break;
-                case "7":
-                    entityManager.moveEntity("player", -1, -1);
-                    break;
-                case "9":
-                    entityManager.moveEntity("player", 1, -1);
-                    break;
-                case "1":
-                    entityManager.moveEntity("player", -1, 1);
-                    break;
-                case "3":
-                    entityManager.moveEntity("player", 1, 1);
-                    break; 
-                case "q":
-                    entityManager.rotateSword(swordId,-1);
-                    break;
-                case "w":
-                    entityManager.rotateSword(swordId,1);
-                    break;
-                case "Backspace":
-                    if(entityManager.canRewind()){
-                        console.log('rewind');
-                        entityManager.rewind();
-                        skipBehaviors = true;
-                    }
-                    break;
-                default:
-                    player.changeStamina(2);
-            }
+        entityManager.skipBehaviors = false;
+        
+        //console.log(key);
+        switch(key){
+            case "6":
+                entityManager.moveEntity("player", 1, 0);
+                break;
+            case "4":
+                entityManager.moveEntity("player", -1, 0);
+                break;
+            case "8":
+                entityManager.moveEntity("player", 0, -1);
+                break;
+            case "2":
+                entityManager.moveEntity("player", 0, 1);
+                break;
+            case "7":
+                entityManager.moveEntity("player", -1, -1);
+                break;
+            case "9":
+                entityManager.moveEntity("player", 1, -1);
+                break;
+            case "1":
+                entityManager.moveEntity("player", -1, 1);
+                break;
+            case "3":
+                entityManager.moveEntity("player", 1, 1);
+                break; 
+            case "q":
+                entityManager.rotateSword(swordId,-1);
+                break;
+            case "w":
+                entityManager.rotateSword(swordId,1);
+                break;
+            case "Backspace":
+                if(entityManager.canRewind()){
+                    console.log('rewind');
+                    entityManager.rewind();
+                    entityManager.skipBehaviors = true;
+                }
+                break;
+            case "5":
+                player.changeStamina(2);
+                break;
+            default:
+                entityManager.skipBehaviors = true;
+                
+        
         }
         entityManager.board.calculateLosArray(entityManager.getEntity('player'));
         entityManager.placeSword(swordId);
-        if(!skipBehaviors){
+        if(!entityManager.skipBehaviors){
             entityManager.reapWounded();
             entityManager.triggerBehaviors();
             entityManager.reapWounded();

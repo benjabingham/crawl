@@ -113,6 +113,9 @@ class EntityManager{
         if(rotation == sword.rotation && sword.x == swordPosition.x && sword.y == swordPosition.y){
             this.setPosition(id,x,y);
         }
+        if (this.player.stamina < 0){
+            this.cancelAction();
+        }
     }
 
     moveEntity(id, x, y){
@@ -492,7 +495,6 @@ class EntityManager{
     saveSnapshot(){
         let entities = JSON.parse(JSON.stringify(this.entities));
         let playerJson = JSON.parse(JSON.stringify(this.player));
-        console.log(playerJson);
         this.history.push({
             entities:entities,
             player:playerJson
@@ -518,7 +520,16 @@ class EntityManager{
     }
 
     cancelAction(){
+        let snapshot = this.history.pop();
+        this.entities = snapshot.entities;
+        this.board.placeEntities(this.entities);
+        //console.log(snapshot.player);
 
+        this.player.setPlayerInfo(snapshot.player);  
+        this.skipBehaviors = true; 
+
+        let swordId = this.getEntity('player').sword;
+        this.placeSword(swordId);
     }
 
     setToLastPosition(id){
