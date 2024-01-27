@@ -342,6 +342,8 @@ class EntityManager{
             this.setToLastPosition(attacker.id);
             this.setToLastPosition(target.id);
             this.placeSword(attacker.id);
+
+            this.transmitMessage(target.name+" holds its footing!");
         }
     }
 
@@ -407,6 +409,7 @@ class EntityManager{
         if(this.player.health <= 0){
             this.setProperty('player','symbol', 'x');
             this.setProperty('player','behavior', 'dead');
+            this.transmitMessage('you are deaed.');
         }
         //console.log('Stamina: ' +player.stamina);
         //console.log('Health: ' + player.health);
