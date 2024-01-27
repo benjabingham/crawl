@@ -299,6 +299,52 @@ class EntityManager{
 
     }
 
+    findSwordMiddle(sword,pos1,pos2){
+        let owner = this.getEntity(sword.owner);
+        //direction is either 1 or -1
+        let direction = (this.roll(0,1) * 2) - 1;
+        let rotation = (sword.rotation + 8 + direction) % 8;
+        let translation = this.translations[rotation];
+        let x = owner.x + translation.x;
+        let y = owner.y + translation.y;
+
+        let bestPos = {x:x, y:y};
+        let bestRotation = rotation;
+        let bestDistance = this.getOrthoDistance({x:x,y:y},pos1)+this.getOrthoDistance({x:x,y:y},pos2)
+
+        for(let i = 0; i < 8; i++){
+            let distance = this.getOrthoDistance({x:x,y:y},pos1)+this.getOrthoDistance({x:x,y:y},pos2);
+
+            let validSpace = (this.board.itemAt(x,y).behavior == 'wall' || !this.board.itemAt(x,y))
+            console.log({
+                distance:distance,
+                bestDistance:bestDistance,
+                validSpace:validSpace,
+                rotation:rotation
+            })
+            if(validSpace){
+                if (distance < bestDistance){
+                    bestDistance = distance;
+                    bestPos = {x:x, y:y};
+                    bestRotation = rotation;
+                }
+            }
+            rotation = (rotation + 8 + direction) % 8;
+            translation = this.translations[rotation];
+            x = owner.x + translation.x;
+            y = owner.y + translation.y;
+        }
+
+        console.log({
+            bestDistance:bestDistance,
+            bestRotation:bestRotation,
+            rotation:rotation
+        })
+
+        sword.rotation = bestRotation;
+        this.placeSword(sword.id);
+    }
+
     enrageAndDaze(entity){
         let enrageChance = entity.behaviorInfo.enrage;
         let dazeChance = entity.behaviorInfo.daze;
@@ -338,11 +384,16 @@ class EntityManager{
 
         let random = this.roll(1,100);
         if (random <= sturdyChance){
+            /*
             this.setToLastPosition(attacker.owner);
             this.setToLastPosition(attacker.id);
             this.setToLastPosition(target.id);
             this.placeSword(attacker.id);
-
+            */
+            this.removeEntity(attacker.id);
+            this.setToLastPosition(target.id);
+            let lastSwordPos = this.history[this.history.length-1].entities[attacker.id];
+            this.findSwordMiddle(attacker,target,lastSwordPos);
             this.transmitMessage(target.name+" holds its footing!");
         }
     }
