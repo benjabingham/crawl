@@ -520,6 +520,13 @@ class EntityManager{
                     daze:30
                 }
                 break;
+            case "dummy":
+                symbol = "D";
+                hitDice = 10;
+                damage = 0;
+                name = "dummy";
+                behavior = "dummy";
+                break;
         }
 
         let id = this.entityInit(symbol, behavior,x, y, hitDice, damage, behaviorInfo, name)
