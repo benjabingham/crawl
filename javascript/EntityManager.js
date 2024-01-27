@@ -89,6 +89,7 @@ class EntityManager{
         let sword = this.getEntity(id);
         let ownerId = sword.owner;
         let owner = this.getEntity(ownerId);
+        let swordPosition = {x:sword.x, y:sword.y};
 
         let rotation = sword.rotation;
         this.setProperty(id, 'symbol', this.getSwordSymbol(rotation));
@@ -107,7 +108,7 @@ class EntityManager{
             }
         }
         //if sword hasn't been placed somewhere else as result of attack...
-        if(rotation == sword.rotation){
+        if(rotation == sword.rotation && sword.x == swordPosition.x && sword.y == swordPosition.y){
             this.setPosition(id,x,y);
         }
 
@@ -274,7 +275,10 @@ class EntityManager{
         }else{
             this.transmitMessage(knocked.name + "is cornered!");
             if(knocker.behavior == 'sword'){
-                this.knockSword(knockerId);
+                this.setToLastPosition(knocker.owner);
+                this.setToLastPosition(knockerId);
+                this.placeSword(knockerId)
+                //this.knockSword(knockerId);
             }
         }
     }
@@ -302,9 +306,6 @@ class EntityManager{
         if(this.board.itemAt(x,y).behavior == 'wall' || !this.board.itemAt(x,y)){
             this.transmitMessage('sword knocked!');
             sword.rotation = rotation;
-            console.log(x);
-            console.log(y);
-            console.log(this.board.itemAt(x,y));
             this.placeSword(sword.id);
             
         }else{
@@ -539,6 +540,12 @@ class EntityManager{
         //console.log(snapshot.player);
 
         return snapshot.player;
+    }
+
+    setToLastPosition(id){
+        let lastPosition = this.history[this.history.length-1].entities[id];
+        console.log(lastPosition);
+        this.setPosition(id,lastPosition.x,lastPosition.y)
     }
 
     roll(min,max){
