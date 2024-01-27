@@ -242,20 +242,35 @@ class EntityManager{
     knock(knockedId, knockerId){
         let knocked = this.getEntity(knockedId);
         let knocker = this.getEntity(knockerId);
+        let knockerPos;
+        knockerPos = this.history[this.history.length-1].entities[knockerId];
+        
+
         let direction = this.roll(0,7);
         let x = knockedId.x + this.translations[direction].x;
         let y = knockedId.y + this.translations[direction].y;
     
         let tries = 0;
-        while(!this.board.isOpenSpace(x,y) && tries < 8){
+        //space must be open AND further from attacker's last position
+        let furtherSpace = (this.getOrthoDistance(knockerPos, knocked) < this.getOrthoDistance(knockerPos,{x:x, y:y}))
+        let backupSpace = false;
+        while((!this.board.isOpenSpace(x,y) || !furtherSpace ) && tries < 8){
+            if(this.board.isOpenSpace(x,y) && !backupSpace){
+                backupSpace = {x:x, y:y};
+            }
+
             direction = (direction+1) % 8;
             x = knocked.x + this.translations[direction].x;
             y = knocked.y + this.translations[direction].y;
+
+            furtherSpace = (this.getOrthoDistance(knockerPos, knocked) < this.getOrthoDistance(knockerPos,{x:x, y:y}))
             tries++;
         }
 
         if(tries < 8){
             this.setPosition(knockedId,x,y)
+        }else if (backupSpace){
+            this.setPosition(knockedId,backupSpace.x,backupSpace.y);
         }else{
             this.transmitMessage(knocked.name + "is cornered!");
             if(knocker.behavior == 'sword'){
@@ -292,6 +307,8 @@ class EntityManager{
             console.log(this.board.itemAt(x,y));
             this.placeSword(sword.id);
             
+        }else{
+            console.log('sword knock failed');
         }
 
 
@@ -616,6 +633,13 @@ class EntityManager{
         let ydif = Math.abs(point1.y - point2.y);
 
         return Math.max(xdif, ydif);
+    }
+
+    getOrthoDistance(point1, point2){
+        let xdif = Math.abs(point1.x - point2.x);
+        let ydif = Math.abs(point1.y - point2.y);
+
+        return xdif + ydif;
     }
 
     transmitMessage(message){
