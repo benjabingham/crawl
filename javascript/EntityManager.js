@@ -169,7 +169,10 @@ class EntityManager{
         //creature is less focused the further they are
         let focus = behaviorInfo.focus;
         focus -= this.getDistance(entity, playerEntity);
-        focus =  Math.max(focus, 3);
+        if(!this.hasPlayerLos){
+            focus -= 20;
+        }
+        focus =  Math.max(focus, 4);
         let x = 0;
         let y = 0;
 
@@ -655,6 +658,10 @@ class EntityManager{
 
     transmitMessage(message){
         console.log(message);
+    }
+
+    hasPlayerLos(entity){
+        return this.board.getLineOfSight(entity.x,entity.y);
     }
 
 }
