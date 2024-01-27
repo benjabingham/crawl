@@ -53,16 +53,25 @@
     </div>
     <div id = "controls">
         <div id="weapon-select-div">
-            <label for="weapon-select">Weapon select</laabel>
+            <label for="weapon-select">Weapon select</label>
             <select name="weapon-select" id="weapon-select"></select>
         </div>
         <div id="enemy-control-div">
-            <div id="custom enemy spawn">
-                Custom Enemy Spawner:
+            <div id="enemy-spawn">
+                Spawn Enemy:
                 <label for="enemy-x-input">x: </label>
                 <input id="enemy-x-input">
                 <label for="enemy-y-input">y: </label>
                 <input id="enemy-y-input">
+                <select name="enemy-select" id="enemy-select"></select>
+                <button id="enemy-spawn-button">Spawn</button>
+            </div>
+            <div id="custom-enemy-spawn">
+                Spawn Custom Enemy:
+                <label for="custom-enemy-x-input">x: </label>
+                <input id="custom-enemy-x-input">
+                <label for="custom-enemy-y-input">y: </label>
+                <input id="custom-enemy-y-input">
                 <label for="enemy-hp-input">hp: </label>
                 <input id="enemy-hp-input">
                 <label for="enemy-damage-input">damage: </label>
@@ -70,6 +79,7 @@
                 <button id="custom-enemy-spawn-button">Spawn</button>
             </div>
             <br>
+            
         </div>
     </div>
   </body>

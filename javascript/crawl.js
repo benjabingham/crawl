@@ -16,6 +16,7 @@ function startGame(){
     entityManager.board.placeEntities(entityManager.entities);
     let swordId = entityManager.getProperty('player','sword')
     populateWeaponSelectDropdown();
+    populateEnemySelectDropdown()
     enemyControlInit();
     boardDisplayInit();
     entityManager.board.placeEntities(entityManager.entities);
@@ -161,10 +162,32 @@ function populateWeaponSelectDropdown(){
     })
 }
 
-function enemyControlInit(){
-    $('#custom-enemy-spawn-button').on('click',function(){
+function populateEnemySelectDropdown(){
+    let enemies = ['goblin','ogre','rat','dire wolf','dire rat','dummy']
+    enemies.forEach((element =>{
+        $('#enemy-select').append(
+            $("<option />").val(element).text(element)
+        )
+    }))
+
+    $('#enemy-spawn-button').on('click',function(){
         let x = parseInt($('#enemy-x-input').val());
         let y = parseInt($('#enemy-y-input').val());
+        let name  = $('#enemy-select').val();
+        console.log(name);
+
+        entityManager.monsterInit(name,x,y);
+        entityManager.board.placeEntities(entityManager.entities);
+        printBoard(entityManager.board.boardArray);
+    });
+
+   
+}
+
+function enemyControlInit(){
+    $('#custom-enemy-spawn-button').on('click',function(){
+        let x = parseInt($('#custom-enemy-x-input').val());
+        let y = parseInt($('#custom-enemy-y-input').val());
         let hp = parseInt($('#enemy-hp-input').val());
         let damage = parseInt($('#enemy-damage-input').val());
         if(!entityManager.board.isSpace(x,y)){
