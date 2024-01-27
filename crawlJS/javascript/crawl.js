@@ -3,35 +3,23 @@ let entityManager = new EntityManager();
 let player = new Player();
 
 $(document).ready(function(){
+    fetch('./rooms/ratnest.json')
+        .then((response) => response.json())
+        .then((json) => {
+            entityManager.loadRoom(json, player)
+            startGame();
+        })
+    
+});
+
+function startGame(){
     entityManager.board.placeEntities(entityManager.entities);
-    entityManager.playerInit(player, 0, 7);
     let swordId = entityManager.getProperty('player','sword')
-    
-    entityManager.entityInit('O','chase',5,5);
-    entityManager.entityInit('O','chase',6,5);
-    entityManager.entityInit('O','chase',6,6);
-    entityManager.entityInit('O','chase',7,6);
-    entityManager.entityInit('O','chase',6,7);
-    
-    entityManager.entityInit('O','chase',0,0);
-
-
-    entityManager.entityInit('M','wall',1,0);
-    entityManager.entityInit('M','wall',1,1);
-    entityManager.entityInit('M','wall',1,2);
-    entityManager.entityInit('M','wall',1,3);
-    entityManager.entityInit('M','wall',2,3);
-    entityManager.entityInit('M','wall',1,4);
-    entityManager.entityInit('M','wall',1,5);
-    entityManager.entityInit('M','wall',1,6);
-    entityManager.entityInit('M','wall',10,10);
-    entityManager.entityInit('M','wall',11,10);
-    entityManager.entityInit('M','wall',10,11);
-    //switchWeapon('longsword');
     populateWeaponSelectDropdown();
     enemyControlInit();
     entityManager.board.placeEntities(entityManager.entities);
     entityManager.saveSnapshot(player);
+    entityManager.board.calculateLosArray(entityManager.getEntity('player'));
     printBoard(entityManager.board.boardArray);
     $(document).on("keydown", function(e){
         if($(':focus').attr('id') != 'board'){
@@ -89,6 +77,7 @@ $(document).ready(function(){
                     player.changeStamina(2);
             }
         }
+        entityManager.board.calculateLosArray(entityManager.getEntity('player'));
         entityManager.placeSword(swordId, player);
         if(!skipBehaviors){
             entityManager.reapWounded(player);
@@ -100,25 +89,28 @@ $(document).ready(function(){
         fillBars();
         entityManager.saveSnapshot(player);
         turnCounter++;
+        entityManager.transmitMessage("-_-_-_-_-_-_-_-")
     });
-});
+}
 
 function printBoard(boardArray){
-    entityManager.board.calculateLosArray(entityManager.getEntity('player'));
+    entityManager.board.placeEntities(entityManager.entities);
     let boardString = "";
+    let symbol;
     for(let i=0; i<boardArray.length; i++){
+        //boardString += '|'
         for(let j=0; j<boardArray[i].length; j++){
-            let playerEntity = entityManager.getEntity('player');
             if(entityManager.board.getLineOfSight(j,i)){
                 if(boardArray[i][j]){
-                    boardString += boardArray[i][j].symbol;
+                    symbol = boardArray[i][j].tempSymbol ? boardArray[i][j].tempSymbol : boardArray[i][j].symbol;
+                    boardString += symbol;
                 }else{
                     boardString += '.';
                 }
             }else{
                 boardString += '?';
             }
-            boardString += '.';            
+            boardString += ' ';            
         }
         boardString += "\n";
     }

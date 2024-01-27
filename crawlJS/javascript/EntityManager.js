@@ -29,18 +29,24 @@ class EntityManager{
     }
     
 
-    entityInit(symbol, behavior, x=0,y=0,hitDice=1){
+    entityInit(symbol, behavior, x=0,y=0, hitDice=1, damage=0, behaviorInfo = {}, name = ""){
+        let threshold = Math.max(this.rollN(hitDice,1,8),1);
         let id = this.entityCounter;
+        if (!name){
+            name = id;
+        }
         let entity = {
             x : x,
             y: y,
             symbol: symbol,
             behavior: behavior,
+            behaviorInfo: behaviorInfo,
             id:id,
             stunned:0,
             mortal:0,
-            threshold:this.rollN(hitDice,1,8),
-            damage:4
+            threshold:threshold,
+            damage:damage,
+            name:name
         }
         this.entityCounter++;
         this.entities[id] = entity;
@@ -83,6 +89,7 @@ class EntityManager{
         let sword = this.getEntity(id);
         let ownerId = sword.owner;
         let owner = this.getEntity(ownerId);
+        let swordPosition = {x:sword.x, y:sword.y};
 
         let rotation = sword.rotation;
         this.setProperty(id, 'symbol', this.getSwordSymbol(rotation));
@@ -92,48 +99,20 @@ class EntityManager{
         let y = owner.y + translation.y;
     
         if(this.board.isOccupiedSpace(x,y)){
-            let knockedId = this.board.itemAt(x,y).id;
-            if(knockedId != id && this.getProperty(knockedId, 'behavior') != 'wall'){
-                this.knock(knockedId, id);
+            let target = this.board.itemAt(x,y);
+            if(target.id != id && target.behavior != 'wall'){
+                this.attack(sword,target);
                 if (ownerId == 'player'){
                     player.changeStamina(sword.weight * -1);
                 }
             }
         }
-
-        this.setPosition(id,x,y);
+        //if sword hasn't been placed somewhere else as result of attack...
+        if(rotation == sword.rotation && sword.x == swordPosition.x && sword.y == swordPosition.y){
+            this.setPosition(id,x,y);
+        }
 
         return player;
-    }
-
-    knock(id, swordId){
-        let entity = this.getEntity(id);
-        let sword = this.getEntity(swordId);
-        let direction = this.roll(0,7);
-        let x = entity.x + this.translations[direction].x;
-        let y = entity.y + this.translations[direction].y;
-    
-        let tries = 0;
-        while(!this.board.isOpenSpace(x,y) && tries < 8){
-            direction = (direction+1) % 8;
-            x = entity.x + this.translations[direction].x;
-            y = entity.y + this.translations[direction].y;
-            tries++;
-        }
-
-        if(sword){
-            let stunTime = this.roll(1,sword.stunTime);
-            let mortality = this.roll(0,sword.damage);
-            this.addStunTime(id,stunTime);
-            this.addMortality(id, mortality);
-        }
-    
-        if(tries < 8){
-            this.setPosition(id,x,y)
-            //console.log('Enemy is knocked!');
-        }else{
-            console.log('Cornered!');
-        }
     }
 
     moveEntity(id, x, y){
@@ -143,7 +122,10 @@ class EntityManager{
     
         if(this.board.isSpace(x,y) && this.board.isOpenSpace(x,y)){
             this.setPosition(id,x,y);
+            return true;
         }
+
+        return false;
     }
 
     rotateSword(id, direction){
@@ -173,7 +155,7 @@ class EntityManager{
         let targetY = entity.y+y;
     
         if(playerEntity.x == targetX && playerEntity.y == targetY){
-            console.log('You are attacked!');
+            this.transmitMessage(entity.name+" attacks you!");
             player.changeHealth(this.roll(1,entity.damage) * -1);
         }
 
@@ -181,17 +163,23 @@ class EntityManager{
         
     }
 
-    chaseNatural(id, player){
+    chaseNatural(id, player, behaviorInfo){
         let entity = this.getEntity(id);
         let playerEntity = this.getEntity('player');
+        //creature is less focused the further they are
+        let focus = behaviorInfo.focus;
+        focus -= this.getDistance(entity, playerEntity);
+        focus =  Math.max(focus, 3);
         let x = 0;
         let y = 0;
-        let random = this.roll(1,10);
+
+        //the higher focus is, the less likely the creature is to move randomly
+        let random = this.roll(1,focus);
         if(random == 1){
             x = -1;
         }else if (random == 2){
             x = 1;
-        }else if (random == 3){
+        }else if (random == 3 || random == 4){
             //do nothing
         }else if(entity.x > playerEntity.x){
             x = -1;
@@ -199,12 +187,12 @@ class EntityManager{
             x = 1;
         }
         
-        random = this.roll(1,10);
+        random = this.roll(1,focus);
         if(random == 1){
             y = -1;
         }else if (random == 2){
             y = 1;
-        }else if (random == 3){
+        }else if (random == 3 || random == 4){
             //do nothing
         }else if(entity.y > playerEntity.y){
             y = -1;
@@ -215,47 +203,183 @@ class EntityManager{
         let targetX = entity.x+x;
         let targetY = entity.y+y
         let targetItem = this.board.itemAt(targetX, targetY);
-    
-        if(targetItem && targetItem.id == 'player'){
-            console.log('You are attacked!');
-            player.changeHealth(this.roll(1,entity.damage) * -1);
-        }else if(targetItem && targetItem.behavior == 'wall'){
-            this.addMortality(targetItem.id,this.roll(1,entity.damage));
-        }else if (targetItem && targetItem.behavior == 'dead'){
-            this.knock(targetItem.id, false);
+
+        if(targetItem.id == "player" || targetItem.behavior == "dead" || targetItem.behavior == "wall"){
+            this.attack(entity,targetItem);
         }
     
-        this.moveEntity(id, 0, y, this.board);
-        this.moveEntity(id, x, 0, this.board);
+        if(!this.moveEntity(id, x, y, this.board)){
+            this.moveEntity(id, 0, y, this.board);
+            this.moveEntity(id, x, 0, this.board);
+        }
+        
+    }
+
+    attack(attacker,target){
+        let stunTime = 0;
+        if (attacker.stunTime){
+            stunTime = this.roll(1,attacker.stunTime);
+        }
+        let mortality = this.roll(0,attacker.damage);
+
+        if (target.id == 'player'){
+            this.transmitMessage(attacker.name+" attacks you!");
+            player.changeHealth(mortality * -1);
+            //this.knockSword(target.sword);
+        }else if(target.behavior == 'wall'){
+            this.addMortality(mortality);
+        }else{
+            this.addStunTime(target.id,stunTime);
+            this.addMortality(target.id, mortality);
+            this.knock(target.id, attacker.id);
+            this.enrageAndDaze(target);   
+        }
+
+        if(attacker.id == 'player' || attacker.owner == 'player'){
+            this.transmitMessage(target.name+" is struck!");
+        }
+    }
+
+    knock(knockedId, knockerId){
+        let knocked = this.getEntity(knockedId);
+        let knocker = this.getEntity(knockerId);
+        let knockerPos;
+        knockerPos = this.history[this.history.length-1].entities[knockerId];
+        
+
+        let direction = this.roll(0,7);
+        let x = knockedId.x + this.translations[direction].x;
+        let y = knockedId.y + this.translations[direction].y;
+    
+        let tries = 0;
+        //space must be open AND further from attacker's last position
+        let furtherSpace = (this.getOrthoDistance(knockerPos, knocked) < this.getOrthoDistance(knockerPos,{x:x, y:y}))
+        let backupSpace = false;
+        while((!this.board.isOpenSpace(x,y) || !furtherSpace ) && tries < 8){
+            if(this.board.isOpenSpace(x,y) && !backupSpace){
+                backupSpace = {x:x, y:y};
+            }
+
+            direction = (direction+1) % 8;
+            x = knocked.x + this.translations[direction].x;
+            y = knocked.y + this.translations[direction].y;
+
+            furtherSpace = (this.getOrthoDistance(knockerPos, knocked) < this.getOrthoDistance(knockerPos,{x:x, y:y}))
+            tries++;
+        }
+
+        if(tries < 8){
+            this.setPosition(knockedId,x,y)
+        }else if (backupSpace){
+            this.setPosition(knockedId,backupSpace.x,backupSpace.y);
+        }else{
+            this.transmitMessage(knocked.name + "is cornered!");
+            if(knocker.behavior == 'sword'){
+                this.setToLastPosition(knocker.owner);
+                this.setToLastPosition(knockerId);
+                this.placeSword(knockerId)
+                //this.knockSword(knockerId);
+            }
+        }
+    }
+
+    knockSword(swordId){
+        let sword = this.getEntity(swordId);
+        let owner = this.getEntity(sword.owner);
+        //direction is either 1 or -1
+        let direction = (this.roll(0,1) * 2) - 1;
+        let rotation = (sword.rotation + 8 + direction) % 8;
+        let translation = this.translations[rotation];
+        let x = owner.x + translation.x;
+        let y = owner.y + translation.y;
+        let counter = 1;
+        while((this.board.itemAt(x,y).behavior != 'wall' && this.board.itemAt(x,y)) && counter < 3){
+            rotation = (sword.rotation + 8 + direction) % 8;
+            translation = this.translations[rotation];
+            x = owner.x + translation.x;
+            y = owner.y + translation.y;
+            console.log(counter);
+        
+            counter++;
+        }
+
+        if(this.board.itemAt(x,y).behavior == 'wall' || !this.board.itemAt(x,y)){
+            this.transmitMessage('sword knocked!');
+            sword.rotation = rotation;
+            this.placeSword(sword.id);
+            
+        }else{
+            console.log('sword knock failed');
+        }
+
+
+    }
+
+    enrageAndDaze(entity){
+        let enrageChance = entity.behaviorInfo.enrage;
+        let dazeChance = entity.behaviorInfo.daze;
+
+        let random = this.roll(1,100);
+        if(random <= enrageChance){
+            this.transmitMessage(entity.name+" is enraged!");
+            entity.behaviorInfo.focus += 5;
+            entity.behaviorInfo.slow -= 3;
+            entity.stunned -= Math.max(this.roll(0,entity.stunned),0);
+        }
+        random = this.roll(1,100);
+        if(random <= dazeChance){
+            this.transmitMessage(entity.name+" is dazed!");
+            entity.behaviorInfo.focus -= 5;
+            entity.behaviorInfo.slow += 5;
+            entity.stunned ++;
+        }
     }
 
     triggerBehaviors(player){
         //console.log(board);
         for (const [k,entity] of Object.entries(this.entities)){
             //console.log(entity);
-            if (!entity.stunned){
+            let random = this.roll(1,100);
+            let skip = entity.stunned
+            if(entity.behaviorInfo){
+                skip += (random <= entity.behaviorInfo.slow);
+            }
+            
+            if (!skip){
                 switch(entity.behavior){
                     case "chase":
-                        this.chaseNatural(k, player);
+                        this.chaseNatural(k, player, entity.behaviorInfo);
                         break;
                     case "sword":
                         //player = this.placeSword(k,board, player);
                         break;
                     case "dead":
-                        entity.symbol = 'x';
+                        entity.tempSymbol = 'x';
                         break;
                     default:
                 }
-            }else if (entity.behavior != 'dead'){
+            }
+            if (entity.behavior != 'dead'){
                 //console.log('enemy is stunned');
-                entity.stunned--;
                 if(entity.stunned > 0){
-                    entity.symbol = 0;
+                    entity.stunned--;
+                }
+                if(entity.stunned > 0){
+                    entity.tempSymbol = entity.symbol.toLowerCase();
                 }else{
-                    entity.symbol = 'O';
+                    entity.tempSymbol = false;
                 }
             }else{
-                entity.symbol = 'x';
+                entity.tempSymbol = 'x';
+            }
+
+
+
+            if((entity.mortal - entity.threshold) >= entity.threshold && !entity.obliterated){
+                //console.log('obliterated');
+                entity.obliterated = true;
+                this.setPosition(entity.id,-1,-1);
+
             }
         }
 
@@ -264,10 +388,10 @@ class EntityManager{
 
     reapWounded(player){
         for (const [k,entity] of Object.entries(this.entities)){
-            if (entity.stunned+entity.mortal > entity.threshold){
-                //console.log('enemy is dead!');
+            if (entity.stunned+entity.mortal > entity.threshold && entity.behavior != 'dead'){
+                this.transmitMessage(entity.name+" is slain!");
                 this.setProperty(k,'behavior', 'dead');
-                this.setProperty(k,'symbol', 'x');
+                this.setProperty(k,'tempSymbol', 'x');
                 this.setProperty(k,'stunned', 0);
             }
         }
@@ -325,6 +449,72 @@ class EntityManager{
         console.log("weapon: "+weaponName);
     }
 
+    monsterInit(monsterName,x,y){
+        let behavior = "chase";
+        let symbol;
+        let hitDice;
+        let behaviorInfo;
+        let damage;
+        let name;
+        switch(monsterName){
+            case "goblin":
+                symbol = "G";
+                hitDice = 1;
+                damage = 3;
+                name = 'goblin';
+                behaviorInfo = {
+                    focus:15,
+                    enrage:20,
+                    daze:30
+                }
+                break;
+            case "ogre":
+                symbol = "O";
+                hitDice = 3;
+                damage = 8;
+                name = 'ogre';
+                behaviorInfo = {
+                    focus:7,
+                    enrage:75,
+                    slow: 30
+                }
+                break;
+            case "rat":
+                symbol = "R";
+                hitDice = 0;
+                damage = 1;
+                name = "rat";
+                behaviorInfo = {
+                    focus:15,   
+                }
+                break;
+            case "dire wolf":
+                symbol = "D";
+                hitDice = 2;
+                damage = 8;
+                name = "dire wolf";
+                behaviorInfo = {
+                    focus:25,
+                    enrage:75,
+                    daze:15
+                }
+                break;
+            case "dire rat":
+                symbol = "D";
+                hitDice = 1;
+                damage = 4;
+                name = "dire rat";
+                behaviorInfo = {
+                    focus:20,
+                    enrage:30,
+                    daze:30
+                }
+                break;
+        }
+
+        let id = this.entityInit(symbol, behavior,x, y, hitDice, damage, behaviorInfo, name)
+    }
+
     saveSnapshot(player){
         let entities = JSON.parse(JSON.stringify(this.entities));
         player = JSON.parse(JSON.stringify(player));
@@ -338,7 +528,7 @@ class EntityManager{
     }
 
     canRewind(){
-        console.log(this.history);
+        //console.log(this.history);
         return this.history.length > 1;
     }
 
@@ -347,9 +537,19 @@ class EntityManager{
         let snapshot = this.history.pop();
         this.entities = snapshot.entities;
         this.board.placeEntities(this.entities);
-        console.log(snapshot.player);
+        //console.log(snapshot.player);
 
         return snapshot.player;
+    }
+
+    setToLastPosition(id){
+        let lastPosition = this.history[this.history.length-1].entities[id];
+        let entity = this.getEntity(id);
+        if (entity.behavior == "sword"){
+            entity.rotation = lastPosition.rotation;
+        }else{
+            this.setPosition(id,lastPosition.x,lastPosition.y)
+        }
     }
 
     roll(min,max){
@@ -364,6 +564,28 @@ class EntityManager{
         return sum;
     }
 
+    loadRoom(json, player){
+        this.board.setDimensions(json.width,json.height)
+        this.board.boardInit;
+        for(let y=0;y<this.board.height;y++){
+            for(let x=0;x<this.board.width;x++){
+                let entityCode = json.board[y][x];
+                if(entityCode){
+                    let entity = json.values[entityCode];
+                    if(entity == "player"){
+                        this.playerInit(player, x, y)
+                    }else if(entity.monster){
+                        this.monsterInit(entity.monster,x,y);
+                    }else{
+                        this.entityInit(entity.symbol, entity.behavior, x, y, entity.hitDice,entity.damage, entity.behaviorInfo, entity.name);
+                    }
+
+                }
+            }
+        }
+        
+    }
+
     setProperty(id, Property, value){
         this.entities[id][Property] = value;
     }
@@ -374,7 +596,7 @@ class EntityManager{
         this.setProperty(id, 'x', x);
         this.setProperty(id, 'y', y);
         this.board.placeEntity(this.getEntity(id),x,y)
-        console.log(this.entities);
+        //console.log(this.entities);
     }
 
     getPosition(id){
@@ -415,6 +637,24 @@ class EntityManager{
     addMortality(id, mortal){
         mortal += Math.max(this.getProperty(id, 'mortal'),0);
         this.setProperty(id, 'mortal', mortal);
+    }
+
+    getDistance(point1, point2){
+        let xdif = Math.abs(point1.x - point2.x);
+        let ydif = Math.abs(point1.y - point2.y);
+
+        return Math.max(xdif, ydif);
+    }
+
+    getOrthoDistance(point1, point2){
+        let xdif = Math.abs(point1.x - point2.x);
+        let ydif = Math.abs(point1.y - point2.y);
+
+        return xdif + ydif;
+    }
+
+    transmitMessage(message){
+        console.log(message);
     }
 
 }
