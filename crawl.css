@@ -43,6 +43,12 @@ html{
     border:1px solid gray;
 }
 
+#instructions-div{
+    padding-top:20px;
+    padding-bottom:20px;
+    font-family: monospace;
+}
+
 #enemy-control-div{
     padding:10px;
     input{

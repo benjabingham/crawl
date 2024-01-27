@@ -1,12 +1,12 @@
-turnCounter = 0;
-let entityManager = new EntityManager();
 let player = new Player();
+let entityManager = new EntityManager(player);
+
 
 $(document).ready(function(){
     fetch('./rooms/ratnest.json')
         .then((response) => response.json())
         .then((json) => {
-            entityManager.loadRoom(json, player)
+            entityManager.loadRoom(json)
             startGame();
         })
     
@@ -18,7 +18,7 @@ function startGame(){
     populateWeaponSelectDropdown();
     enemyControlInit();
     entityManager.board.placeEntities(entityManager.entities);
-    entityManager.saveSnapshot(player);
+    entityManager.saveSnapshot();
     entityManager.board.calculateLosArray(entityManager.getEntity('player'));
     printBoard(entityManager.board.boardArray);
     $(document).on("keydown", function(e){
@@ -68,8 +68,7 @@ function startGame(){
                 case "Backspace":
                     if(entityManager.canRewind()){
                         console.log('rewind');
-                        playerInfo = entityManager.rewind();
-                        player.setPlayerInfo(playerInfo);
+                        entityManager.rewind();
                         skipBehaviors = true;
                     }
                     break;
@@ -78,17 +77,16 @@ function startGame(){
             }
         }
         entityManager.board.calculateLosArray(entityManager.getEntity('player'));
-        entityManager.placeSword(swordId, player);
+        entityManager.placeSword(swordId);
         if(!skipBehaviors){
-            entityManager.reapWounded(player);
-            player = entityManager.triggerBehaviors(player);
-            entityManager.reapWounded(player);
+            entityManager.reapWounded();
+            entityManager.triggerBehaviors();
+            entityManager.reapWounded();
         }
         //entityManager.board.placeEntities(entityManager.entities);
         printBoard(entityManager.board.boardArray);
         fillBars();
-        entityManager.saveSnapshot(player);
-        turnCounter++;
+        entityManager.saveSnapshot();
         entityManager.transmitMessage("-_-_-_-_-_-_-_-")
     });
 }
