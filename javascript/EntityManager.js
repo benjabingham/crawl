@@ -186,6 +186,10 @@ class EntityManager{
         if(targetItem.id == "player" || targetItem.behavior == "dead" || targetItem.behavior == "wall"){
             this.attack(entity,targetItem);
         }
+
+        if(targetItem.behavior == "sword" && entity.behaviorInfo.beat){
+            this.beat(entity,targetItem);
+        }
     
         if(!this.moveEntity(id, x, y, this.board)){
             this.moveEntity(id, 0, y, this.board);
@@ -204,14 +208,15 @@ class EntityManager{
         if (target.id == 'player'){
             this.transmitMessage(attacker.name+" attacks you!");
             this.player.changeHealth(mortality * -1);
-            //this.knockSword(target.sword);
         }else if(target.behavior == 'wall'){
             this.addMortality(mortality);
         }else{
+            console.log(attacker);
             this.addStunTime(target.id,stunTime);
             this.addMortality(target.id, mortality);
             this.knock(target.id, attacker.id);
             this.enrageAndDaze(target);   
+            this.sturdy(attacker,target);
         }
 
         if(attacker.id == 'player' || attacker.owner == 'player'){
@@ -303,6 +308,8 @@ class EntityManager{
             this.transmitMessage(entity.name+" is enraged!");
             entity.behaviorInfo.focus += 5;
             entity.behaviorInfo.slow -= 3;
+            entity.behaviorInfo.beat += 5;
+            entity.sturdy += 5;
             entity.stunned -= Math.max(this.roll(0,entity.stunned),0);
         }
         random = this.roll(1,100);
@@ -310,7 +317,31 @@ class EntityManager{
             this.transmitMessage(entity.name+" is dazed!");
             entity.behaviorInfo.focus -= 5;
             entity.behaviorInfo.slow += 5;
+            entity.sturdy -= 5;
+            entity.beat -=5;
             entity.stunned ++;
+        }
+    }
+
+    beat(entity, sword){
+        let beatChance = entity.behaviorInfo.beat;
+
+        let random = this.roll(1,100);
+        if(random <= beatChance){
+            this.transmitMessage(entity.name+" knocks your sword out of the way!");
+            this.knockSword(sword.id);
+        }
+    }
+
+    sturdy(attacker,target){
+        let sturdyChance = target.behaviorInfo.sturdy;
+
+        let random = this.roll(1,100);
+        if (random <= sturdyChance){
+            this.setToLastPosition(attacker.owner);
+            this.setToLastPosition(attacker.id);
+            this.setToLastPosition(target.id);
+            this.placeSword(attacker.id);
         }
     }
 
@@ -453,7 +484,9 @@ class EntityManager{
                 behaviorInfo = {
                     focus:7,
                     enrage:75,
-                    slow: 30
+                    slow: 40,
+                    beat:30,
+                    sturdy:30
                 }
                 break;
             case "rat":
