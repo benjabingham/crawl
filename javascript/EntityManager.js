@@ -236,7 +236,7 @@ class EntityManager{
         //space must be open AND further from attacker's last position
         let furtherSpace = (this.getOrthoDistance(knockerPos, knocked) < this.getOrthoDistance(knockerPos,{x:x, y:y}))
         let backupSpace = false;
-        while((!this.board.isOpenSpace(x,y) || !furtherSpace ) && tries < 8){
+        while((!this.board.isOpenSpace(x,y) || !furtherSpace ) && tries <= 8){
             if(this.board.isOpenSpace(x,y) && !backupSpace){
                 backupSpace = {x:x, y:y};
             }

@@ -1,5 +1,6 @@
 #game-window{
     display:flex;
+    margin:auto;
 }
 
 #log-window{
@@ -82,10 +83,18 @@
 }
 
 #enemy-control-div{
-    padding:10px;
+    padding:5px;
     input{
         width:20px;
     }
+
+    div{
+        padding-bottom:5px;
+    }
+}
+
+#weapon-select-div{
+    padding:5px;
 }
 
 .message-fresh{
