@@ -544,8 +544,12 @@ class EntityManager{
 
     setToLastPosition(id){
         let lastPosition = this.history[this.history.length-1].entities[id];
-        console.log(lastPosition);
-        this.setPosition(id,lastPosition.x,lastPosition.y)
+        let entity = this.getEntity(id);
+        if (entity.behavior == "sword"){
+            entity.rotation = lastPosition.rotation;
+        }else{
+            this.setPosition(id,lastPosition.x,lastPosition.y)
+        }
     }
 
     roll(min,max){
