@@ -1,7 +1,9 @@
 $(document).ready(function(){
-    let gameMaster = new GameMaster();
+    let save = new Save();
+    let gameMaster = new GameMaster(save);
     let display = gameMaster.display;
-    display.populateMapSelectDropdown(gameMaster);
+    
+    display.showHomeScreen(gameMaster);
     /*
     fetch('./rooms/ratnest.json')
         .then((response) => response.json())

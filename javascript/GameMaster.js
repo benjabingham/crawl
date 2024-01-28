@@ -1,10 +1,12 @@
 class GameMaster{
-    constructor(){
+    constructor(save){
         this.player = new Player();
         this.log = new Log();
         this.entityManager = new EntityManager(this.player,this.log);
         this.board = this.entityManager.board;
         this.display = new Display(this.entityManager, this.board);
+
+        this.save = save;
     }
 
     startGame(){
@@ -20,7 +22,7 @@ class GameMaster{
 
         board.calculateLosArray(entityManager.getEntity('player'));
 
-        display.displayInit();
+        display.showDungeonScreen();
         display.printBoard();
 
         $(document).on("keydown", function(e){
@@ -105,6 +107,23 @@ class GameMaster{
                 break;
             default:
                 this.entityManager.skipBehaviors = true;
+        }
+    }
+
+    getRoom(roomString){
+        if(this.save.maps[roomString]){
+            this.entityManager.loadRoom(this.save.maps[roomString]);
+            this.startGame();
+        }else{
+            console.log('loading room '+roomString);
+            fetch('./rooms/'+roomString)
+            .then((response) => response.json())
+            .then((json) => {
+                console.log('loaded');
+                this.save.maps[roomString] = json;
+                this.entityManager.loadRoom(json)
+                this.startGame();
+            })
         }
     }
     

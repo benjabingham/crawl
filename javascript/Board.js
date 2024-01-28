@@ -1,5 +1,5 @@
 class Board{
-    constructor(entityManager,width = 20,height = 20){
+    constructor(entityManager, width = 20,height = 20){
         this.width = width;
         this.height = height;
 

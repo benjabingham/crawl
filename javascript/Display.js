@@ -4,17 +4,30 @@ class Display{
         this.board = board;
     }
 
-    displayInit(){
-        $('#log-window').show();
-        $('#resources').show();
+    showDungeonScreen(){
+        $('#dungeon-screen').show();
         this.populateWeaponSelectDropdown();
         this.giveReminderTextBehavior();
         this.enemyControlInit();
         this.boardDisplayInit();
     }
 
+    showHomeScreen(gameMaster){
+        $('#home-screen').show();
+        $('#map-select-div').hide();
+        this.populateMapSelectDropdown(gameMaster);
+        this.giveSaveButtonsBehavior(gameMaster.save);
+    }
+
+    giveSaveButtonsBehavior(save){
+        $('#new-save-button').off().on('click',function(){
+            save.newSave();
+            $('#new-save-button').hide();
+            $('#map-select-div').show();
+        })
+    }
+
     boardDisplayInit(){
-        console.log('displayInit');
         let boardDiv = $("#board");
         boardDiv.css('width',this.board.width*1.8+"rem");
         let gameWindow = $("#game-window");
@@ -74,26 +87,17 @@ class Display{
     }
     
     populateMapSelectDropdown(gameMaster){
-        //let maps = ['ratnest','trainingHall','room1','room2']
         let maps = ['ratnest','trainingHall','trainingHallNoOgre']
-        let entityManager = this.entityManager;
         maps.forEach((element =>{
             $('#map-select').append(
                 $("<option />").val(element+".json").text(element)
             )
         }))
-    
-        $('#map-select').on('change',function(){
-            fetch('./rooms/'+this.value)
-            .then((response) => response.json())
-            .then((json) => {
-                $('#map-select-div').hide();
-                entityManager.loadRoom(json)
-                gameMaster.startGame();
-            })
+
+        $('#map-select').off().on('change',function(){
+            console.log(this.value);
+            gameMaster.getRoom(this.value)
         })
-    
-        
     }
     
     populateEnemySelectDropdown(){
