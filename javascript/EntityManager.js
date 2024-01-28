@@ -608,6 +608,7 @@ class EntityManager{
         this.skipBehaviors = true; 
 
         let swordId = this.getEntity('player').sword;
+        this.board.calculateLosArray(this.getEntity('player'));
         this.placeSword(swordId);
     }
 

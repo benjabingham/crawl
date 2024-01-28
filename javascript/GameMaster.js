@@ -38,24 +38,25 @@ class GameMaster{
         let swordId = this.entityManager.getProperty('player','sword')
         this.entityManager.removeEntity(swordId);
         this.entityManager.skipBehaviors = false;
+        
         this.playerAction(e.originalEvent.key, swordId);
 
         this.board.calculateLosArray(this.entityManager.getEntity('player'));
-            this.entityManager.placeSword(swordId);
-            if(!this.entityManager.skipBehaviors){
-                this.entityManager.reapWounded();
-                this.entityManager.triggerBehaviors();
-                this.entityManager.reapWounded();
-            }
-            this.display.printBoard(board.boardArray);
-            this.display.fillBars(this.player);
-            this.entityManager.saveSnapshot();
-            if(!this.entityManager.skipBehaviors){
-                this.log.turnCounter++;
-            }else{
-                this.log.rewind();
-            }
-            this.log.printLog();
+        this.entityManager.placeSword(swordId);
+        if(!this.entityManager.skipBehaviors){
+            this.entityManager.reapWounded();
+            this.entityManager.triggerBehaviors();
+            this.entityManager.reapWounded();
+        }
+        this.display.printBoard(board.boardArray);
+        this.display.fillBars(this.player);
+        this.entityManager.saveSnapshot();
+        if(!this.entityManager.skipBehaviors){
+            this.log.turnCounter++;
+        }else{
+            this.log.rewind();
+        }
+        this.log.printLog();
     }
 
     playerAction(key, swordId){
