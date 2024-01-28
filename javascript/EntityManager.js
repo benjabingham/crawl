@@ -395,7 +395,7 @@ class EntityManager{
             if (!skip){
                 switch(entity.behavior){
                     case "chase":
-                        this.chaseNatural(k, this.player, entity.behaviorInfo);
+                        this.chaseNatural(k, entity.behaviorInfo);
                         break;
                     case "sword":
                         //player = this.placeSword(k,board, player);
