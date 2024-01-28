@@ -1,5 +1,5 @@
 class EntityManager{
-    constructor(){
+    constructor(player){
         this.entities = {};
         this.entityCounter = 0;
         this.translations = [
@@ -13,19 +13,22 @@ class EntityManager{
             {x:-1,y:-1}
         ];
         this.board = new Board();
+        this.player = player;
+        this.log = log;
         this.history = [];
         this.historyLimit = 10;
+    
 
     }
 
-    playerInit(player, x=0,y=0){
+    playerInit(x=0,y=0){
         this.entities.player = {
             x:x,
             y:y,
             symbol:"☺",
             id: "player"
         };
-        this.swordInit("player", player);
+        this.swordInit("player");
     }
     
 
@@ -55,7 +58,7 @@ class EntityManager{
         return id;
     }
 
-    swordInit(owner, player, rotation = 3){
+    swordInit(owner, rotation = 3){
         let id = this.entityInit('*', 'sword');
         let sword = this.getEntity(id);
 
@@ -67,7 +70,7 @@ class EntityManager{
         this.setProperty(owner,'sword', id);
         
         this.switchWeapon('stick');
-        this.placeSword(id, player);
+        this.placeSword(id, this.player);
     
         return id;
     }
@@ -85,7 +88,7 @@ class EntityManager{
         return symbol;
     }
 
-    placeSword(id, player){
+    placeSword(id){
         let sword = this.getEntity(id);
         let ownerId = sword.owner;
         let owner = this.getEntity(ownerId);
@@ -103,7 +106,7 @@ class EntityManager{
             if(target.id != id && target.behavior != 'wall'){
                 this.attack(sword,target);
                 if (ownerId == 'player'){
-                    player.changeStamina(sword.weight * -1);
+                    this.player.changeStamina(sword.weight * -1);
                 }
             }
         }
@@ -111,8 +114,9 @@ class EntityManager{
         if(rotation == sword.rotation && sword.x == swordPosition.x && sword.y == swordPosition.y){
             this.setPosition(id,x,y);
         }
-
-        return player;
+        if (this.player.stamina < 0){
+            this.cancelAction();
+        }
     }
 
     moveEntity(id, x, y){
@@ -136,40 +140,16 @@ class EntityManager{
         this.setProperty(id, 'rotation', rotation);
     }
 
-    chase(id, player){
-        let entity = this.getEntity(id);
-        let playerEntity = this.getEntity('player');
-        let x = 0;
-        let y = 0;
-        if(entity.x > playerEntity.x){
-            x = -1;
-        }else if (entity.x < playerEntity.x){
-            x = 1;
-        }else if(entity.y > playerEntity.y){
-            y = -1;
-        }else if (entity.y < playerEntity.y){
-            y = 1;
-        }
-
-        let targetX = entity.x+x;
-        let targetY = entity.y+y;
-    
-        if(playerEntity.x == targetX && playerEntity.y == targetY){
-            this.transmitMessage(entity.name+" attacks you!");
-            player.changeHealth(this.roll(1,entity.damage) * -1);
-        }
-
-        moveEntity(id, x, y);
-        
-    }
-
-    chaseNatural(id, player, behaviorInfo){
+    chaseNatural(id, behaviorInfo){
         let entity = this.getEntity(id);
         let playerEntity = this.getEntity('player');
         //creature is less focused the further they are
         let focus = behaviorInfo.focus;
         focus -= this.getDistance(entity, playerEntity);
-        focus =  Math.max(focus, 3);
+        if(!this.hasPlayerLos){
+            focus -= 20;
+        }
+        focus =  Math.max(focus, 4);
         let x = 0;
         let y = 0;
 
@@ -207,6 +187,10 @@ class EntityManager{
         if(targetItem.id == "player" || targetItem.behavior == "dead" || targetItem.behavior == "wall"){
             this.attack(entity,targetItem);
         }
+
+        if(targetItem.behavior == "sword" && entity.behaviorInfo.beat){
+            this.beat(entity,targetItem);
+        }
     
         if(!this.moveEntity(id, x, y, this.board)){
             this.moveEntity(id, 0, y, this.board);
@@ -224,19 +208,16 @@ class EntityManager{
 
         if (target.id == 'player'){
             this.transmitMessage(attacker.name+" attacks you!");
-            player.changeHealth(mortality * -1);
-            //this.knockSword(target.sword);
+            this.player.changeHealth(mortality * -1);
         }else if(target.behavior == 'wall'){
             this.addMortality(mortality);
         }else{
+            this.transmitMessage(target.name+" is struck!");
             this.addStunTime(target.id,stunTime);
             this.addMortality(target.id, mortality);
             this.knock(target.id, attacker.id);
             this.enrageAndDaze(target);   
-        }
-
-        if(attacker.id == 'player' || attacker.owner == 'player'){
-            this.transmitMessage(target.name+" is struck!");
+            this.sturdy(attacker,target);
         }
     }
 
@@ -255,7 +236,7 @@ class EntityManager{
         //space must be open AND further from attacker's last position
         let furtherSpace = (this.getOrthoDistance(knockerPos, knocked) < this.getOrthoDistance(knockerPos,{x:x, y:y}))
         let backupSpace = false;
-        while((!this.board.isOpenSpace(x,y) || !furtherSpace ) && tries < 8){
+        while((!this.board.isOpenSpace(x,y) || !furtherSpace ) && tries <= 8){
             if(this.board.isOpenSpace(x,y) && !backupSpace){
                 backupSpace = {x:x, y:y};
             }
@@ -273,7 +254,7 @@ class EntityManager{
         }else if (backupSpace){
             this.setPosition(knockedId,backupSpace.x,backupSpace.y);
         }else{
-            this.transmitMessage(knocked.name + "is cornered!");
+            this.transmitMessage(knocked.name + " is cornered!");
             if(knocker.behavior == 'sword'){
                 this.setToLastPosition(knocker.owner);
                 this.setToLastPosition(knockerId);
@@ -315,6 +296,52 @@ class EntityManager{
 
     }
 
+    findSwordMiddle(sword,pos1,pos2){
+        let owner = this.getEntity(sword.owner);
+        //direction is either 1 or -1
+        let direction = (this.roll(0,1) * 2) - 1;
+        let rotation = (sword.rotation + 8 + direction) % 8;
+        let translation = this.translations[rotation];
+        let x = owner.x + translation.x;
+        let y = owner.y + translation.y;
+
+        let bestPos = {x:x, y:y};
+        let bestRotation = rotation;
+        let bestDistance = this.getOrthoDistance({x:x,y:y},pos1)+this.getOrthoDistance({x:x,y:y},pos2)
+
+        for(let i = 0; i < 8; i++){
+            let distance = this.getOrthoDistance({x:x,y:y},pos1)+this.getOrthoDistance({x:x,y:y},pos2);
+
+            let validSpace = (this.board.itemAt(x,y).behavior == 'wall' || !this.board.itemAt(x,y))
+            console.log({
+                distance:distance,
+                bestDistance:bestDistance,
+                validSpace:validSpace,
+                rotation:rotation
+            })
+            if(validSpace){
+                if (distance < bestDistance){
+                    bestDistance = distance;
+                    bestPos = {x:x, y:y};
+                    bestRotation = rotation;
+                }
+            }
+            rotation = (rotation + 8 + direction) % 8;
+            translation = this.translations[rotation];
+            x = owner.x + translation.x;
+            y = owner.y + translation.y;
+        }
+
+        console.log({
+            bestDistance:bestDistance,
+            bestRotation:bestRotation,
+            rotation:rotation
+        })
+
+        sword.rotation = bestRotation;
+        this.placeSword(sword.id);
+    }
+
     enrageAndDaze(entity){
         let enrageChance = entity.behaviorInfo.enrage;
         let dazeChance = entity.behaviorInfo.daze;
@@ -324,6 +351,8 @@ class EntityManager{
             this.transmitMessage(entity.name+" is enraged!");
             entity.behaviorInfo.focus += 5;
             entity.behaviorInfo.slow -= 3;
+            entity.behaviorInfo.beat += 5;
+            entity.sturdy += 5;
             entity.stunned -= Math.max(this.roll(0,entity.stunned),0);
         }
         random = this.roll(1,100);
@@ -331,11 +360,42 @@ class EntityManager{
             this.transmitMessage(entity.name+" is dazed!");
             entity.behaviorInfo.focus -= 5;
             entity.behaviorInfo.slow += 5;
+            entity.sturdy -= 5;
+            entity.beat -=5;
             entity.stunned ++;
         }
     }
 
-    triggerBehaviors(player){
+    beat(entity, sword){
+        let beatChance = entity.behaviorInfo.beat;
+
+        let random = this.roll(1,100);
+        if(random <= beatChance){
+            this.transmitMessage(entity.name+" knocks your sword out of the way!");
+            this.knockSword(sword.id);
+        }
+    }
+
+    sturdy(attacker,target){
+        let sturdyChance = target.behaviorInfo.sturdy;
+
+        let random = this.roll(1,100);
+        if (random <= sturdyChance){
+            /*
+            this.setToLastPosition(attacker.owner);
+            this.setToLastPosition(attacker.id);
+            this.setToLastPosition(target.id);
+            this.placeSword(attacker.id);
+            */
+            this.removeEntity(attacker.id);
+            this.setToLastPosition(target.id);
+            let lastSwordPos = this.history[this.history.length-1].entities[attacker.id];
+            this.findSwordMiddle(attacker,target,lastSwordPos);
+            this.transmitMessage(target.name+" holds its footing!");
+        }
+    }
+
+    triggerBehaviors(){
         //console.log(board);
         for (const [k,entity] of Object.entries(this.entities)){
             //console.log(entity);
@@ -348,7 +408,7 @@ class EntityManager{
             if (!skip){
                 switch(entity.behavior){
                     case "chase":
-                        this.chaseNatural(k, player, entity.behaviorInfo);
+                        this.chaseNatural(k, this.player, entity.behaviorInfo);
                         break;
                     case "sword":
                         //player = this.placeSword(k,board, player);
@@ -382,23 +442,23 @@ class EntityManager{
 
             }
         }
-
-        return player;
     }
 
-    reapWounded(player){
+    reapWounded(){
         for (const [k,entity] of Object.entries(this.entities)){
             if (entity.stunned+entity.mortal > entity.threshold && entity.behavior != 'dead'){
                 this.transmitMessage(entity.name+" is slain!");
+                entity.name += " corpse";
                 this.setProperty(k,'behavior', 'dead');
                 this.setProperty(k,'tempSymbol', 'x');
                 this.setProperty(k,'stunned', 0);
             }
         }
         //console.log(player.health);
-        if(player.health <= 0){
+        if(this.player.health <= 0){
             this.setProperty('player','symbol', 'x');
             this.setProperty('player','behavior', 'dead');
+            this.transmitMessage('you are dead.');
         }
         //console.log('Stamina: ' +player.stamina);
         //console.log('Health: ' + player.health);
@@ -446,7 +506,7 @@ class EntityManager{
         }
         
         this.setEntity(id, sword);
-        console.log("weapon: "+weaponName);
+        this.transmitMessage('equipped weapon: '+weaponName);
     }
 
     monsterInit(monsterName,x,y){
@@ -476,7 +536,9 @@ class EntityManager{
                 behaviorInfo = {
                     focus:7,
                     enrage:75,
-                    slow: 30
+                    slow: 40,
+                    beat:30,
+                    sturdy:30
                 }
                 break;
             case "rat":
@@ -510,17 +572,24 @@ class EntityManager{
                     daze:30
                 }
                 break;
+            case "dummy":
+                symbol = "D";
+                hitDice = 10;
+                damage = 0;
+                name = "dummy";
+                behavior = "dummy";
+                break;
         }
 
         let id = this.entityInit(symbol, behavior,x, y, hitDice, damage, behaviorInfo, name)
     }
 
-    saveSnapshot(player){
+    saveSnapshot(){
         let entities = JSON.parse(JSON.stringify(this.entities));
-        player = JSON.parse(JSON.stringify(player));
+        let playerJson = JSON.parse(JSON.stringify(this.player));
         this.history.push({
             entities:entities,
-            player:player
+            player:playerJson
         });
         if(this.history.length > this.historyLimit){
             this.history.shift();
@@ -539,7 +608,20 @@ class EntityManager{
         this.board.placeEntities(this.entities);
         //console.log(snapshot.player);
 
-        return snapshot.player;
+        this.player.setPlayerInfo(snapshot.player);
+    }
+
+    cancelAction(){
+        let snapshot = this.history.pop();
+        this.entities = snapshot.entities;
+        this.board.placeEntities(this.entities);
+        //console.log(snapshot.player);
+
+        this.player.setPlayerInfo(snapshot.player);  
+        this.skipBehaviors = true; 
+
+        let swordId = this.getEntity('player').sword;
+        this.placeSword(swordId);
     }
 
     setToLastPosition(id){
@@ -564,7 +646,7 @@ class EntityManager{
         return sum;
     }
 
-    loadRoom(json, player){
+    loadRoom(json){
         this.board.setDimensions(json.width,json.height)
         this.board.boardInit;
         for(let y=0;y<this.board.height;y++){
@@ -573,7 +655,7 @@ class EntityManager{
                 if(entityCode){
                     let entity = json.values[entityCode];
                     if(entity == "player"){
-                        this.playerInit(player, x, y)
+                        this.playerInit(x, y)
                     }else if(entity.monster){
                         this.monsterInit(entity.monster,x,y);
                     }else{
@@ -654,7 +736,12 @@ class EntityManager{
     }
 
     transmitMessage(message){
+        this.log.addMessage(message);
         console.log(message);
+    }
+
+    hasPlayerLos(entity){
+        return this.board.getLineOfSight(entity.x,entity.y);
     }
 
 }

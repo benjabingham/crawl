@@ -1,5 +1,37 @@
 html{
-    
+    background-color: #222;
+    color: #ddd;
+}
+
+#game-window{
+    background-color: #ddd;
+    color: #222;
+    display:flex;
+    margin:auto;
+    border:1px solid black;
+    width:fit-content;
+}
+
+#log-window{
+    border:1px solid gray;
+    width:300px;
+}
+
+#log-title{
+    text-align:center;
+    font-weight: 600;
+}
+
+#log{
+    overflow-y:scroll;
+
+    p{
+        margin:0;
+    }
+
+    .turn-counter{
+        text-align:center;
+    }
 }
 
 #board{
@@ -10,11 +42,21 @@ html{
     white-space:pre-line;
     font-family: monospace;
     font-size:xx-large;
-    width:fit-content;
+    float:left;
 }
 
 #board:focus{
     border:1px solid #BBBBBB;
+}
+
+#resources{
+    display:flex;
+    width:fit-content;
+    margin:auto;
+}
+
+#resources>div{
+    margin:5px;
 }
 
 #stamina-bar{
@@ -43,9 +85,54 @@ html{
     border:1px solid gray;
 }
 
-#enemy-control-div{
+#instructions-div{
+    padding-top:20px;
+    padding-bottom:20px;
+    font-family: monospace;
+}
+
+#controls>div{
+
     padding:10px;
+
+    div{
+        padding-bottom:5px;
+    }
+    
+}
+
+#enemy-control-div{
+    display:none;
+    
     input{
         width:20px;
     }
+
+}
+
+.message-fresh{
+    background-color:rgba(252, 244, 233, 0.562);
+}
+
+#log-window{
+    display:none;
+}
+
+#resources{
+    display:none;
+}
+
+#weapon-select-div{
+    display:none;
+}
+
+#focus-reminder{
+    display:none;
+    color:blue;
+}
+
+#reminder-wrapper{
+    height:2rem;
+    margin:auto;
+    width:fit-content
 }
