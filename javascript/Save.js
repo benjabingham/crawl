@@ -9,6 +9,21 @@ class Save{
         this.maps = [];
     }
 
+    loadSave(file){
+        if (file) {
+            var reader = new FileReader();
+            reader.readAsText(file, "UTF-8");
+            reader.onload = function (evt) {
+                let fileString = evt.target.result;
+                let fileJson = JSON.parse(fileString);
+                console.log(fileJson);
+            }
+            reader.onerror = function (evt) {
+                $('#load-file-input').append("error reading file");
+            }
+        }
+    }
+
     downloadSave(){
         let file = new File([JSON.stringify(this)], 'crawlJS-save.txt', {
             type: 'text/plain',

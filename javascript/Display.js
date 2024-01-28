@@ -22,8 +22,22 @@ class Display{
     giveSaveButtonsBehavior(save){
         $('#new-save-button').off().on('click',function(){
             save.newSave();
-            $('#new-save-button').hide();
+            $('#save-manage-div').hide();
             $('#map-select-div').show();
+        })
+
+        $('#load-file-input').off().change(function(){
+            save.loadSave($('#load-file-input').prop('files')[0])
+        })
+
+        $('#new-save-button').off().change(function(){
+            save.newSave();
+            //$('#save-manage-div').hide();
+            //$('#map-select-div').show();
+        })
+
+        $('#download-save-button').off().on('click',function(){
+            save.downloadSave();
         })
     }
 
