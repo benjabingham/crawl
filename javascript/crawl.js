@@ -3,20 +3,28 @@ let log = new Log();
 let entityManager = new EntityManager(player, log);
 
 $(document).ready(function(){
+    
+    populateMapSelectDropdown();
+    /*
     fetch('./rooms/ratnest.json')
         .then((response) => response.json())
         .then((json) => {
             entityManager.loadRoom(json)
             startGame();
-        })
+        })*/
     
 });
 
 function startGame(){
+    $('#log-window').show();
+    $('#resources').show();
+    populateWeaponSelectDropdown();
+    giveReminderTextBehavior();
+
     entityManager.board.placeEntities(entityManager.entities);
     let swordId = entityManager.getProperty('player','sword')
-    populateWeaponSelectDropdown();
-    populateEnemySelectDropdown()
+
+    
     enemyControlInit();
     boardDisplayInit();
     entityManager.board.placeEntities(entityManager.entities);
@@ -160,9 +168,34 @@ function populateWeaponSelectDropdown(){
     $('#weapon-select').on('change',function(){
         entityManager.switchWeapon(this.value);
     })
+
+    $('#weapon-select-div').show();
+}
+
+function populateMapSelectDropdown(){
+    //let maps = ['ratnest','trainingHall','room1','room2']
+    let maps = ['ratnest','trainingHall']
+    maps.forEach((element =>{
+        $('#map-select').append(
+            $("<option />").val(element+".json").text(element)
+        )
+    }))
+
+    $('#map-select').on('change',function(){
+        fetch('./rooms/'+this.value)
+        .then((response) => response.json())
+        .then((json) => {
+            $('#map-select-div').hide();
+            entityManager.loadRoom(json)
+            startGame();
+        })
+    })
+
+    
 }
 
 function populateEnemySelectDropdown(){
+    $('#enemy-spawn').show();
     let enemies = ['goblin','ogre','rat','dire wolf','dire rat','dummy']
     enemies.forEach((element =>{
         $('#enemy-select').append(
@@ -184,7 +217,7 @@ function populateEnemySelectDropdown(){
    
 }
 
-function enemyControlInit(){
+function populateCustomEnemySelectDropdown(){
     $('#custom-enemy-spawn-button').on('click',function(){
         let x = parseInt($('#custom-enemy-x-input').val());
         let y = parseInt($('#custom-enemy-y-input').val());
@@ -199,6 +232,22 @@ function enemyControlInit(){
         entityManager.board.placeEntities(entityManager.entities);
         printBoard(entityManager.board.boardArray);
 
+    })
+}
+
+function enemyControlInit(){
+    $('#enemy-control-div').show();
+    populateCustomEnemySelectDropdown();
+    populateEnemySelectDropdown();
+}
+
+function giveReminderTextBehavior(){
+    $('#focus-reminder').show()
+
+    $('#board').on('focus',function(){
+        $('#focus-reminder').hide()
+    }).on('focusout',function(){
+        $('#focus-reminder').show()
     })
 }
 

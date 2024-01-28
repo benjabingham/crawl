@@ -506,7 +506,7 @@ class EntityManager{
         }
         
         this.setEntity(id, sword);
-        console.log("weapon: "+weaponName);
+        this.transmitMessage('equipped weapon: '+weaponName);
     }
 
     monsterInit(monsterName,x,y){

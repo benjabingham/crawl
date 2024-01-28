@@ -31,30 +31,19 @@
             <div id="log"></div>
         </div>
     </div>
-  
-    
-    <div id = 'instructions-div'>
-        Welcome to crawlJS!
-        use the numpad to move - you can move up, down, left, right, or diagonally.
-        use Q and W to rotate your sword clockwise or counter-clockwise.
-        The play area must be selected for the controls to work.
-        <br><br>
-        Fight monsters by navigating your sword onto them. If there is room, you will knock backwards and may stun them.
-        Stunned enemies appear in lower case and are easier to kill.
-        <br><br>
-        Striking an enemy costs STAMINA. Try not to run out - doing so can cost you a turn.
-        Take a turn off to regain stamina by pressing '5'
-        <br><br>
-        Some enemies may become more aggressive when harmed... 
-        Some enemies are more predictable than others... 
-        <br><br>
-        If you make a mistake, press BACKSPACE to undo an aciton. You can travel up to 10 turns into the past in this way.
-
+    <div id="reminder-wrapper">
+        <div id="focus-reminder">Click on the game window for controls to register!</div>
     </div>
     <div id = "controls">
         <div id="weapon-select-div">
             <label for="weapon-select">Weapon select</label>
             <select name="weapon-select" id="weapon-select"></select>
+        </div>
+        <div id="map-select-div">
+            <label for="map-select">Map select</label>
+            <select name="map-select" id="map-select">
+                <option>Choose a map</option>
+            </select>
         </div>
         <div id="enemy-control-div">
             <div id="enemy-spawn">
@@ -81,6 +70,30 @@
             <br>
             
         </div>
+    </div>
+    <div id = 'instructions-div'>
+        Welcome to crawlJS! (real name tbd...?)
+        use the numpad to move - you can move up, down, left, right, or diagonally.
+        use Q and W to rotate your sword clockwise or counter-clockwise.
+        The play area must be selected for the controls to work.
+        <br><br>
+        Fight monsters by navigating your sword onto them. If there is room, you will knock them backwards and may stun them.
+        Stunned enemies appear in lower case and are easier to kill.
+        <br><br>
+        Striking an enemy costs STAMINA. Try not to run out - doing so can cost you a turn.
+        Take a turn off to regain stamina by pressing '5'
+        <br><br>
+        Some enemies may become more aggressive when harmed... 
+        Some enemies are more predictable than others... 
+        <br><br>
+        If you make a mistake, press BACKSPACE to undo an aciton. You can travel up to 10 turns into the past in this way.
+        <br><br>
+        Larger weapons do more damage, but cost more stamina to attack with.
+        Blunt weapons do less damage but are more likely to stun.
+        <br><br>
+        select a map above to begin.
+
+
     </div>
   </body>
 </html>
