@@ -20,7 +20,7 @@
         "2":{
             "symbol":"W",
             "behavior":"wall",
-            "hitDice":"12",
+            "hitDice":"24",
             "name":"wall"
         },
         "3":{"monster":"rat"},

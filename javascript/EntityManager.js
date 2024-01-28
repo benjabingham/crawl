@@ -210,7 +210,7 @@ class EntityManager{
             this.transmitMessage(attacker.name+" attacks you!");
             this.player.changeHealth(mortality * -1);
         }else if(target.behavior == 'wall'){
-            this.addMortality(mortality);
+            this.addMortality(target.id, mortality);
         }else{
             this.transmitMessage(target.name+" is struck!");
             this.addStunTime(target.id,stunTime);
@@ -279,7 +279,6 @@ class EntityManager{
             translation = this.translations[rotation];
             x = owner.x + translation.x;
             y = owner.y + translation.y;
-            console.log(counter);
         
             counter++;
         }
@@ -313,12 +312,6 @@ class EntityManager{
             let distance = this.getOrthoDistance({x:x,y:y},pos1)+this.getOrthoDistance({x:x,y:y},pos2);
 
             let validSpace = (this.board.itemAt(x,y).behavior == 'wall' || !this.board.itemAt(x,y))
-            console.log({
-                distance:distance,
-                bestDistance:bestDistance,
-                validSpace:validSpace,
-                rotation:rotation
-            })
             if(validSpace){
                 if (distance < bestDistance){
                     bestDistance = distance;
@@ -331,12 +324,6 @@ class EntityManager{
             x = owner.x + translation.x;
             y = owner.y + translation.y;
         }
-
-        console.log({
-            bestDistance:bestDistance,
-            bestRotation:bestRotation,
-            rotation:rotation
-        })
 
         sword.rotation = bestRotation;
         this.placeSword(sword.id);
