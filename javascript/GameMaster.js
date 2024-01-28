@@ -16,7 +16,6 @@ class GameMaster{
         let gm = this;
 
         board.placeEntities();
-        board.placeEntities();
         entityManager.saveSnapshot();
 
         board.calculateLosArray(entityManager.getEntity('player'));
@@ -38,7 +37,7 @@ class GameMaster{
         let swordId = this.entityManager.getProperty('player','sword')
         this.entityManager.removeEntity(swordId);
         this.entityManager.skipBehaviors = false;
-        
+
         this.playerAction(e.originalEvent.key, swordId);
 
         this.board.calculateLosArray(this.entityManager.getEntity('player'));
