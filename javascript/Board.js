@@ -1,11 +1,13 @@
 class Board{
-    constructor(width = 20,height = 20){
+    constructor(entityManager,width = 20,height = 20){
         this.width = width;
         this.height = height;
 
         this.boardArray = [];
         this.losArray = [];
         this.boardInit();
+
+        this.entityManager = entityManager;
     }
 
     
@@ -21,7 +23,8 @@ class Board{
         }
     }
 
-    placeEntities(entities){
+    placeEntities(){
+        let entities = this.entityManager.entities;
         this.boardInit();
         for (const [k,entity] of Object.entries(entities)){
             let x = entity.x;

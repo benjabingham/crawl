@@ -1,5 +1,5 @@
 class EntityManager{
-    constructor(player){
+    constructor(player, log){
         this.entities = {};
         this.entityCounter = 0;
         this.translations = [
@@ -12,7 +12,7 @@ class EntityManager{
             {x:-1,y:0},
             {x:-1,y:-1}
         ];
-        this.board = new Board();
+        this.board = new Board(this);
         this.player = player;
         this.log = log;
         this.history = [];
