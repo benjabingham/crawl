@@ -80,6 +80,7 @@ function startGame(){
                     entityManager.skipBehaviors = true;
                     log.turnCounter--;
                     log.messages[log.turnCounter] = false;
+                    console.log(entityManager.entities);
                 }
                 break;
             case "5":
@@ -174,7 +175,7 @@ function populateWeaponSelectDropdown(){
 
 function populateMapSelectDropdown(){
     //let maps = ['ratnest','trainingHall','room1','room2']
-    let maps = ['ratnest','trainingHall']
+    let maps = ['ratnest','trainingHall','trainingHallNoOgre']
     maps.forEach((element =>{
         $('#map-select').append(
             $("<option />").val(element+".json").text(element)
