@@ -59,6 +59,7 @@ class Display{
     
     populateWeaponSelectDropdown(){
         let weapons = ['stick','shortsword','longsword','rapier','greatsword','club','maul']
+        let entityManager = this.entityManager;
         weapons.forEach((element =>{
             $('#weapon-select').append(
                 $("<option />").val(element).text(element)
@@ -66,7 +67,7 @@ class Display{
         }))
     
         $('#weapon-select').on('change',function(){
-            this.entityManager.switchWeapon(this.value);
+            entityManager.switchWeapon(this.value);
         })
     
         $('#weapon-select-div').show();
