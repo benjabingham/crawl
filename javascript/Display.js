@@ -5,6 +5,7 @@ class Display{
     }
 
     showDungeonScreen(){
+        console.log('showDungeonScreen');
         $('#dungeon-screen').show();
         this.populateWeaponSelectDropdown();
         this.giveReminderTextBehavior();
@@ -28,12 +29,14 @@ class Display{
 
         $('#load-file-input').off().change(function(){
             save.loadSave($('#load-file-input').prop('files')[0])
+            $('#map-select-div').show();
+
         })
 
-        $('#new-save-button').off().change(function(){
+        $('#new-save-button').off().on('click',function(){
             save.newSave();
             //$('#save-manage-div').hide();
-            //$('#map-select-div').show();
+            $('#map-select-div').show();
         })
 
         $('#download-save-button').off().on('click',function(){

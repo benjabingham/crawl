@@ -1,22 +1,25 @@
 class Save{
     constructor(){
-        this.maps = [];
+        this.maps = {};
         this.player;
     }
 
     newSave(){
         this.player = new Player;
-        this.maps = [];
+        this.maps = {};
     }
 
     loadSave(file){
         if (file) {
+            let save = this;
             var reader = new FileReader();
             reader.readAsText(file, "UTF-8");
             reader.onload = function (evt) {
                 let fileString = evt.target.result;
                 let fileJson = JSON.parse(fileString);
-                console.log(fileJson);
+                for (const [key, value] of Object.entries(fileJson)) {
+                    save[key] = value;
+                }
             }
             reader.onerror = function (evt) {
                 $('#load-file-input').append("error reading file");

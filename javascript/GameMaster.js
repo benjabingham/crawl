@@ -10,6 +10,7 @@ class GameMaster{
     }
 
     startGame(){
+        console.log(this.save);
         let player = this.player;
         let log = this.log;
         let entityManager = this.entityManager;
@@ -112,6 +113,7 @@ class GameMaster{
 
     getRoom(roomString){
         if(this.save.maps[roomString]){
+            console.log('room cached')
             this.entityManager.loadRoom(this.save.maps[roomString]);
             this.startGame();
         }else{
@@ -121,6 +123,7 @@ class GameMaster{
             .then((json) => {
                 console.log('loaded');
                 this.save.maps[roomString] = json;
+                console.log(this.save);
                 this.entityManager.loadRoom(json)
                 this.startGame();
             })
