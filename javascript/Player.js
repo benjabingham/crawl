@@ -5,6 +5,7 @@ class Player {
 
         this.healthMax = 10;
         this.health = this.healthMax;
+        console.log('new player');
     }
 
     get staminaPercent(){
@@ -25,6 +26,8 @@ class Player {
         this.health = this.health+n;
         this.health = Math.min(this.healthMax,this.health);
         this.health = Math.max(0,this.health)
+
+        console.log(this);
     }
 
 
@@ -32,6 +35,14 @@ class Player {
         for (const [key, value] of Object.entries(playerInfo)) {
             this[key] = value;
           }
+    }
+
+    reset(){
+        this.staminaMax = 10;
+        this.stamina = this.staminaMax;
+
+        this.healthMax = 10;
+        this.health = this.healthMax;
     }
 
 }

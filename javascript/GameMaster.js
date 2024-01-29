@@ -1,6 +1,6 @@
 class GameMaster{
     constructor(save){
-        this.player = new Player();
+        this.player = save.player;
         this.log = new Log();
         this.entityManager = new EntityManager(this.player,this.log);
         this.board = this.entityManager.board;

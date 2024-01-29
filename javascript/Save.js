@@ -1,12 +1,11 @@
 class Save{
     constructor(){
         this.maps = {};
-        this.player;
+        this.player = new Player;
     }
 
     newSave(){
-        this.player = new Player;
-        this.maps = {};
+        this.player.reset();
     }
 
     loadSave(file){
@@ -17,9 +16,15 @@ class Save{
             reader.onload = function (evt) {
                 let fileString = evt.target.result;
                 let fileJson = JSON.parse(fileString);
-                for (const [key, value] of Object.entries(fileJson)) {
-                    save[key] = value;
+                save.maps = fileJson.maps;
+                for (const [key, value] of Object.entries(fileJson.player)) {
+                    save.player[key] = value;
+                    console.log({
+                        k:key,
+                        v:value
+                    })
                 }
+                console.log(save.player);
             }
             reader.onerror = function (evt) {
                 $('#load-file-input').append("error reading file");
@@ -42,6 +47,8 @@ class Save{
         
         document.body.removeChild(link)
         window.URL.revokeObjectURL(url)
+
+        console.log(this);
     }
 
 }
