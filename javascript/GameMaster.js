@@ -2,14 +2,20 @@ class GameMaster{
     constructor(save){
         this.player = save.player;
         this.log = new Log();
-        this.entityManager = new EntityManager(this.player,this.log);
+        this.save = save;
+        this.entityManager = new EntityManager(this.player,this.log, this);
         this.board = this.entityManager.board;
         this.display = new Display(this.entityManager, this.board);
+        this.inDungeon = false;
+    }
 
-        this.save = save;
+    reset(){
+        this.log.wipeLog();
+        this.entityManager.wipeEntities();
     }
 
     startGame(){
+        this.inDungeon = true;
         console.log(this.save);
         let player = this.player;
         let log = this.log;
@@ -26,7 +32,7 @@ class GameMaster{
         display.showDungeonScreen();
         display.printBoard();
 
-        $(document).on("keydown", function(e){
+        $(document).off().on("keydown", function(e){
             gm.resolvePlayerInput(e); 
         });
     }
@@ -42,6 +48,10 @@ class GameMaster{
         this.entityManager.skipBehaviors = false;
 
         this.playerAction(e.originalEvent.key, swordId);
+        //if dungeon left
+        if(!this.inDungeon){
+            return false;
+        }
 
         this.board.calculateLosArray(this.entityManager.getEntity('player'));
         this.entityManager.placeSword(swordId);
@@ -128,6 +138,13 @@ class GameMaster{
                 this.startGame();
             })
         }
+    }
+
+    travel(){
+        this.inDungeon = false;
+        console.log('travel');
+        this.reset();
+        this.display.showTownScreen(this);
     }
     
 }

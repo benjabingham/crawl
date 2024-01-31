@@ -1,5 +1,5 @@
 class EntityManager{
-    constructor(player, log){
+    constructor(player, log, gameMaster){
         this.entities = {};
         this.entityCounter = 0;
         this.translations = [
@@ -17,8 +17,15 @@ class EntityManager{
         this.log = log;
         this.history = [];
         this.historyLimit = 10;
-    
 
+        this.gameMaster = gameMaster;
+    }
+
+    wipeEntities(){
+        this.entities = {};
+        this.entityCounter = 0;
+        this.history = [];
+        this.historyLimit = 10;
     }
 
     playerInit(x=0,y=0){
@@ -127,6 +134,9 @@ class EntityManager{
         if(this.board.isSpace(x,y) && this.board.isOpenSpace(x,y)){
             this.setPosition(id,x,y);
             return true;
+        }else if(!this.board.isSpace(x,y) && id == "player"){
+            console.log(this.gameMaster);
+            this.gameMaster.travel();
         }
 
         return false;

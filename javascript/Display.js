@@ -22,6 +22,7 @@ class Display{
     }
 
     showTownScreen(gameMaster){
+        this.hideAllScreens();
         $('#town-screen').show();
         this.populateMapSelectDropdown(gameMaster);
     }
@@ -110,7 +111,8 @@ class Display{
     }
     
     populateMapSelectDropdown(gameMaster){
-        let maps = ['ratnest','trainingHall','trainingHallNoOgre']
+        $('#map-select').html('');
+        let maps = ['choose a map','ratnest','trainingHall','trainingHallNoOgre']
         maps.forEach((element =>{
             $('#map-select').append(
                 $("<option />").val(element+".json").text(element)

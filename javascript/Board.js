@@ -10,8 +10,6 @@ class Board{
         this.entityManager = entityManager;
     }
 
-    
-
     boardInit(){
         this.boardArray = [];
         //this.LosInit();
