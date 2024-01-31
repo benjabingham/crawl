@@ -14,6 +14,11 @@ class Log{
         });
     }
 
+    wipeLog(){
+        this.messages = {};
+        this.turnCounter = 0;
+    }
+
     printLog(){
         let log = $('#log');
         log.html('');

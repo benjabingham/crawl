@@ -1,14 +1,15 @@
 class Board{
-    constructor(width = 20,height = 20){
+    constructor(entityManager, width = 20,height = 20){
         this.width = width;
         this.height = height;
 
         this.boardArray = [];
         this.losArray = [];
         this.boardInit();
-    }
 
-    
+        this.entityManager = entityManager;
+        this.destinations = {};
+    }
 
     boardInit(){
         this.boardArray = [];
@@ -21,18 +22,19 @@ class Board{
         }
     }
 
-    placeEntities(entities){
+    placeEntities(){
+        let entities = this.entityManager.entities;
         this.boardInit();
         for (const [k,entity] of Object.entries(entities)){
             let x = entity.x;
             let y = entity.y;
-            if(this.itemAt(x,y).id != entity.id){
-                if(this.isSpace(x,y) && (!this.isOccupiedSpace(x,y))){
+            if(this.itemAt(x,y).id != entity.id && this.isSpace(x,y)){
+                if(!this.isOccupiedSpace(x,y) || entity.behavior == 'sword'){
                     this.placeEntity(entity, x, y);
                 }else{
-                    //console.log("ENTITY OVERWRITE");
-                    //console.log(entity);
-                    //console.log(this.itemAt(x,y));
+                    console.log("ENTITY OVERWRITE");
+                    console.log(entity);
+                    console.log(this.itemAt(x,y));
                 }   
             } 
         };

@@ -1,5 +1,5 @@
 class EntityManager{
-    constructor(player){
+    constructor(player, log, gameMaster){
         this.entities = {};
         this.entityCounter = 0;
         this.translations = [
@@ -12,13 +12,20 @@ class EntityManager{
             {x:-1,y:0},
             {x:-1,y:-1}
         ];
-        this.board = new Board();
+        this.board = new Board(this);
         this.player = player;
         this.log = log;
         this.history = [];
         this.historyLimit = 10;
-    
 
+        this.gameMaster = gameMaster;
+    }
+
+    wipeEntities(){
+        this.entities = {};
+        this.entityCounter = 0;
+        this.history = [];
+        this.historyLimit = 10;
     }
 
     playerInit(x=0,y=0){
@@ -127,6 +134,9 @@ class EntityManager{
         if(this.board.isSpace(x,y) && this.board.isOpenSpace(x,y)){
             this.setPosition(id,x,y);
             return true;
+        }else if(!this.board.isSpace(x,y) && id == "player"){
+            console.log(this.gameMaster);
+            this.gameMaster.travel(x,y);
         }
 
         return false;
@@ -608,6 +618,7 @@ class EntityManager{
         this.skipBehaviors = true; 
 
         let swordId = this.getEntity('player').sword;
+        this.board.calculateLosArray(this.getEntity('player'));
         this.placeSword(swordId);
     }
 
@@ -634,8 +645,11 @@ class EntityManager{
     }
 
     loadRoom(json){
+        console.log(json);
         this.board.setDimensions(json.width,json.height)
-        this.board.boardInit;
+        this.board.boardInit();
+        console.log(json.destinations);
+        this.board.destinations = json.destinations;
         for(let y=0;y<this.board.height;y++){
             for(let x=0;x<this.board.width;x++){
                 let entityCode = json.board[y][x];

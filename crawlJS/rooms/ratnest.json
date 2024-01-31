@@ -27,5 +27,11 @@
         "4":{"monster":"dire rat"},
         "5":{"monster":"ogre"},
         "6":{"monster":"goblin"}
+    },
+    "destinations":{
+        "left":{
+            "type":"dungeon",
+            "name":"trainingHall.json"
+        }
     }
 }
