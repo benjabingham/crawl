@@ -63,6 +63,8 @@ class GameMaster{
             this.entityManager.reapWounded();
         }
         this.display.printBoard(board.boardArray);
+        this.display.DisplayDungeonInventory();
+
         this.display.fillBars(this.player);
         this.entityManager.saveSnapshot();
         if(!this.entityManager.skipBehaviors){

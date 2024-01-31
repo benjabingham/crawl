@@ -184,21 +184,27 @@ class Display{
 
     addInventoryItem(item, slot){
         let display = this;
-        console.log(item);
+        let player = this.entityManager.player;
         
         $('#inventory-list').append(
             $('<div>').addClass('inventory-slot').attr('id','inventory-slot-'+slot).append(
                 $('<div>').addClass('item-name').text(item.name)
             ).on('click',function(){
-                console.log('click');
                 display.displayItemInfo(item);
             })
         )
 
-        if(item.weapon){
+        if(item.weapon && !player.equipped){
             $('#inventory-slot-'+slot).append(
                 $('<button>').addClass('item-equip').text('equip').on('click',function(){
-                    display.entityManager.equipWeapon(item);
+                    display.entityManager.equipWeapon(item,slot);
+                })
+            )
+        }
+        if(item.weapon && player.equipped && player.equipped.slot == slot){
+            $('#inventory-slot-'+slot).append(
+                $('<button>').addClass('item-equip').text('unequip').on('click',function(){
+                    display.entityManager.unequipWeapon();
                 })
             )
         }

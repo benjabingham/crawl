@@ -66,17 +66,18 @@ class EntityManager{
     }
 
     swordInit(owner, rotation = 3){
-        let id = this.entityInit('*', 'sword');
+        let id = this.entityInit('*', 'sword', -1,-1);
         let sword = this.getEntity(id);
 
         sword.owner = owner;
+        sword.equipped = false;
         sword.rotation = rotation;
 
         this.setEntity(id, sword);
 
         this.setProperty(owner,'sword', id);
         
-        this.switchWeapon('stick');
+        //this.switchWeapon('stick');
         this.placeSword(id, this.player);
     
         return id;
@@ -97,6 +98,10 @@ class EntityManager{
 
     placeSword(id){
         let sword = this.getEntity(id);
+        if(!sword.equipped){
+            console.log(sword.equipped);
+            return;
+        }
         let ownerId = sword.owner;
         let owner = this.getEntity(ownerId);
         let swordPosition = {x:sword.x, y:sword.y};
@@ -112,7 +117,6 @@ class EntityManager{
             let target = this.board.itemAt(x,y);
             if(target.id != id && target.behavior != 'wall'){
                 this.attack(sword,target);
-                console.log(sword);
                 if (ownerId == 'player'){
                     this.player.changeStamina(sword.weight * -1);
                 }
@@ -136,7 +140,6 @@ class EntityManager{
             this.setPosition(id,x,y);
             return true;
         }else if(!this.board.isSpace(x,y) && id == "player"){
-            console.log(this.gameMaster);
             this.gameMaster.travel(x,y);
         }
 
@@ -461,7 +464,7 @@ class EntityManager{
         //console.log('Stamina: ' +player.stamina);
         //console.log('Health: ' + player.health);
     }
-
+/*
     switchWeapon(weaponName){
         let id = this.getProperty("player", "sword");
         let sword = this.getEntity(id);
@@ -482,9 +485,12 @@ class EntityManager{
         sword.id = id;
         this.transmitMessage('equipped weapon: '+weaponName);
         console.log(sword);
-    }
+    }*/
 
-    equipWeapon(weapon){
+    equipWeapon(weapon,slot){
+        if(this.player.equipped){
+            return;
+        }
         let id = this.getProperty("player", "sword");
         let sword = this.getEntity(id);
 
@@ -494,17 +500,30 @@ class EntityManager{
         let owner = sword.owner;
         let symbol = sword.symbol;
 
-        sword = weapon;
+        this.entities[id] = JSON.parse(JSON.stringify(weapon));
+        sword = this.getEntity(id);
         sword.x = x;
         sword.y = y;
         sword.rotation = rotation;
         sword.owner = owner;
         sword.symbol = symbol;
         sword.id = id;
+        sword.equipped = true;
         this.transmitMessage('equipped weapon: '+weapon.name);
-        console.log(sword);
 
+        this.player.equipped = {equipped:true,slot:slot};
         this.gameMaster.resolvePlayerInput(false);
+    }
+
+    unequipWeapon(){
+        if(!this.player.equipped){
+            return;
+        }
+        this.player.equipped = false;
+        let sword = this.getEntity(this.entities.player.sword);
+        sword.equipped = false;
+        this.gameMaster.resolvePlayerInput(false);
+
     }
 
     monsterInit(monsterName,x,y){
@@ -595,7 +614,6 @@ class EntityManager{
     }
 
     canRewind(){
-        //console.log(this.history);
         return this.history.length > 1;
     }
 

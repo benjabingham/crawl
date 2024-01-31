@@ -22,6 +22,7 @@ class Player {
             stunTime:2,
             weight:1
         }];
+        this.equipped = false;
         console.log('new player');
     }
 
