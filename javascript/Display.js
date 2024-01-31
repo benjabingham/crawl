@@ -62,12 +62,13 @@ class Display{
     printBoard(){
         this.board.placeEntities();
         let boardArray = this.board.boardArray;
+        let player = this.entityManager.player;
         let boardString = "";
         let symbol;
         for(let i=0; i<boardArray.length; i++){
             //boardString += '|'
             for(let j=0; j<boardArray[i].length; j++){
-                if(this.board.getLineOfSight(j,i)){
+                if(this.board.hasPlayerLos({x:j, y:i})){
                     if(boardArray[i][j]){
                         symbol = boardArray[i][j].tempSymbol ? boardArray[i][j].tempSymbol : boardArray[i][j].symbol;
                         boardString += symbol;

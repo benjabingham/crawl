@@ -5,6 +5,8 @@ class Player {
 
         this.healthMax = 10;
         this.health = this.healthMax;
+
+        this.light = 0;
         console.log('new player');
     }
 
