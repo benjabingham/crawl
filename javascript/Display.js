@@ -6,6 +6,7 @@ class Display{
 
     showDungeonScreen(){
         console.log('showDungeonScreen');
+        this.hideAllScreens();
         $('#dungeon-screen').show();
         this.populateWeaponSelectDropdown();
         this.giveReminderTextBehavior();
@@ -14,33 +15,38 @@ class Display{
     }
 
     showHomeScreen(gameMaster){
+        this.hideAllScreens();
         $('#home-screen').show();
-        $('#map-select-div').hide();
         this.populateMapSelectDropdown(gameMaster);
-        this.giveSaveButtonsBehavior(gameMaster.save);
+        this.giveSaveButtonsBehavior(gameMaster);
     }
 
-    giveSaveButtonsBehavior(save){
+    showTownScreen(gameMaster){
+        $('#town-screen').show();
+        this.populateMapSelectDropdown(gameMaster);
+    }
+
+    hideAllScreens(){
+        $('#town-screen').hide();
+        $('#home-screen').hide();
+        $('#dungeon-screen').hide();
+    }
+
+    giveSaveButtonsBehavior(gameMaster){
+        let save = gameMaster.save
+        let display = this;
         $('#new-save-button').off().on('click',function(){
             save.newSave();
-            $('#save-manage-div').hide();
-            $('#map-select-div').show();
+            display.showTownScreen(gameMaster);
         })
 
         $('#load-file-input').off().change(function(){
             save.loadSave($('#load-file-input').prop('files')[0])
-            $('#map-select-div').show();
-
-        })
-
-        $('#new-save-button').off().on('click',function(){
-            save.newSave();
-            //$('#save-manage-div').hide();
-            $('#map-select-div').show();
+            display.showTownScreen(gameMaster);
         })
 
         $('#download-save-button').off().on('click',function(){
-            save.downloadSave();
+            save.downloadSave(gameMaster);
         })
     }
 
