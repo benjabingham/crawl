@@ -34,5 +34,14 @@
         "4":{"monster":"dummy"},
         "5":{"monster":"ogre"}
         
+    },
+    "destinations":{
+        "left":{
+            "type":"town"
+        },
+        "right":{
+            "type":"dungeon",
+            "name":"ratnest.json"
+        }
     }
 }

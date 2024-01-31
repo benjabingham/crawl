@@ -8,6 +8,7 @@ class Board{
         this.boardInit();
 
         this.entityManager = entityManager;
+        this.destinations = {};
     }
 
     boardInit(){

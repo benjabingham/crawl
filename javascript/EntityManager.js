@@ -136,7 +136,7 @@ class EntityManager{
             return true;
         }else if(!this.board.isSpace(x,y) && id == "player"){
             console.log(this.gameMaster);
-            this.gameMaster.travel();
+            this.gameMaster.travel(x,y);
         }
 
         return false;
@@ -645,8 +645,11 @@ class EntityManager{
     }
 
     loadRoom(json){
+        console.log(json);
         this.board.setDimensions(json.width,json.height)
-        this.board.boardInit;
+        this.board.boardInit();
+        console.log(json.destinations);
+        this.board.destinations = json.destinations;
         for(let y=0;y<this.board.height;y++){
             for(let x=0;x<this.board.width;x++){
                 let entityCode = json.board[y][x];

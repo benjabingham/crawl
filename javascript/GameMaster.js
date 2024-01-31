@@ -6,7 +6,7 @@ class GameMaster{
         this.entityManager = new EntityManager(this.player,this.log, this);
         this.board = this.entityManager.board;
         this.display = new Display(this.entityManager, this.board);
-        this.inDungeon = false;
+        this.dungeonId = 0;
     }
 
     reset(){
@@ -15,7 +15,6 @@ class GameMaster{
     }
 
     startGame(){
-        this.inDungeon = true;
         console.log(this.save);
         let player = this.player;
         let log = this.log;
@@ -38,6 +37,7 @@ class GameMaster{
     }
 
     resolvePlayerInput(e){
+        let dungeonId = this.dungeonId;
         if($(':focus').attr('id') != 'board'){
             return;
         }
@@ -49,7 +49,7 @@ class GameMaster{
 
         this.playerAction(e.originalEvent.key, swordId);
         //if dungeon left
-        if(!this.inDungeon){
+        if(dungeonId != this.dungeonId){
             return false;
         }
 
@@ -140,11 +140,30 @@ class GameMaster{
         }
     }
 
-    travel(){
-        this.inDungeon = false;
+    travel(x,y){
+        let direction = false;
+        if (x < 0){
+            direction = "left"
+        }else if (x >= this.board.width){
+            direction = "right"
+        }else if (y < 0){
+            direction = "up";
+        }else if (y >= this.board.height){
+            direction = "down"
+        }
+        let destination = this.board.destinations[direction]
+        if(!destination){
+            return false;
+        }
+        this.dungeonId++;
         console.log('travel');
         this.reset();
-        this.display.showTownScreen(this);
+
+        if(destination.type == "town"){
+            this.display.showTownScreen(this);
+        }else if(destination.type == "dungeon"){
+            this.getRoom(destination.name);
+        }
     }
     
 }
