@@ -112,6 +112,7 @@ class EntityManager{
             let target = this.board.itemAt(x,y);
             if(target.id != id && target.behavior != 'wall'){
                 this.attack(sword,target);
+                console.log(sword);
                 if (ownerId == 'player'){
                     this.player.changeStamina(sword.weight * -1);
                 }
@@ -464,46 +465,23 @@ class EntityManager{
     switchWeapon(weaponName){
         let id = this.getProperty("player", "sword");
         let sword = this.getEntity(id);
-        switch(weaponName){
-            case "stick":
-                sword.damage = 1;
-                sword.stunTime = 1;
-                sword.weight = 1;
-                break;
-            case "shortsword":
-                sword.damage = 3;
-                sword.stunTime = 2;
-                sword.weight = 1;
-                break;
-            case "longsword":
-                sword.damage = 4;
-                sword.stunTime = 3;
-                sword.weight = 2;
-                break;
-            case "rapier":
-                sword.damage = 5;
-                sword.stunTime = 2;
-                sword.weight = 0;
-                break;
-            case "greatsword":
-                sword.damage = 4;
-                sword.stunTime = 6;
-                sword.weight = 3;
-                break;
-            case "club":
-                sword.damage = 1;
-                sword.stunTime = 6;
-                sword.weight = 2;
-                break;
-            case "maul":
-                sword.damage = 3;
-                sword.stunTime = 8;
-                sword.weight = 3;
-                break;
-        }
+        let x = sword.x;
+        let y = sword.y;
+        let rotation = sword.rotation;
+        let owner = sword.owner;
+        let symbol = sword.symbol;
         
-        this.setEntity(id, sword);
+        this.entities[id] = JSON.parse(JSON.stringify(itemVars.weapons[weaponName]));    
+        sword = this.getEntity(id);
+
+        sword.x = x;
+        sword.y = y;
+        sword.rotation = rotation;
+        sword.owner = owner;
+        sword.symbol = symbol;
+        sword.id = id;
         this.transmitMessage('equipped weapon: '+weaponName);
+        console.log(sword);
     }
 
     monsterInit(monsterName,x,y){

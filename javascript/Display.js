@@ -12,6 +12,7 @@ class Display{
         this.giveReminderTextBehavior();
         this.enemyControlInit();
         this.boardDisplayInit();
+        this.DisplayDungeonInventory();
     }
 
     showHomeScreen(gameMaster){
@@ -168,6 +169,22 @@ class Display{
         $('#enemy-control-div').show();
         this.populateCustomEnemySelectDropdown();
         this.populateEnemySelectDropdown();
+    }
+
+    DisplayDungeonInventory(){
+        $('#inventory-wrapper').show();
+        $('#inventory').html('');
+        let inventory = this.entityManager.player.inventory;
+        inventory.forEach((item) =>{
+            this.addInventoryItem(item);
+        })
+    }
+
+    addInventoryItem(item){
+        console.log(item);
+        $('#inventory').append(
+            $('<div>').addClass('inventory-slot').text(item)
+        )
     }
     
     giveReminderTextBehavior(){

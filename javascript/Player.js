@@ -7,6 +7,8 @@ class Player {
         this.health = this.healthMax;
 
         this.light = 8;
+
+        this.inventory = ["one","two","three","four","five","six"];
         console.log('new player');
     }
 
