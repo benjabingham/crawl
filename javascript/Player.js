@@ -8,7 +8,20 @@ class Player {
 
         this.light = 8;
 
-        this.inventory = ["one","two","three","four","five","six"];
+        this.inventory = [{
+            weapon:true,
+            name:"stick",
+            damage:1,
+            stunTime:1,
+            weight:1
+        },
+        {
+            weapon:true,
+            name:"shortSword",
+            damage:3,
+            stunTime:2,
+            weight:1
+        }];
         console.log('new player');
     }
 

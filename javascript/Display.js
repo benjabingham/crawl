@@ -173,18 +173,51 @@ class Display{
 
     DisplayDungeonInventory(){
         $('#inventory-wrapper').show();
-        $('#inventory').html('');
+        $('#inventory-list').html('');
+        let slot = 0;
         let inventory = this.entityManager.player.inventory;
         inventory.forEach((item) =>{
-            this.addInventoryItem(item);
+            this.addInventoryItem(item, slot);
+            slot++
         })
     }
 
-    addInventoryItem(item){
+    addInventoryItem(item, slot){
+        let display = this;
         console.log(item);
-        $('#inventory').append(
-            $('<div>').addClass('inventory-slot').text(item)
+        
+        $('#inventory-list').append(
+            $('<div>').addClass('inventory-slot').attr('id','inventory-slot-'+slot).append(
+                $('<div>').addClass('item-name').text(item.name)
+            ).on('click',function(){
+                console.log('click');
+                display.displayItemInfo(item);
+            })
         )
+
+        if(item.weapon){
+            $('#inventory-slot-'+slot).append(
+                $('<button>').addClass('item-equip').text('equip').on('click',function(){
+                    display.entityManager.equipWeapon(item);
+                })
+            )
+        }
+    }
+
+    displayItemInfo(item){
+        $('#inventory-description').html('').append(
+            $('<div>').addClass('item-name').text(item.name)
+        )
+
+        if(item.weapon){
+            $('#inventory-description').append(
+                $('<div>').addClass('item-damage').text('Damage: '+item.damage)
+            ).append(
+                $('<div>').addClass('item-stun').text('stun: '+item.stunTime)
+            ).append(
+                $('<div>').addClass('item-weight').text('Damage: '+item.weight)
+            )
+        }
     }
     
     giveReminderTextBehavior(){

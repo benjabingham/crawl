@@ -484,6 +484,29 @@ class EntityManager{
         console.log(sword);
     }
 
+    equipWeapon(weapon){
+        let id = this.getProperty("player", "sword");
+        let sword = this.getEntity(id);
+
+        let x = sword.x;
+        let y = sword.y;
+        let rotation = sword.rotation;
+        let owner = sword.owner;
+        let symbol = sword.symbol;
+
+        sword = weapon;
+        sword.x = x;
+        sword.y = y;
+        sword.rotation = rotation;
+        sword.owner = owner;
+        sword.symbol = symbol;
+        sword.id = id;
+        this.transmitMessage('equipped weapon: '+weapon.name);
+        console.log(sword);
+
+        this.gameMaster.resolvePlayerInput(false);
+    }
+
     monsterInit(monsterName,x,y){
         let behavior = "chase";
         let symbol;

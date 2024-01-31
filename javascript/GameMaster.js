@@ -38,7 +38,7 @@ class GameMaster{
 
     resolvePlayerInput(e){
         let dungeonId = this.dungeonId;
-        if($(':focus').attr('id') != 'board'){
+        if(e && $(':focus').attr('id') != 'board'){
             return;
         }
         e.preventDefault;
@@ -47,7 +47,9 @@ class GameMaster{
         this.entityManager.removeEntity(swordId);
         this.entityManager.skipBehaviors = false;
 
-        this.playerAction(e.originalEvent.key, swordId);
+        if(e){
+            this.playerAction(e.originalEvent.key, swordId);
+        }
         //if dungeon left
         if(dungeonId != this.dungeonId){
             return false;
