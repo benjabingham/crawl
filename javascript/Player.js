@@ -99,4 +99,15 @@ class Player {
         }
     }
 
+    lightDown(log){
+        if(this.light < 1){
+            return false;
+        }
+        let random = Math.random()*100;
+        if (random < this.light*2){
+            this.light--;
+            log.addMessage('Your light dims...');
+        }
+    }
+
 }

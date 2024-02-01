@@ -62,6 +62,7 @@ class GameMaster{
             this.entityManager.triggerBehaviors();
             this.entityManager.reapWounded();
         }
+        this.player.lightDown(this.log);
         this.display.printBoard(board.boardArray);
         this.display.DisplayDungeonInventory();
 
@@ -72,6 +73,7 @@ class GameMaster{
         }else{
             this.log.rewind();
         }
+        
         this.log.printLog();
     }
 
