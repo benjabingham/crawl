@@ -48,7 +48,7 @@ class GameMaster{
         this.entityManager.skipBehaviors = false;
 
         if(e){
-            this.playerAction(e.originalEvent.key, swordId);
+            this.playerAction(e.originalEvent, swordId);
         }
         //if dungeon left
         if(dungeonId != this.dungeonId){
@@ -77,39 +77,44 @@ class GameMaster{
         this.log.printLog();
     }
 
-    playerAction(key, swordId){
+    playerAction(e, swordId){
+        let key = e.key +"_"+e.location;
+        console.log(key);
+        console.log(e);
         switch(key){
-            case "6":
+            case "6_3":
                 this.entityManager.moveEntity("player", 1, 0);
                 break;
-            case "4":
+            case "4_3":
                 this.entityManager.moveEntity("player", -1, 0);
                 break;
-            case "8":
+            case "8_3":
                 this.entityManager.moveEntity("player", 0, -1);
                 break;
-            case "2":
+            case "2_3":
                 this.entityManager.moveEntity("player", 0, 1);
                 break;
-            case "7":
+            case "7_3":
                 this.entityManager.moveEntity("player", -1, -1);
                 break;
-            case "9":
+            case "9_3":
                 this.entityManager.moveEntity("player", 1, -1);
                 break;
-            case "1":
+            case "1_3":
                 this.entityManager.moveEntity("player", -1, 1);
                 break;
-            case "3":
+            case "3_3":
                 this.entityManager.moveEntity("player", 1, 1);
                 break; 
-            case "q":
+            case "/_3":
+            case "q_0":
                 this.entityManager.rotateSword(swordId,-1);
                 break;
-            case "w":
+            case "*_3":
+            case "w_0":
                 this.entityManager.rotateSword(swordId,1);
                 break;
-            case "Backspace":
+            case "Backspace_0":
                 if(this.entityManager.canRewind()){
                     console.log('rewind');
                     this.entityManager.rewind();
@@ -119,7 +124,7 @@ class GameMaster{
                     console.log(this.entityManager.entities);
                 }
                 break;
-            case "5":
+            case "5_3":
                 this.player.changeStamina(2);
                 break;
             default:
