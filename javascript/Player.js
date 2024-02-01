@@ -8,6 +8,7 @@ class Player {
 
         this.light = 0;
         this.lightMax = 8;
+        this.lightTime = 0;
 
         this.inventory = [{
             weapon:true,
@@ -103,9 +104,11 @@ class Player {
         if(this.light < 1){
             return false;
         }
-        let random = Math.random()*100;
-        if (random < this.light*2){
+        this.lightTime += this.light;
+        let random = Math.random()*1000;
+        if (random < this.lightTime-100){
             this.light--;
+            this.lightTime = 0;
             log.addMessage('Your light dims...');
         }
     }

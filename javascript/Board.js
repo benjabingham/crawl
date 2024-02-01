@@ -174,14 +174,18 @@ class Board{
     }
 
     getTrueDistance(pos1, pos2){
-        let line = this.getLine(pos1,pos2);
-        return line.length;
+        let a2 = Math.abs(pos1.x - pos2.x)**2;
+        let b2 = Math.abs(pos1.y - pos2.y)**2;
+        let distance = Math.sqrt(a2+b2);
+        //let line = this.getLine(pos1,pos2);
+        //return line.length;
+        return Math.floor(distance);
     }
 
     hasLight(pos){
         let playerEntity = this.entityManager.getEntity('player');
         let player = this.entityManager.player
-        let lightDistance = player.light+2;
+        let lightDistance = player.light+1;
         let distance = this.getTrueDistance(pos,playerEntity);
 
         return lightDistance >= distance;

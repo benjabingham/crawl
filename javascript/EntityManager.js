@@ -70,7 +70,7 @@ class EntityManager{
         let sword = this.getEntity(id);
 
         sword.owner = owner;
-        sword.equipped = false;
+        sword.equipped = (this.player.equipped) ? this.player.equipped.weapon : false;
         sword.rotation = rotation;
 
         this.setEntity(id, sword);
@@ -511,7 +511,7 @@ class EntityManager{
         sword.equipped = true;
         this.transmitMessage('equipped weapon: '+weapon.name);
 
-        this.player.equipped = {equipped:true,slot:slot};
+        this.player.equipped = {weapon:weapon,slot:slot};
         this.gameMaster.resolvePlayerInput(false);
     }
 
