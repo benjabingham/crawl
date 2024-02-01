@@ -38,7 +38,7 @@ class GameMaster{
 
     resolvePlayerInput(e){
         let dungeonId = this.dungeonId;
-        if(e && $(':focus').attr('id') != 'board'){
+        if($(':focus').is('input')){
             return;
         }
         e.preventDefault;
