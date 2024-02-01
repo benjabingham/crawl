@@ -177,12 +177,14 @@ class Display{
         let slot = 0;
         let inventory = this.entityManager.player.inventory;
         inventory.forEach((item) =>{
-            this.addInventoryItem(item, slot);
+            item.slot = slot;
+            this.addInventoryItem(item);
             slot++
         })
     }
 
-    addInventoryItem(item, slot){
+    addInventoryItem(item){
+        let slot = item.slot;
         let display = this;
         let player = this.entityManager.player;
         let gameMaster = this.entityManager.gameMaster;
@@ -204,14 +206,14 @@ class Display{
         if(item.weapon && !player.equipped){
             $('#item-buttons-'+slot).append(
                 $('<button>').addClass('item-button').text('equip').on('click',function(){
-                    display.entityManager.equipWeapon(item,slot);
+                    player.useItem(item,gameMaster);
                 })
             )
         }
         if(item.weapon && player.equipped && player.equipped.slot == slot){
             $('#item-buttons-'+slot).append(
                 $('<button>').addClass('item-button').text('unequip').on('click',function(){
-                    display.entityManager.unequipWeapon();
+                    player.useItem(item,gameMaster);
                 })
             )
         }
@@ -219,7 +221,7 @@ class Display{
         if(item.usable){
             $('#item-buttons-'+slot).append(
                 $('<button>').addClass('item-button').text('use').on('click',function(){
-                    player.use(item,slot, gameMaster);
+                    player.useItem(item, gameMaster);
                 })
             )
         }

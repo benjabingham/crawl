@@ -127,6 +127,18 @@ class GameMaster{
             case "5_3":
                 this.player.changeStamina(2);
                 break;
+            case "0_0":
+            case "0_1":
+            case "0_2":
+            case "0_3":
+            case "0_4":
+            case "0_5":
+            case "0_6":
+            case "0_7":
+            case "0_8":
+            case "0_9":
+
+                break;
             default:
                 this.entityManager.skipBehaviors = true;
         }

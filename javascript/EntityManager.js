@@ -70,7 +70,7 @@ class EntityManager{
         let sword = this.getEntity(id);
 
         sword.owner = owner;
-        sword.equipped = (this.player.equipped) ? this.player.equipped.weapon : false;
+        sword.equipped = this.player.equipped;
         sword.rotation = rotation;
 
         this.setEntity(id, sword);
@@ -487,10 +487,7 @@ class EntityManager{
         console.log(sword);
     }*/
 
-    equipWeapon(weapon,slot){
-        if(this.player.equipped){
-            return;
-        }
+    equipWeapon(weapon){
         let id = this.getProperty("player", "sword");
         let sword = this.getEntity(id);
 
@@ -513,19 +510,13 @@ class EntityManager{
         sword.equipped = true;
         this.transmitMessage('equipped weapon: '+weapon.name);
 
-        this.player.equipped = {weapon:weapon,slot:slot};
         this.gameMaster.resolvePlayerInput(false);
     }
 
     unequipWeapon(){
-        if(!this.player.equipped){
-            return;
-        }
-        this.player.equipped = false;
         let sword = this.getEntity(this.entities.player.sword);
         sword.equipped = false;
         this.gameMaster.resolvePlayerInput(false);
-
     }
 
     monsterInit(monsterName,x,y){

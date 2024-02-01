@@ -72,18 +72,34 @@ class Player {
         this.health = this.healthMax;
     }
 
-    use(item,slot, gameMaster){
-        if(!item.usable){
-            console.log("ITEM NOT USABLE");
-            return;
-        }
+    useItem(item,gameMaster){
         if(item.fuel){
-            this.addFuel(item,slot, gameMaster);
-            this.ent
+            this.addFuel(item,gameMaster);
+        }else if(item.weapon && this.equipped.slot == item.slot){
+           this.unequipWeapon(gameMaster);
+        }else if(item.weapon && !this.equipped){
+            this.equipWeapon(item,gameMaster);
         }
     }
 
-    addFuel(fuel,slot,gameMaster){
+    equipWeapon(weapon,gameMaster){
+        if(this.equipped){
+            return;
+        }
+        this.equipped = weapon
+        gameMaster.entityManager.equipWeapon(weapon);
+    }
+
+    unequipWeapon(gameMaster){
+        if (!this.equipped){
+            return;
+        }
+        this.equipped = false;
+        gameMaster.entityManager.unequipWeapon();
+    }
+
+    addFuel(fuel,gameMaster){
+        let slot = fuel.slot;
         this.light += fuel.light;
         this.light = Math.min(this.lightMax, this.light);
 
