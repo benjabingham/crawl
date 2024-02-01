@@ -508,8 +508,8 @@ class EntityManager{
         sword.id = id;
         sword.behavior = behavior;
         sword.equipped = true;
+        
         this.transmitMessage('equipped weapon: '+weapon.name);
-
     }
 
     unequipWeapon(){

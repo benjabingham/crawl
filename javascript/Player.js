@@ -30,6 +30,41 @@ class Player {
             fuel:true,
             light:2,
             uses:3
+        },
+        {
+            usable:true,
+            name: "oil flask",
+            fuel:true,
+            light:2,
+            uses:3
+        },
+        {
+            usable:true,
+            name: "oil flask",
+            fuel:true,
+            light:2,
+            uses:3
+        },
+        {
+            usable:true,
+            name: "oil flask",
+            fuel:true,
+            light:2,
+            uses:3
+        },
+        {
+            usable:true,
+            name: "oil flask",
+            fuel:true,
+            light:2,
+            uses:3
+        },
+        {
+            weapon:true,
+            name:"shortSword",
+            damage:3,
+            stunTime:2,
+            weight:1
         }];
         this.equipped = false;
         console.log('new player');
@@ -134,6 +169,20 @@ class Player {
             this.lightTime = 0;
             log.addMessage('Your light dims...');
         }
+    }
+
+    inventoryCleanup(){
+        let newInventory = [];
+        let slot = 0;
+        this.inventory.forEach((item) =>{
+            if(item){
+                newInventory.push(item);
+                item.slot = slot;
+                slot++;
+            }
+        })
+
+        this.inventory = newInventory;
     }
 
 }

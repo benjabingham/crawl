@@ -37,7 +37,7 @@ class GameMaster{
     }
 
     resolvePlayerInput(e){
-        console.log(e);
+        //console.log(e);
         let dungeonId = this.dungeonId;
         if($(':focus').is('input')){
             return;
@@ -65,6 +65,7 @@ class GameMaster{
         }
         this.player.lightDown(this.log);
         this.display.printBoard(board.boardArray);
+        this.player.inventoryCleanup();
         this.display.DisplayDungeonInventory();
 
         this.display.fillBars(this.player);
@@ -75,7 +76,7 @@ class GameMaster{
             this.log.rewind();
         }
         console.log(this.log.turnCounter);
-        this.log.printLog();
+        this.log.printLog();  
     }
 
     playerAction(e, swordId){
