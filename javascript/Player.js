@@ -73,6 +73,9 @@ class Player {
     }
 
     useItem(item,gameMaster){
+        if(!item){
+            return false;
+        }
         if(item.fuel){
             this.addFuel(item,gameMaster);
         }else if(item.weapon && this.equipped.slot == item.slot){

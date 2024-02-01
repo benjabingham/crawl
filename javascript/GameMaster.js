@@ -128,16 +128,18 @@ class GameMaster{
                 this.player.changeStamina(2);
                 break;
             case "0_0":
-            case "0_1":
-            case "0_2":
-            case "0_3":
-            case "0_4":
-            case "0_5":
-            case "0_6":
-            case "0_7":
-            case "0_8":
-            case "0_9":
-
+            case "1_0":
+            case "2_0":
+            case "3_0":
+            case "4_0":
+            case "5_0":
+            case "6_0":
+            case "7_0":
+            case "8_0":
+            case "9_0":
+                let slot = parseInt(e.key)-1;
+                this.player.useItem(this.player.inventory[slot], this)
+                this.entityManager.skipBehaviors = true;
                 break;
             default:
                 this.entityManager.skipBehaviors = true;

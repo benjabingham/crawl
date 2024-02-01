@@ -191,6 +191,8 @@ class Display{
         
         $('#inventory-list').append(
             $('<div>').addClass('inventory-slot').attr('id','inventory-slot-'+slot).append(
+                $('<div>').text(slot+1).addClass('item-slot-number')
+            ).append(
                 $('<div>').attr('id','item-name-'+slot).addClass('item-name').text(item.name)
             ).on('click',function(){
                 display.displayItemInfo(item);
