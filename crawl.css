@@ -142,7 +142,7 @@ html{
     background-color: #ddd;
     color: #222;
     display:flex;
-    height:300px;
+    height:10rem;
 }
 
 #inventory-list{
@@ -191,4 +191,9 @@ html{
     margin-left:auto;
     width:300px;
     padding:5px;
+}
+
+.item-slot-number{
+    padding-right:5px;
+    /*border-right:1px solid black*/
 }

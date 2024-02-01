@@ -37,6 +37,7 @@ class GameMaster{
     }
 
     resolvePlayerInput(e){
+        console.log(e);
         let dungeonId = this.dungeonId;
         if($(':focus').is('input')){
             return;
@@ -73,7 +74,7 @@ class GameMaster{
         }else{
             this.log.rewind();
         }
-        
+        console.log(this.log.turnCounter);
         this.log.printLog();
     }
 
@@ -138,8 +139,10 @@ class GameMaster{
             case "8_0":
             case "9_0":
                 let slot = parseInt(e.key)-1;
-                this.player.useItem(this.player.inventory[slot], this)
-                this.entityManager.skipBehaviors = true;
+                if(!this.player.useItem(this.player.inventory[slot], this)){
+                    //skip behaviors if invalid item
+                    this.entityManager.skipBehaviors = true;
+                }
                 break;
             default:
                 this.entityManager.skipBehaviors = true;

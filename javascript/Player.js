@@ -78,11 +78,16 @@ class Player {
         }
         if(item.fuel){
             this.addFuel(item,gameMaster);
+            return true;
         }else if(item.weapon && this.equipped.slot == item.slot){
            this.unequipWeapon(gameMaster);
+           return true;
         }else if(item.weapon && !this.equipped){
             this.equipWeapon(item,gameMaster);
+            return true;
         }
+
+        return false;
     }
 
     equipWeapon(weapon,gameMaster){
@@ -107,7 +112,6 @@ class Player {
         this.light = Math.min(this.lightMax, this.light);
 
         this.consume(slot);
-        gameMaster.resolvePlayerInput(false);
     }
 
     consume(slot){

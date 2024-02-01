@@ -208,14 +208,15 @@ class Display{
         if(item.weapon && !player.equipped){
             $('#item-buttons-'+slot).append(
                 $('<button>').addClass('item-button').text('equip').on('click',function(){
-                    player.useItem(item,gameMaster);
+                    //spoof button press...
+                    gameMaster.resolvePlayerInput({originalEvent:{key:slot+1,location:0}});
                 })
             )
         }
         if(item.weapon && player.equipped && player.equipped.slot == slot){
             $('#item-buttons-'+slot).append(
                 $('<button>').addClass('item-button').text('unequip').on('click',function(){
-                    player.useItem(item,gameMaster);
+                    gameMaster.resolvePlayerInput({originalEvent:{key:slot+1,location:0}});
                 })
             )
         }
@@ -223,7 +224,7 @@ class Display{
         if(item.usable){
             $('#item-buttons-'+slot).append(
                 $('<button>').addClass('item-button').text('use').on('click',function(){
-                    player.useItem(item, gameMaster);
+                    gameMaster.resolvePlayerInput({originalEvent:{key:slot+1,location:0}});
                 })
             )
         }

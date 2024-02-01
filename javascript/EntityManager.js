@@ -510,13 +510,11 @@ class EntityManager{
         sword.equipped = true;
         this.transmitMessage('equipped weapon: '+weapon.name);
 
-        this.gameMaster.resolvePlayerInput(false);
     }
 
     unequipWeapon(){
         let sword = this.getEntity(this.entities.player.sword);
         sword.equipped = false;
-        this.gameMaster.resolvePlayerInput(false);
     }
 
     monsterInit(monsterName,x,y){
