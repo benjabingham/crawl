@@ -186,7 +186,6 @@ class Display{
         let display = this;
         let player = this.entityManager.player;
         let gameMaster = this.entityManager.gameMaster;
-        console.log(item);
         
         $('#inventory-list').append(
             $('<div>').addClass('inventory-slot').attr('id','inventory-slot-'+slot).append(

@@ -499,6 +499,7 @@ class EntityManager{
         let rotation = sword.rotation;
         let owner = sword.owner;
         let symbol = sword.symbol;
+        let behavior = sword.behavior;
 
         this.entities[id] = JSON.parse(JSON.stringify(weapon));
         sword = this.getEntity(id);
@@ -508,6 +509,7 @@ class EntityManager{
         sword.owner = owner;
         sword.symbol = symbol;
         sword.id = id;
+        sword.behavior = behavior;
         sword.equipped = true;
         this.transmitMessage('equipped weapon: '+weapon.name);
 
