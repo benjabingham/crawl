@@ -150,7 +150,7 @@ html{
     display:grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 0px;
-    grid-auto-rows: minmax(0px, auto);
+    grid-auto-rows: 2rem;
 }
 
 .inventory-slot{
@@ -180,7 +180,7 @@ html{
     width:fit-content;
 }
 
-.item-equip{
+.item-buttons{
     margin-left:auto;
     width:fit-content;
     height:fit-content;

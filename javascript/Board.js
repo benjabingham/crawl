@@ -181,7 +181,7 @@ class Board{
     hasLight(pos){
         let playerEntity = this.entityManager.getEntity('player');
         let player = this.entityManager.player
-        let lightDistance = Math.max(player.light,2);
+        let lightDistance = player.light+2;
         let distance = this.getTrueDistance(pos,playerEntity);
 
         return lightDistance >= distance;

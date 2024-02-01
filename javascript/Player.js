@@ -6,7 +6,8 @@ class Player {
         this.healthMax = 10;
         this.health = this.healthMax;
 
-        this.light = 8;
+        this.light = 0;
+        this.lightMax = 8;
 
         this.inventory = [{
             weapon:true,
@@ -21,6 +22,13 @@ class Player {
             damage:3,
             stunTime:2,
             weight:1
+        },
+        {
+            usable:true,
+            name: "oil flask",
+            fuel:true,
+            light:2,
+            uses:3
         }];
         this.equipped = false;
         console.log('new player');
@@ -61,6 +69,34 @@ class Player {
 
         this.healthMax = 10;
         this.health = this.healthMax;
+    }
+
+    use(item,slot, gameMaster){
+        if(!item.usable){
+            console.log("ITEM NOT USABLE");
+            return;
+        }
+        if(item.fuel){
+            this.addFuel(item,slot, gameMaster);
+            this.ent
+        }
+    }
+
+    addFuel(fuel,slot,gameMaster){
+        this.light += fuel.light;
+        this.light = Math.min(this.lightMax, this.light);
+
+        this.consume(slot);
+        gameMaster.resolvePlayerInput(false);
+    }
+
+    consume(slot){
+        let item = this.inventory[slot];
+        if(item.uses > 1){
+            item.uses--;
+        }else{
+            this.inventory[slot] = false;
+        }
     }
 
 }

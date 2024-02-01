@@ -1,16 +1,27 @@
 let itemVars = {
     weapons:{
         stick:{
+            weapon:true,
             name:"stick",
             damage:1,
             stunTime:1,
             weight:1
         },
         shortSword:{
-            name:"shortSword",
+            weapon:true,
+            name:"short sword",
             damage:3,
             stunTime:2,
             weight:1
+        }
+    },
+    fuel:{
+        oilFlask:{
+            usable:true,
+            name: "oil flask",
+            fuel:true,
+            light:2,
+            uses:3
         }
     }
 }

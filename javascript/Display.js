@@ -185,26 +185,42 @@ class Display{
     addInventoryItem(item, slot){
         let display = this;
         let player = this.entityManager.player;
+        let gameMaster = this.entityManager.gameMaster;
+        console.log(item);
         
         $('#inventory-list').append(
             $('<div>').addClass('inventory-slot').attr('id','inventory-slot-'+slot).append(
-                $('<div>').addClass('item-name').text(item.name)
+                $('<div>').attr('id','item-name-'+slot).addClass('item-name').text(item.name)
             ).on('click',function(){
                 display.displayItemInfo(item);
-            })
+            }).append(
+                $('<div>').addClass('item-buttons').attr('id','item-buttons-'+slot)
+            )
         )
 
+        if(item.uses){
+            $('#item-name-'+slot).append("("+item.uses+")")
+        }
+
         if(item.weapon && !player.equipped){
-            $('#inventory-slot-'+slot).append(
-                $('<button>').addClass('item-equip').text('equip').on('click',function(){
+            $('#item-buttons-'+slot).append(
+                $('<button>').addClass('item-button').text('equip').on('click',function(){
                     display.entityManager.equipWeapon(item,slot);
                 })
             )
         }
         if(item.weapon && player.equipped && player.equipped.slot == slot){
-            $('#inventory-slot-'+slot).append(
-                $('<button>').addClass('item-equip').text('unequip').on('click',function(){
+            $('#item-buttons-'+slot).append(
+                $('<button>').addClass('item-button').text('unequip').on('click',function(){
                     display.entityManager.unequipWeapon();
+                })
+            )
+        }
+
+        if(item.usable){
+            $('#item-buttons-'+slot).append(
+                $('<button>').addClass('item-button').text('use').on('click',function(){
+                    player.use(item,slot, gameMaster);
                 })
             )
         }
