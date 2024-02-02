@@ -5,15 +5,74 @@ let itemVars = {
             name:"stick",
             damage:1,
             stunTime:1,
-            weight:1
+            weight:1,
+            type:{
+                blunt:true
+            }
         },
-        shortSword:{
+        club:{
             weapon:true,
-            name:"short sword",
+            name:"club",
+            damage:2,
+            stunTime:2,
+            weight:1,
+            type:{
+                blunt:true
+            },
+            swing:{
+                damage:5,
+                stunTime:4,
+                weight:1,
+            }
+        },
+        mace:{
+            weapon:true,
+            name:"mace",
+            damage:5,
+            stunTime:4,
+            weight:1,
+            type:{
+                blunt:true
+            },
+            swing:{
+                damage:1,
+                stunTime:1,
+                weight:1,
+            }
+        },
+        shortsword:{
+            weapon:true,
+            name:"shortsword",
             damage:3,
             stunTime:2,
-            weight:1
-        }
+            weight:1,
+            type:{
+                sword:true,
+                edged:true
+            }
+        },
+        longsword:{
+            weapon:true,
+            name:"longsword",
+            damage:8,
+            stunTime:3,
+            weight:2,
+            type:{
+                sword:true,
+                edged:true
+            }
+        },
+        greatsword:{
+            weapon:true,
+            name:"greatsword",
+            damage:12,
+            stunTime:4,
+            weight:3,
+            type:{
+                sword:true,
+                edged:true
+            }
+        },
     },
     fuel:{
         oilFlask:{
@@ -22,6 +81,14 @@ let itemVars = {
             fuel:true,
             light:2,
             uses:3
+        }
+    },
+    loot:{
+        vase:{
+            value:5
+        },
+        pendant:{
+            value:10
         }
     }
 }

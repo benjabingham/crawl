@@ -114,7 +114,7 @@ class Display{
     
     populateMapSelectDropdown(gameMaster){
         $('#map-select').html('');
-        let maps = ['choose a map','ratnest','trainingHall','trainingHallNoOgre']
+        let maps = ['choose a map','ratnest','bigcave','trainingHall','trainingHallNoOgre']
         maps.forEach((element =>{
             $('#map-select').append(
                 $("<option />").val(element+".json").text(element)
@@ -241,7 +241,7 @@ class Display{
             ).append(
                 $('<div>').addClass('item-stun').text('stun: '+item.stunTime)
             ).append(
-                $('<div>').addClass('item-weight').text('Damage: '+item.weight)
+                $('<div>').addClass('item-weight').text('weight: '+item.weight)
             )
         }
     }
