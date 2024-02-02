@@ -76,6 +76,10 @@ class EntityManager{
         this.setEntity(id, sword);
 
         this.setProperty(owner,'sword', id);
+
+        if(sword.equipped){
+            this.equipWeapon(this.player.equipped);
+        }
         
         //this.switchWeapon('stick');
         this.placeSword(id, this.player);
