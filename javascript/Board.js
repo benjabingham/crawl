@@ -23,11 +23,12 @@ class Board{
     }
 
     placeEntities(){
+        console.log('placeEntities');
         let entities = this.entityManager.entities;
         this.boardInit();
         for (const [k,entity] of Object.entries(entities)){
-            console.log(entity);
-
+            //console.log(entity);
+            
             let x = entity.x;
             let y = entity.y;
             if(this.itemAt(x,y).id != entity.id && this.isSpace(x,y)){
@@ -52,6 +53,16 @@ class Board{
                 }   
             } 
         };
+    }
+
+    updateSpace(x,y){
+        let entities = this.entityManager.entities;
+        for (const [k,entity] of Object.entries(entities)){
+            //console.log(entity);
+            if(entity.x == x && entity.y == y){
+                this.placeEntity(entity,x,y);
+            }
+        }
     }
 
     isOpenSpace(x,y){

@@ -615,12 +615,15 @@ class EntityManager{
             return false;
         }
         console.log(entity);
+        console.log(item.dropTurn);
+        console.log(this.log.turnCounter);
         if(item.dropTurn >= this.log.turnCounter){
             return false;
         }
         if(entity.id == 'player'){
             entity = this.player;
         }
+        console.log('pickup');
         let items = [];
         if(item.inventory){
             item.inventory.forEach((obj) =>{
@@ -767,9 +770,11 @@ class EntityManager{
 
     removeEntity(id){
         let entity = this.getEntity(id);
-        this.board.clearSpace(entity.x, entity.y);
+        let x = entity.x;
+        let y = entity.y;
+        this.board.clearSpace(x, y);
         this.setPosition(id,-1,-1);
-        this.board.placeEntities(this.log);
+        this.board.updateSpace(x,y);
     }
 
     addStunTime(id, stunTime){

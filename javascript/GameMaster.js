@@ -143,7 +143,7 @@ class GameMaster{
                 let slot = parseInt(e.key)-1;
                 if(this.dropMode){
                     if(!this.player.dropItem(slot,this.entityManager)){
-                        this.entityManager.skipBehaviors = true;
+                        //this.entityManager.skipBehaviors = true;
                         this.dropMode = false;
                     }
                 }else if(!this.player.useItem(this.player.inventory[slot], this)){
