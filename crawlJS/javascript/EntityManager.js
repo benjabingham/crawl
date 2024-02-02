@@ -596,6 +596,54 @@ class EntityManager{
         let id = this.entityInit(symbol, behavior,x, y, hitDice, damage, behaviorInfo, name)
     }
 
+    dropItem(item,x,y){
+        item.x = x;
+        item.y = y;
+        item.item = true;
+        item.walkable = true;
+        item.id = this.entityCounter;
+        item.dropTurn = this.log.turnCounter;
+        if (!item.symbol){
+            item.symbol = '*';
+        }
+        this.entities[this.entityCounter] = item;
+        this.entityCounter++;
+    }
+
+    pickUpItem(entity,item){
+        if(!entity || entity.behavior == 'sword' ||item.dropTurn >= this.log.turnCounter || this.skipBehaviors){
+            return false;
+        }
+        if(entity.id == 'player'){
+            entity = this.player;
+        }
+        //console.log('pickup');
+        //console.log(JSON.parse(JSON.stringify(item)));
+        let items = [];
+        if(item.inventory){
+            item.inventory.forEach((obj) =>{
+                if(!obj.obliterated){
+                    items.push(obj);
+                }
+            })
+        }
+
+        items.push(item);
+        
+        if(!entity.inventory){
+            entity.inventory = [];
+        }
+        items.forEach((obj)=>{
+            if(entity.inventory.length < 10){
+                let obliterated = {id:obj.id, obliterated:true, x:-1, y:-1};
+                this.entities[obj.id] = obliterated;
+                obj.inventory = false;
+                entity.inventory.push(obj);
+            }
+        })
+        console.log(entity);
+    }
+
     saveSnapshot(){
         let entities = JSON.parse(JSON.stringify(this.entities));
         let playerJson = JSON.parse(JSON.stringify(this.player));
@@ -616,7 +664,7 @@ class EntityManager{
         this.history.pop();
         let snapshot = this.history.pop();
         this.entities = snapshot.entities;
-        this.board.placeEntities(this.entities);
+        this.board.placeEntities(this.log);
         //console.log(snapshot.player);
 
         this.player.setPlayerInfo(snapshot.player);
@@ -625,7 +673,7 @@ class EntityManager{
     cancelAction(){
         let snapshot = this.history.pop();
         this.entities = snapshot.entities;
-        this.board.placeEntities(this.entities);
+        this.board.placeEntities(this.log);
         //console.log(snapshot.player);
 
         this.player.setPlayerInfo(snapshot.player);  
@@ -721,9 +769,11 @@ class EntityManager{
 
     removeEntity(id){
         let entity = this.getEntity(id);
-        this.board.clearSpace(entity.x, entity.y);
+        let x = entity.x;
+        let y = entity.y;
+        this.board.clearSpace(x, y);
         this.setPosition(id,-1,-1);
-        this.board.placeEntities(this.entities);
+        this.board.updateSpace(x,y);
     }
 
     addStunTime(id, stunTime){

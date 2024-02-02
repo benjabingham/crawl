@@ -61,7 +61,6 @@ class Display{
     }
     
     printBoard(){
-        this.board.placeEntities();
         let boardArray = this.board.boardArray;
         let player = this.entityManager.player;
         let boardString = "";

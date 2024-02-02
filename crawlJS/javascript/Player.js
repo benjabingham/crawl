@@ -172,8 +172,20 @@ class Player {
                 slot++;
             }
         })
-
         this.inventory = newInventory;
+    }
+
+    dropItem(slot, gameMaster){
+        let entityManager = gameMaster.entityManager;
+        if(!this.inventory[slot]){
+            return false;
+        }
+        if(this.equipped.slot == slot){
+            this.unequipWeapon(gameMaster);
+        }
+        let playerEntity = entityManager.getEntity('player');
+        entityManager.dropItem(this.inventory[slot],playerEntity.x,playerEntity.y);
+        this.inventory[slot] = false;
     }
 
 }
