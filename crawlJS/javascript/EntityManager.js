@@ -66,17 +66,18 @@ class EntityManager{
     }
 
     swordInit(owner, rotation = 3){
-        let id = this.entityInit('*', 'sword');
+        let id = this.entityInit('*', 'sword', -1,-1);
         let sword = this.getEntity(id);
 
         sword.owner = owner;
+        sword.equipped = this.player.equipped;
         sword.rotation = rotation;
 
         this.setEntity(id, sword);
 
         this.setProperty(owner,'sword', id);
         
-        this.switchWeapon('stick');
+        //this.switchWeapon('stick');
         this.placeSword(id, this.player);
     
         return id;
@@ -97,6 +98,10 @@ class EntityManager{
 
     placeSword(id){
         let sword = this.getEntity(id);
+        if(!sword.equipped){
+            console.log(sword.equipped);
+            return;
+        }
         let ownerId = sword.owner;
         let owner = this.getEntity(ownerId);
         let swordPosition = {x:sword.x, y:sword.y};
@@ -135,7 +140,6 @@ class EntityManager{
             this.setPosition(id,x,y);
             return true;
         }else if(!this.board.isSpace(x,y) && id == "player"){
-            console.log(this.gameMaster);
             this.gameMaster.travel(x,y);
         }
 
@@ -460,50 +464,57 @@ class EntityManager{
         //console.log('Stamina: ' +player.stamina);
         //console.log('Health: ' + player.health);
     }
-
+/*
     switchWeapon(weaponName){
         let id = this.getProperty("player", "sword");
         let sword = this.getEntity(id);
-        switch(weaponName){
-            case "stick":
-                sword.damage = 1;
-                sword.stunTime = 1;
-                sword.weight = 1;
-                break;
-            case "shortsword":
-                sword.damage = 3;
-                sword.stunTime = 2;
-                sword.weight = 1;
-                break;
-            case "longsword":
-                sword.damage = 4;
-                sword.stunTime = 3;
-                sword.weight = 2;
-                break;
-            case "rapier":
-                sword.damage = 5;
-                sword.stunTime = 2;
-                sword.weight = 0;
-                break;
-            case "greatsword":
-                sword.damage = 4;
-                sword.stunTime = 6;
-                sword.weight = 3;
-                break;
-            case "club":
-                sword.damage = 1;
-                sword.stunTime = 6;
-                sword.weight = 2;
-                break;
-            case "maul":
-                sword.damage = 3;
-                sword.stunTime = 8;
-                sword.weight = 3;
-                break;
-        }
+        let x = sword.x;
+        let y = sword.y;
+        let rotation = sword.rotation;
+        let owner = sword.owner;
+        let symbol = sword.symbol;
         
-        this.setEntity(id, sword);
+        this.entities[id] = JSON.parse(JSON.stringify(itemVars.weapons[weaponName]));    
+        sword = this.getEntity(id);
+
+        sword.x = x;
+        sword.y = y;
+        sword.rotation = rotation;
+        sword.owner = owner;
+        sword.symbol = symbol;
+        sword.id = id;
         this.transmitMessage('equipped weapon: '+weaponName);
+        console.log(sword);
+    }*/
+
+    equipWeapon(weapon){
+        let id = this.getProperty("player", "sword");
+        let sword = this.getEntity(id);
+
+        let x = sword.x;
+        let y = sword.y;
+        let rotation = sword.rotation;
+        let owner = sword.owner;
+        let symbol = sword.symbol;
+        let behavior = sword.behavior;
+
+        this.entities[id] = JSON.parse(JSON.stringify(weapon));
+        sword = this.getEntity(id);
+        sword.x = x;
+        sword.y = y;
+        sword.rotation = rotation;
+        sword.owner = owner;
+        sword.symbol = symbol;
+        sword.id = id;
+        sword.behavior = behavior;
+        sword.equipped = true;
+        
+        this.transmitMessage('equipped weapon: '+weapon.name);
+    }
+
+    unequipWeapon(){
+        let sword = this.getEntity(this.entities.player.sword);
+        sword.equipped = false;
     }
 
     monsterInit(monsterName,x,y){
@@ -594,7 +605,6 @@ class EntityManager{
     }
 
     canRewind(){
-        //console.log(this.history);
         return this.history.length > 1;
     }
 

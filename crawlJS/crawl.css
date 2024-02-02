@@ -132,3 +132,68 @@ html{
     margin:auto;
     width:fit-content
 }
+
+#inventory-wrapper{
+    margin:auto;
+    width:875px;
+}
+
+#inventory{
+    background-color: #ddd;
+    color: #222;
+    display:flex;
+    height:10rem;
+}
+
+#inventory-list{
+    width:600px;
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0px;
+    grid-auto-rows: 2rem;
+}
+
+.inventory-slot{
+    padding:5px;
+    display:flex;
+    height:fit-content;
+    /*border:1px solid gray*/
+}
+
+.inventory-slot:hover{
+    cursor: pointer;
+    background-color: #bbbbbb;
+}
+
+/*
+.inventory-slot{
+    width:280px;
+    height:120px;
+    border:1px solid #BBBBBB;
+    background-color: #ddd;
+    color: #222;
+}
+*/
+
+.item-name{
+    font-weight:800;
+    width:fit-content;
+}
+
+.item-buttons{
+    margin-left:auto;
+    width:fit-content;
+    height:fit-content;
+}
+
+#inventory-description{
+    outline:1px solid black;
+    margin-left:auto;
+    width:300px;
+    padding:5px;
+}
+
+.item-slot-number{
+    padding-right:5px;
+    /*border-right:1px solid black*/
+}

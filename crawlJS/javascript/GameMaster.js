@@ -37,8 +37,9 @@ class GameMaster{
     }
 
     resolvePlayerInput(e){
+        //console.log(e);
         let dungeonId = this.dungeonId;
-        if($(':focus').attr('id') != 'board'){
+        if($(':focus').is('input')){
             return;
         }
         e.preventDefault;
@@ -47,7 +48,9 @@ class GameMaster{
         this.entityManager.removeEntity(swordId);
         this.entityManager.skipBehaviors = false;
 
-        this.playerAction(e.originalEvent.key, swordId);
+        if(e){
+            this.playerAction(e.originalEvent, swordId);
+        }
         //if dungeon left
         if(dungeonId != this.dungeonId){
             return false;
@@ -60,7 +63,11 @@ class GameMaster{
             this.entityManager.triggerBehaviors();
             this.entityManager.reapWounded();
         }
+        this.player.lightDown(this.log);
         this.display.printBoard(board.boardArray);
+        this.player.inventoryCleanup();
+        this.display.DisplayDungeonInventory();
+
         this.display.fillBars(this.player);
         this.entityManager.saveSnapshot();
         if(!this.entityManager.skipBehaviors){
@@ -68,42 +75,48 @@ class GameMaster{
         }else{
             this.log.rewind();
         }
-        this.log.printLog();
+        console.log(this.log.turnCounter);
+        this.log.printLog();  
     }
 
-    playerAction(key, swordId){
+    playerAction(e, swordId){
+        let key = e.key +"_"+e.location;
+        console.log(key);
+        console.log(e);
         switch(key){
-            case "6":
+            case "6_3":
                 this.entityManager.moveEntity("player", 1, 0);
                 break;
-            case "4":
+            case "4_3":
                 this.entityManager.moveEntity("player", -1, 0);
                 break;
-            case "8":
+            case "8_3":
                 this.entityManager.moveEntity("player", 0, -1);
                 break;
-            case "2":
+            case "2_3":
                 this.entityManager.moveEntity("player", 0, 1);
                 break;
-            case "7":
+            case "7_3":
                 this.entityManager.moveEntity("player", -1, -1);
                 break;
-            case "9":
+            case "9_3":
                 this.entityManager.moveEntity("player", 1, -1);
                 break;
-            case "1":
+            case "1_3":
                 this.entityManager.moveEntity("player", -1, 1);
                 break;
-            case "3":
+            case "3_3":
                 this.entityManager.moveEntity("player", 1, 1);
                 break; 
-            case "q":
+            case "/_3":
+            case "q_0":
                 this.entityManager.rotateSword(swordId,-1);
                 break;
-            case "w":
+            case "*_3":
+            case "w_0":
                 this.entityManager.rotateSword(swordId,1);
                 break;
-            case "Backspace":
+            case "Backspace_0":
                 if(this.entityManager.canRewind()){
                     console.log('rewind');
                     this.entityManager.rewind();
@@ -113,8 +126,24 @@ class GameMaster{
                     console.log(this.entityManager.entities);
                 }
                 break;
-            case "5":
+            case "5_3":
                 this.player.changeStamina(2);
+                break;
+            case "0_0":
+            case "1_0":
+            case "2_0":
+            case "3_0":
+            case "4_0":
+            case "5_0":
+            case "6_0":
+            case "7_0":
+            case "8_0":
+            case "9_0":
+                let slot = parseInt(e.key)-1;
+                if(!this.player.useItem(this.player.inventory[slot], this)){
+                    //skip behaviors if invalid item
+                    this.entityManager.skipBehaviors = true;
+                }
                 break;
             default:
                 this.entityManager.skipBehaviors = true;

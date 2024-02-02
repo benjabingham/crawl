@@ -12,6 +12,7 @@ class Display{
         this.giveReminderTextBehavior();
         this.enemyControlInit();
         this.boardDisplayInit();
+        this.DisplayDungeonInventory();
     }
 
     showHomeScreen(gameMaster){
@@ -62,12 +63,13 @@ class Display{
     printBoard(){
         this.board.placeEntities();
         let boardArray = this.board.boardArray;
+        let player = this.entityManager.player;
         let boardString = "";
         let symbol;
         for(let i=0; i<boardArray.length; i++){
             //boardString += '|'
             for(let j=0; j<boardArray[i].length; j++){
-                if(this.board.getLineOfSight(j,i)){
+                if(this.board.hasPlayerLos({x:j, y:i})){
                     if(boardArray[i][j]){
                         symbol = boardArray[i][j].tempSymbol ? boardArray[i][j].tempSymbol : boardArray[i][j].symbol;
                         boardString += symbol;
@@ -112,7 +114,7 @@ class Display{
     
     populateMapSelectDropdown(gameMaster){
         $('#map-select').html('');
-        let maps = ['choose a map','ratnest','trainingHall','trainingHallNoOgre']
+        let maps = ['choose a map','ratnest','bigcave','trainingHall','trainingHallNoOgre']
         maps.forEach((element =>{
             $('#map-select').append(
                 $("<option />").val(element+".json").text(element)
@@ -167,6 +169,81 @@ class Display{
         $('#enemy-control-div').show();
         this.populateCustomEnemySelectDropdown();
         this.populateEnemySelectDropdown();
+    }
+
+    DisplayDungeonInventory(){
+        $('#inventory-wrapper').show();
+        $('#inventory-list').html('');
+        let slot = 0;
+        let inventory = this.entityManager.player.inventory;
+        inventory.forEach((item) =>{
+            item.slot = slot;
+            this.addInventoryItem(item);
+            slot++
+        })
+    }
+
+    addInventoryItem(item){
+        let slot = item.slot;
+        let display = this;
+        let player = this.entityManager.player;
+        let gameMaster = this.entityManager.gameMaster;
+        
+        $('#inventory-list').append(
+            $('<div>').addClass('inventory-slot').attr('id','inventory-slot-'+slot).append(
+                $('<div>').text(slot+1).addClass('item-slot-number')
+            ).append(
+                $('<div>').attr('id','item-name-'+slot).addClass('item-name').text(item.name)
+            ).on('click',function(){
+                display.displayItemInfo(item);
+            }).append(
+                $('<div>').addClass('item-buttons').attr('id','item-buttons-'+slot)
+            )
+        )
+
+        if(item.uses){
+            $('#item-name-'+slot).append("("+item.uses+")")
+        }
+
+        if(item.weapon && !player.equipped){
+            $('#item-buttons-'+slot).append(
+                $('<button>').addClass('item-button').text('equip').on('click',function(){
+                    //spoof button press...
+                    gameMaster.resolvePlayerInput({originalEvent:{key:slot+1,location:0}});
+                })
+            )
+        }
+        if(item.weapon && player.equipped && player.equipped.slot == slot){
+            $('#item-buttons-'+slot).append(
+                $('<button>').addClass('item-button').text('unequip').on('click',function(){
+                    gameMaster.resolvePlayerInput({originalEvent:{key:slot+1,location:0}});
+                })
+            )
+        }
+
+        if(item.usable){
+            $('#item-buttons-'+slot).append(
+                $('<button>').addClass('item-button').text('use').on('click',function(){
+                    gameMaster.resolvePlayerInput({originalEvent:{key:slot+1,location:0}});
+                })
+            )
+        }
+    }
+
+    displayItemInfo(item){
+        $('#inventory-description').html('').append(
+            $('<div>').addClass('item-name').text(item.name)
+        )
+
+        if(item.weapon){
+            $('#inventory-description').append(
+                $('<div>').addClass('item-damage').text('Damage: '+item.damage)
+            ).append(
+                $('<div>').addClass('item-stun').text('stun: '+item.stunTime)
+            ).append(
+                $('<div>').addClass('item-weight').text('weight: '+item.weight)
+            )
+        }
     }
     
     giveReminderTextBehavior(){

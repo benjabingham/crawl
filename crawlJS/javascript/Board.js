@@ -172,5 +172,28 @@ class Board{
         this.width = width;
         this.height = height;
     }
+
+    getTrueDistance(pos1, pos2){
+        let a2 = Math.abs(pos1.x - pos2.x)**2;
+        let b2 = Math.abs(pos1.y - pos2.y)**2;
+        let distance = Math.sqrt(a2+b2);
+        //let line = this.getLine(pos1,pos2);
+        //return line.length;
+        return Math.floor(distance);
+    }
+
+    hasLight(pos){
+        let playerEntity = this.entityManager.getEntity('player');
+        let player = this.entityManager.player
+        let lightDistance = player.light+1;
+        let distance = this.getTrueDistance(pos,playerEntity);
+
+        return lightDistance >= distance;
+        
+    }
+
+    hasPlayerLos(pos){
+        return this.hasLight(pos) && this.getLineOfSight(pos.x, pos.y);
+    }
     
 }
