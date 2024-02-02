@@ -172,8 +172,16 @@ class Player {
                 slot++;
             }
         })
-
         this.inventory = newInventory;
+    }
+
+    dropItem(slot, entityManager){
+        if(!this.inventory[slot]){
+            return false;
+        }
+        let playerEntity = entityManager.getEntity('player');
+        entityManager.dropItem(this.inventory[slot],playerEntity.x,playerEntity.y);
+        this.inventory[slot] = false;
     }
 
 }

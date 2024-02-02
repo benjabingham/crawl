@@ -23,7 +23,7 @@ class GameMaster{
         let display = this.display;
         let gm = this;
 
-        board.placeEntities();
+        board.placeEntities(log);
         entityManager.saveSnapshot();
 
         board.calculateLosArray(entityManager.getEntity('player'));
@@ -62,8 +62,9 @@ class GameMaster{
             this.entityManager.reapWounded();
             this.entityManager.triggerBehaviors();
             this.entityManager.reapWounded();
+            this.player.lightDown(this.log);
         }
-        this.player.lightDown(this.log);
+        this.board.placeEntities(this.log);
         this.display.printBoard(board.boardArray);
         this.player.inventoryCleanup();
         this.display.DisplayDungeonInventory();
@@ -140,10 +141,23 @@ class GameMaster{
             case "8_0":
             case "9_0":
                 let slot = parseInt(e.key)-1;
-                if(!this.player.useItem(this.player.inventory[slot], this)){
+                if(this.dropMode){
+                    if(!this.player.dropItem(slot,this.entityManager)){
+                        this.entityManager.skipBehaviors = true;
+                        this.dropMode = false;
+                    }
+                }else if(!this.player.useItem(this.player.inventory[slot], this)){
                     //skip behaviors if invalid item
                     this.entityManager.skipBehaviors = true;
                 }
+                break;
+            case "d_0":
+                if(!this.dropMode){
+                    this.dropMode = true;
+                }else{
+                    this.dropMode = false;
+                }
+                this.entityManager.skipBehaviors = true;
                 break;
             default:
                 this.entityManager.skipBehaviors = true;

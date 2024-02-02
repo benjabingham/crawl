@@ -26,11 +26,25 @@ class Board{
         let entities = this.entityManager.entities;
         this.boardInit();
         for (const [k,entity] of Object.entries(entities)){
+            console.log(entity);
+
             let x = entity.x;
             let y = entity.y;
             if(this.itemAt(x,y).id != entity.id && this.isSpace(x,y)){
-                if(!this.isOccupiedSpace(x,y) || entity.behavior == 'sword'){
-                    this.placeEntity(entity, x, y);
+                let itemCase = this.itemAt(x,y).item  || entity.item;
+                if(!this.isOccupiedSpace(x,y) || entity.behavior == 'sword' || itemCase){
+                    if(itemCase){
+                        if(this.itemAt(x,y).item){
+                            this.entityManager.pickUpItem(entity,this.itemAt(x,y));
+                            this.placeEntity(entity, x, y);
+                        }else if(entity.item && this.itemAt(x,y)){
+                            this.entityManager.pickUpItem(this.itemAt(x,y),entity);
+                        }else{
+                            this.placeEntity(entity, x, y);
+                        }
+                    }else{
+                        this.placeEntity(entity, x, y);
+                    }
                 }else{
                     console.log("ENTITY OVERWRITE");
                     console.log(entity);
@@ -41,11 +55,11 @@ class Board{
     }
 
     isOpenSpace(x,y){
-        return (this.isSpace(x,y) && !this.boardArray[y][x]);
+        return (this.isSpace(x,y) && (!this.itemAt(x,y) || this.itemAt(x,y).item));
     }
 
     isOccupiedSpace(x,y){
-        return (this.isSpace(x,y) && this.boardArray[y][x]);
+        return (this.isSpace(x,y) && this.itemAt(x,y) && !this.itemAt(x,y).item);
     }
 
     isSpace(x,y){
@@ -61,8 +75,9 @@ class Board{
     }
 
     placeEntity(entity, x, y){
+
         if (this.isSpace(x,y)){
-            if(entity && this.isOccupiedSpace(x,y)){
+            if(this.isOccupiedSpace(x,y) && !this.itemAt(x,y).item){
                 //console.log('ENTITY OVERWRITE');
                 //console.log(entity);
                 //console.log(this.itemAt(x,y));
