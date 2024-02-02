@@ -175,9 +175,13 @@ class Player {
         this.inventory = newInventory;
     }
 
-    dropItem(slot, entityManager){
+    dropItem(slot, gameMaster){
+        let entityManager = gameMaster.entityManager;
         if(!this.inventory[slot]){
             return false;
+        }
+        if(this.equipped.slot == slot){
+            this.unequipWeapon(gameMaster);
         }
         let playerEntity = entityManager.getEntity('player');
         entityManager.dropItem(this.inventory[slot],playerEntity.x,playerEntity.y);

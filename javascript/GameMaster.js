@@ -142,7 +142,7 @@ class GameMaster{
             case "9_0":
                 let slot = parseInt(e.key)-1;
                 if(this.dropMode){
-                    if(!this.player.dropItem(slot,this.entityManager)){
+                    if(!this.player.dropItem(slot,this)){
                         //this.entityManager.skipBehaviors = true;
                         this.dropMode = false;
                     }

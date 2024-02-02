@@ -611,27 +611,25 @@ class EntityManager{
     }
 
     pickUpItem(entity,item){
-        if(!entity || entity.behavior == 'sword'){
-            return false;
-        }
-        console.log(entity);
-        console.log(item.dropTurn);
-        console.log(this.log.turnCounter);
-        if(item.dropTurn >= this.log.turnCounter){
+        if(!entity || entity.behavior == 'sword' ||item.dropTurn >= this.log.turnCounter || this.skipBehaviors){
             return false;
         }
         if(entity.id == 'player'){
             entity = this.player;
         }
         console.log('pickup');
+        console.log(JSON.parse(JSON.stringify(item)));
         let items = [];
         if(item.inventory){
             item.inventory.forEach((obj) =>{
-                items.push(obj);
+                if(!obj.obliterated){
+                    items.push(obj);
+                }
             })
-        }else{
-            items.push(item);
         }
+
+        items.push(item);
+        
         if(!entity.inventory){
             entity.inventory = [];
         }
@@ -639,6 +637,7 @@ class EntityManager{
             if(entity.inventory.length < 10){
                 let obliterated = {id:obj.id, obliterated:true, x:-1, y:-1};
                 this.entities[obj.id] = obliterated;
+                obj.inventory = false;
                 entity.inventory.push(obj);
             }
         })
