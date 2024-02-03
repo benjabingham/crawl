@@ -1,0 +1,81 @@
+let monsterVars = {
+    goblin:{
+        name:"goblin",
+        symbol:"G",
+        behavior:"chase",
+        behaviorInfo:{
+            focus:15,
+            enrage:20,
+            daze:30
+        },
+        hitDice:1,
+        damage:4,
+        inventorySlots: 10,
+    },
+    ogre:{
+        name:"ogre",
+        symbol:"O",
+        behavior:"chase",
+        behaviorInfo:{
+            focus:7,
+            enrage:75,
+            slow:40,
+            beat:30,
+            sturdy:30
+        },
+        hitDice:5,
+        damage:8,
+        inventorySlots: 10,
+    },
+    rat:{
+        name:"rat",
+        symbol:"R",
+        behavior:"chase",
+        behaviorInfo:{
+            focus:15,
+        },
+        hitDice:0,
+        damage:1,
+        inventorySlots: 0,
+    },
+    direRat:{
+        name:"dire rat",
+        symbol:"D",
+        behavior:"chase",
+        behaviorInfo:{
+            focus:20,
+            enrage:30,
+            daze:30
+        },
+        hitDice:1,
+        damage:4,
+        inventorySlots: 0,
+    },
+    wolf:{
+        name:"dire wolf",
+        symbol:"D",
+        behavior:"chase",
+        behaviorInfo:{
+            focus:25,
+            enrage:40,
+            daze:30
+        },
+        hitDice:1,
+        damage:5,
+        inventorySlots: 0,
+    },
+    direWolf:{
+        name:"dire wolf",
+        symbol:"D",
+        behavior:"chase",
+        behaviorInfo:{
+            focus:25,
+            enrage:75,
+            daze:15
+        },
+        hitDice:3,
+        damage:8,
+        inventorySlots: 0,
+    },
+
+}

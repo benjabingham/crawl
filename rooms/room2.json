@@ -37,7 +37,7 @@
             "behavior":"wall",
             "hitDice":"5"
         },
-        "4":{"monster":"dire wolf"},
+        "4":{"monster":"direWolf"},
         "5":{"monster":"ogre"},
         "6":{"monster":"goblin"}
     }

@@ -39,7 +39,7 @@ class EntityManager{
     }
     
 
-    entityInit(symbol, behavior, x=0,y=0, hitDice=1, damage=0, behaviorInfo = {}, name = "". inventorySlots = 10){
+    entityInit(symbol, behavior, x=0,y=0, hitDice=1, damage=0, behaviorInfo = {}, name = "", inventorySlots = 10){
         let threshold = Math.max(this.rollN(hitDice,1,8),1);
         let id = this.entityCounter;
         if (!name){
@@ -57,7 +57,7 @@ class EntityManager{
             threshold:threshold,
             damage:damage,
             name:name,
-            inventorySlots:10
+            inventorySlots:inventorySlots
         }
         this.entityCounter++;
         this.entities[id] = entity;
@@ -237,6 +237,7 @@ class EntityManager{
             this.knock(target.id, attacker.id);
             this.enrageAndDaze(target);   
             this.sturdy(attacker,target);
+            console.log(target);
         }
     }
 
@@ -524,84 +525,20 @@ class EntityManager{
     }
 
     monsterInit(monsterName,x,y){
-        let behavior = "chase";
-        let symbol;
-        let hitDice;
-        let behaviorInfo;
-        let damage;
-        let name;
-        switch(monsterName){
-            case "goblin":
-                symbol = "G";
-                hitDice = 1;
-                damage = 3;
-                name = 'goblin';
-                behaviorInfo = {
-                    focus:15,
-                    enrage:20,
-                    daze:30
-                }
-                break;
-            case "ogre":
-                symbol = "O";
-                hitDice = 3;
-                damage = 8;
-                name = 'ogre';
-                behaviorInfo = {
-                    focus:7,
-                    enrage:75,
-                    slow: 40,
-                    beat:30,
-                    sturdy:30
-                }
-                break;
-            case "rat":
-                symbol = "R";
-                hitDice = 0;
-                damage = 1;
-                name = "rat";
-                behaviorInfo = {
-                    focus:15,   
-                }
-                slots = 0;
-                break;
-            case "dire wolf":
-                symbol = "D";
-                hitDice = 2;
-                damage = 8;
-                name = "dire wolf";
-                behaviorInfo = {
-                    focus:25,
-                    enrage:75,
-                    daze:15
-                }
-                slots = 0;
-                break;
-            case "dire rat":
-                symbol = "D";
-                hitDice = 1;
-                damage = 4;
-                name = "dire rat";
-                behaviorInfo = {
-                    focus:20,
-                    enrage:30,
-                    daze:30
-                }
-                slots = 0;
-                break;
-            case "dummy":
-                symbol = "D";
-                hitDice = 10;
-                damage = 0;
-                name = "dummy";
-                behavior = "dummy";
-                slots = 0;
-                break;
-        }
+        let id = this.entityCounter;
+        this.entityCounter++;
+        let monster = JSON.parse(JSON.stringify(monsterVars[monsterName]));
 
-        let id = this.entityInit(symbol, behavior,x, y, hitDice, damage, behaviorInfo, name, slots)
-        monster = getEntity(id);
+        let threshold = Math.max(this.rollN(monster.hitDice,1,8),1);
 
+        monster.x = x;
+        monster.y = y;
+        monster.id = id;
+        monster.threshold = threshold;
+        monster.stunned = 0;
+        monster.mortal = 0;
+
+        this.entities[id] = monster;
     }
 
     dropItem(item,x,y){

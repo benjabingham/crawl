@@ -24,7 +24,7 @@
             "name":"wall"
         },
         "3":{"monster":"rat"},
-        "4":{"monster":"dire rat"},
+        "4":{"monster":"direRat"},
         "5":{"monster":"ogre"},
         "6":{"monster":"goblin"}
     },
