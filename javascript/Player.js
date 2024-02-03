@@ -9,7 +9,8 @@ class Player {
         this.light = 0;
         this.lightMax = 8;
         this.lightTime = 0;
-
+        
+        this.inventorySlots = 10;
         this.inventory = [
             {
                 weapon:true,

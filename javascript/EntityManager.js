@@ -39,7 +39,7 @@ class EntityManager{
     }
     
 
-    entityInit(symbol, behavior, x=0,y=0, hitDice=1, damage=0, behaviorInfo = {}, name = ""){
+    entityInit(symbol, behavior, x=0,y=0, hitDice=1, damage=0, behaviorInfo = {}, name = "". inventorySlots = 10){
         let threshold = Math.max(this.rollN(hitDice,1,8),1);
         let id = this.entityCounter;
         if (!name){
@@ -56,7 +56,8 @@ class EntityManager{
             mortal:0,
             threshold:threshold,
             damage:damage,
-            name:name
+            name:name,
+            inventorySlots:10
         }
         this.entityCounter++;
         this.entities[id] = entity;
@@ -442,6 +443,7 @@ class EntityManager{
 
             if((entity.mortal - entity.threshold) >= entity.threshold && !entity.obliterated){
                 //console.log('obliterated');
+                this.dropItems(entity);
                 entity.obliterated = true;
                 this.setPosition(entity.id,-1,-1);
 
@@ -561,6 +563,7 @@ class EntityManager{
                 behaviorInfo = {
                     focus:15,   
                 }
+                slots = 0;
                 break;
             case "dire wolf":
                 symbol = "D";
@@ -572,6 +575,7 @@ class EntityManager{
                     enrage:75,
                     daze:15
                 }
+                slots = 0;
                 break;
             case "dire rat":
                 symbol = "D";
@@ -583,6 +587,7 @@ class EntityManager{
                     enrage:30,
                     daze:30
                 }
+                slots = 0;
                 break;
             case "dummy":
                 symbol = "D";
@@ -590,10 +595,13 @@ class EntityManager{
                 damage = 0;
                 name = "dummy";
                 behavior = "dummy";
+                slots = 0;
                 break;
         }
 
-        let id = this.entityInit(symbol, behavior,x, y, hitDice, damage, behaviorInfo, name)
+        let id = this.entityInit(symbol, behavior,x, y, hitDice, damage, behaviorInfo, name, slots)
+        monster = getEntity(id);
+
     }
 
     dropItem(item,x,y){
@@ -610,15 +618,26 @@ class EntityManager{
         this.entityCounter++;
     }
 
+    dropItems(entity){
+        let inventory = entity.inventory
+        if(!inventory){
+            return false;
+        }
+
+        inventory.forEach((item) =>{
+            this.dropItem(item, entity.x, entity.y);
+        })
+    }
+
     pickUpItem(entity,item){
-        if(!entity || entity.behavior == 'sword' ||item.dropTurn >= this.log.turnCounter || this.skipBehaviors){
+        if(!entity || entity.behavior == 'sword' || (item.dropTurn >= this.log.turnCounter && !entity.item) || this.skipBehaviors){
             return false;
         }
         if(entity.id == 'player'){
             entity = this.player;
         }
-        console.log('pickup');
-        console.log(JSON.parse(JSON.stringify(item)));
+        //console.log('pickup');
+        //console.log(JSON.parse(JSON.stringify(item)));
         let items = [];
         if(item.inventory){
             item.inventory.forEach((obj) =>{
@@ -634,7 +653,7 @@ class EntityManager{
             entity.inventory = [];
         }
         items.forEach((obj)=>{
-            if(entity.inventory.length < 10){
+            if(entity.inventory.length < entity.inventorySlots){
                 let obliterated = {id:obj.id, obliterated:true, x:-1, y:-1};
                 this.entities[obj.id] = obliterated;
                 obj.inventory = false;
