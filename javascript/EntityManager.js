@@ -358,17 +358,26 @@ class EntityManager{
             this.transmitMessage(entity.name+" is enraged!");
             entity.behaviorInfo.focus += 5;
             entity.behaviorInfo.slow -= 3;
+            if(!entity.behavior.beat){
+                entity.behavior.beat = 0;
+            }
             entity.behaviorInfo.beat += 5;
+            if(!entity.behavior.sturdy){
+                entity.behavior.sturdy = 0;
+            }
             entity.sturdy += 5;
             entity.stunned -= Math.max(this.roll(0,entity.stunned),0);
         }
         random = this.roll(1,100);
         if(random <= dazeChance){
             this.transmitMessage(entity.name+" is dazed!");
-            entity.behaviorInfo.focus -= 5;
-            entity.behaviorInfo.slow += 5;
-            entity.sturdy -= 5;
-            entity.beat -=5;
+            entity.behaviorInfo.focus -= 7;
+            if(!entity.behavior.slow){
+                entity.behavior.slow = 0;
+            }
+            entity.behaviorInfo.slow += 7;
+            entity.sturdy -= 7;
+            entity.beat -=7;
             entity.stunned ++;
         }
     }
