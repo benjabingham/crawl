@@ -84,5 +84,13 @@ let monsterVars = {
         damage:8,
         inventorySlots: 0,
     },
+    dummy:{
+        name:"dummy",
+        symbol:"D",
+        behavior:"",
+        hitDice:100,
+        damage:8,
+        inventorySlots: 0,
+    },
 
 }

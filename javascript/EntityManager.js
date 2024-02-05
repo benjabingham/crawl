@@ -124,6 +124,7 @@ class EntityManager{
         if(this.board.isOccupiedSpace(x,y)){
             let target = this.board.itemAt(x,y);
             if(target.id != id && target.behavior != 'wall'){
+                console.log(this.getStrikeType(sword));
                 this.attack(sword,target);
                 if (ownerId == 'player'){
                     this.player.changeStamina(sword.weight * -1);
@@ -137,6 +138,21 @@ class EntityManager{
         if (this.player.stamina < 0){
             this.cancelAction();
         }
+    }
+
+    getStrikeType(sword){
+        let owner = sword.owner;
+        let ownerPos = this.getEntity(owner);
+        let lastSwordPos = this.history[this.history.length-1].entities[sword.id];
+        let lastOwnerPos = this.history[this.history.length-1].entities[owner];
+        if(lastSwordPos.rotation != sword.rotation){
+            return {swing:true};
+        }
+        if(((sword.rotation+1)%2 && (lastSwordPos.x == ownerPos.x || lastSwordPos.y == ownerPos.y)) || (lastOwnerPos.x == ownerPos.x && lastOwnerPos.y == ownerPos.y)){
+            return {jab:true};
+        }
+
+        return {strafe:true};
     }
 
     moveEntity(id, x, y){
@@ -353,6 +369,9 @@ class EntityManager{
     }
 
     enrageAndDaze(entity){
+        if(!entity.behaviorInfo){
+            return;
+        }
         let enrageChance = entity.behaviorInfo.enrage;
         let dazeChance = entity.behaviorInfo.daze;
 
@@ -386,6 +405,9 @@ class EntityManager{
     }
 
     beat(entity, sword){
+        if(!target.behaviorInfor){
+            return;
+        }
         let beatChance = entity.behaviorInfo.beat;
 
         let random = this.roll(1,100);
@@ -396,6 +418,9 @@ class EntityManager{
     }
 
     sturdy(attacker,target){
+        if(!target.behaviorInfor){
+            return;
+        }
         let sturdyChance = target.behaviorInfo.sturdy;
 
         let random = this.roll(1,100);
