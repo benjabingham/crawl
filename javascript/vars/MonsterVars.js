@@ -11,6 +11,12 @@ let monsterVars = {
         hitDice:1,
         damage:4,
         inventorySlots: 10,
+        loot:{
+            weapon:{
+                chance:100,
+                tier:1
+            }
+        }
     },
     ogre:{
         name:"ogre",
@@ -37,6 +43,7 @@ let monsterVars = {
         hitDice:0,
         damage:1,
         inventorySlots: 0,
+        tiny:true
     },
     direRat:{
         name:"dire rat",

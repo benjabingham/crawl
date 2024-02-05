@@ -18,7 +18,7 @@ class Player {
                 damage:1,
                 stunTime:1,
                 weight:1
-            },
+            },/*
             {
                 weapon:true,
                 name:"shortSword",
@@ -47,7 +47,7 @@ class Player {
                     sword:true,
                     edged:true
                 }
-            },
+            },*/
             {
                 usable:true,
                 name: "oil flask",

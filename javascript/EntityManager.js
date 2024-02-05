@@ -19,6 +19,8 @@ class EntityManager{
         this.historyLimit = 10;
 
         this.gameMaster = gameMaster;
+
+        this.lootManager = new LootManager();
     }
 
     wipeEntities(){
@@ -103,6 +105,7 @@ class EntityManager{
 
     placeSword(id){
         let sword = this.getEntity(id);
+        console.log(sword);
         if(!sword.equipped){
             console.log(sword.equipped);
             return;
@@ -358,12 +361,12 @@ class EntityManager{
             this.transmitMessage(entity.name+" is enraged!");
             entity.behaviorInfo.focus += 5;
             entity.behaviorInfo.slow -= 3;
-            if(!entity.behavior.beat){
-                entity.behavior.beat = 0;
+            if(!entity.behaviorInfo.beat){
+                entity.behaviorInfo.beat = 0;
             }
             entity.behaviorInfo.beat += 5;
-            if(!entity.behavior.sturdy){
-                entity.behavior.sturdy = 0;
+            if(!entity.behaviorInfo.sturdy){
+                entity.behaviorInfo.sturdy = 0;
             }
             entity.sturdy += 5;
             entity.stunned -= Math.max(this.roll(0,entity.stunned),0);
@@ -372,8 +375,8 @@ class EntityManager{
         if(random <= dazeChance){
             this.transmitMessage(entity.name+" is dazed!");
             entity.behaviorInfo.focus -= 7;
-            if(!entity.behavior.slow){
-                entity.behavior.slow = 0;
+            if(!entity.behaviorInfo.slow){
+                entity.behaviorInfo.slow = 0;
             }
             entity.behaviorInfo.slow += 7;
             entity.sturdy -= 7;
@@ -430,7 +433,7 @@ class EntityManager{
                         //player = this.placeSword(k,board, player);
                         break;
                     case "dead":
-                        entity.tempSymbol = 'x';
+                        //entity.tempSymbol = 'x';
                         break;
                     default:
                 }
@@ -446,7 +449,7 @@ class EntityManager{
                     entity.tempSymbol = false;
                 }
             }else{
-                entity.tempSymbol = 'x';
+                //entity.tempSymbol = 'x';
             }
 
 
@@ -469,6 +472,11 @@ class EntityManager{
                 this.setProperty(k,'behavior', 'dead');
                 this.setProperty(k,'tempSymbol', 'x');
                 this.setProperty(k,'stunned', 0);
+                if(entity.tiny){
+                    entity.item = true;
+                    entity.walkable = true;
+                    entity.tempSymbol = '*';
+                }
             }
         }
         //console.log(player.health);
@@ -514,6 +522,8 @@ class EntityManager{
         let symbol = sword.symbol;
         let behavior = sword.behavior;
 
+        console.log(owner);
+
         this.entities[id] = JSON.parse(JSON.stringify(weapon));
         sword = this.getEntity(id);
         sword.x = x;
@@ -524,6 +534,7 @@ class EntityManager{
         sword.id = id;
         sword.behavior = behavior;
         sword.equipped = true;
+        console.log(sword);
         
         this.transmitMessage('equipped weapon: '+weapon.name);
     }
@@ -546,6 +557,8 @@ class EntityManager{
         monster.threshold = threshold;
         monster.stunned = 0;
         monster.mortal = 0;
+
+        this.lootManager.giveMonsterLoot(monster);
 
         this.entities[id] = monster;
     }
@@ -602,7 +615,9 @@ class EntityManager{
             if(entity.inventory.length < entity.inventorySlots){
                 let obliterated = {id:obj.id, obliterated:true, x:-1, y:-1};
                 this.entities[obj.id] = obliterated;
+                obj.walkable = false;
                 obj.inventory = false;
+                obj.item = false;
                 entity.inventory.push(obj);
             }
         })
@@ -660,7 +675,7 @@ class EntityManager{
     }
 
     roll(min,max){
-        return Math.floor(Math.random()*(max+1))+min;
+        return Math.floor(Math.random()*(max-min+1))+min;
     }
     
     rollN(n, min,max){
