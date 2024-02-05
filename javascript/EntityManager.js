@@ -124,10 +124,21 @@ class EntityManager{
         if(this.board.isOccupiedSpace(x,y)){
             let target = this.board.itemAt(x,y);
             if(target.id != id && target.behavior != 'wall'){
-                console.log(this.getStrikeType(sword));
                 this.attack(sword,target);
                 if (ownerId == 'player'){
-                    this.player.changeStamina(sword.weight * -1);
+                    let strikeType = this.getStrikeType(sword);
+                    let weight;
+                    if(sword[strikeType]){
+                        weight = sword[strikeType].weight;
+                        console.log("..."+weight);
+
+                    }else{
+                        weight = sword.weight;
+                        console.log(weight);
+
+                    }
+                    console.log(weight);
+                    this.player.changeStamina(weight * -1);
                 }
             }
         }
@@ -146,13 +157,13 @@ class EntityManager{
         let lastSwordPos = this.history[this.history.length-1].entities[sword.id];
         let lastOwnerPos = this.history[this.history.length-1].entities[owner];
         if(lastSwordPos.rotation != sword.rotation){
-            return {swing:true};
+            return "swing";
         }
         if(((sword.rotation+1)%2 && (lastSwordPos.x == ownerPos.x || lastSwordPos.y == ownerPos.y)) || (lastOwnerPos.x == ownerPos.x && lastOwnerPos.y == ownerPos.y)){
-            return {jab:true};
+            return "jab";
         }
 
-        return {strafe:true};
+        return "strafe";
     }
 
     moveEntity(id, x, y){
@@ -238,11 +249,20 @@ class EntityManager{
     }
 
     attack(attacker,target){
-        let stunTime = 0;
-        if (attacker.stunTime){
-            stunTime = this.roll(1,attacker.stunTime);
+        let damage = attacker.damage;
+        let stunTime = attacker.stunTime;
+        if(attacker.behavior == 'sword'){
+            let strikeType = this.getStrikeType(attacker);
+            if(attacker[strikeType]){
+                damage = attacker[strikeType].damage;
+                stunTime = attacker[strikeType].stunTime;
+            }
         }
-        let mortality = this.roll(0,attacker.damage);
+        let stunAdded = 0;
+        if (stunTime){
+            stunAdded = this.roll(1,stunTime);
+        }
+        let mortality = this.roll(0,damage);
 
         if (target.id == 'player'){
             this.transmitMessage(attacker.name+" attacks you!");
@@ -251,7 +271,7 @@ class EntityManager{
             this.addMortality(target.id, mortality);
         }else{
             this.transmitMessage(target.name+" is struck!");
-            this.addStunTime(target.id,stunTime);
+            this.addStunTime(target.id,stunAdded);
             this.addMortality(target.id, mortality);
             this.knock(target.id, attacker.id);
             this.enrageAndDaze(target);   
@@ -405,7 +425,7 @@ class EntityManager{
     }
 
     beat(entity, sword){
-        if(!target.behaviorInfor){
+        if(!entity.behaviorInfor){
             return;
         }
         let beatChance = entity.behaviorInfo.beat;

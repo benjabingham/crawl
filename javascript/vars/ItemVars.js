@@ -34,7 +34,7 @@ let itemVars = {
             type:{
                 blunt:true
             },
-            swing:{
+            jab:{
                 damage:1,
                 stunTime:1,
                 weight:1,
