@@ -6,18 +6,23 @@ class LootManager{
                 flimsy:true,
                 stunTime: -1,
                 edged:{
-                    damage:-5
+                    damage:-2
                 },
                 blunt:{
-                    damage:-2
+                    damage:-1
                 }
             },
             stone:{
                 name:'stone',
                 flimsy:true,
-                damage:2,
                 weight:2,
-                stunTime:3
+                stunTime:3,
+                blunt:{
+                    damage:4
+                },
+                edged:{
+                    damage:2
+                }
             },
             lead:{
                 name:'lead',
@@ -25,6 +30,9 @@ class LootManager{
                 stunTime:2,
                 blunt:{
                     damage:5
+                },
+                edged:{
+                    damage:3
                 }
             },
             steel:{
@@ -37,16 +45,13 @@ class LootManager{
                 name:'ironwood',
                 stunTime:2,
                 blunt:{
-                    damage:6
-                },
-                edged:{
                     damage:2
                 }
             },
             lightsteel:{
                 name:'lightsteel',
                 weight:-1,
-                stunTime:-1,
+                stunTime:-2,
                 blunt:{
                     damage:-2
                 },
@@ -230,6 +235,6 @@ class LootManager{
     }
 
     roll(min,max){
-        return Math.floor(Math.random()*(max+1))+min;
+        return Math.floor(Math.random()*(max-min+1))+min;
     }
 }

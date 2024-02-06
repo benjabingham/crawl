@@ -137,15 +137,15 @@ let itemVars = {
         handaxe:{
             weapon:true,
             name:"handaxe",
-            damage:6,
-            stunTime:3,
+            damage:1,
+            stunTime:2,
             weight:1,
             type:{
                 edged:true
             },
-            jab:{
-                damage:1,
-                stunTime:1,
+            swing:{
+                damage:6,
+                stunTime:3,
                 weight:1,
                 type:{
                     edged:true
@@ -155,15 +155,15 @@ let itemVars = {
         greataxe:{
             weapon:true,
             name:"greataxe",
-            damage:15,
-            stunTime:6,
-            weight:3,
+            damage:2,
+            stunTime:3,
+            weight:2,
             type:{
                 edged:true
             },
-            jab:{
-                damage:2,
-                stunTime:2,
+            swing:{
+                damage:15,
+                stunTime:6,
                 weight:3,
                 type:{
                     edged:true
@@ -181,9 +181,9 @@ let itemVars = {
                 long:true
             },
             swing:{
-                damage:12,
+                damage:15,
                 stunTime:4,
-                weight:3,
+                weight:4,
                 type:{
                     edged:true,
                     long:true

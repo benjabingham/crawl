@@ -258,11 +258,15 @@ class EntityManager{
                 stunTime = attacker[strikeType].stunTime;
             }
         }
+        let damageDice = 1;
+        if(target.stunned){
+            damageDice=2;
+        }
         let stunAdded = 0;
         if (stunTime){
             stunAdded = this.roll(1,stunTime);
         }
-        let mortality = this.roll(0,damage);
+        let mortality = this.rollN(damageDice,0,damage);
 
         if (target.id == 'player'){
             this.transmitMessage(attacker.name+" attacks you!");
@@ -511,7 +515,7 @@ class EntityManager{
 
     reapWounded(){
         for (const [k,entity] of Object.entries(this.entities)){
-            if (entity.stunned+entity.mortal > entity.threshold && entity.behavior != 'dead'){
+            if (entity.mortal > entity.threshold && entity.behavior != 'dead'){
                 this.transmitMessage(entity.name+" is slain!");
                 entity.name += " corpse";
                 this.setProperty(k,'behavior', 'dead');
