@@ -193,6 +193,10 @@ html{
     padding:5px;
 }
 
+.special-title{
+    font-weight:800;
+}
+
 .item-slot-number{
     padding-right:5px;
     /*border-right:1px solid black*/

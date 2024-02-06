@@ -19,21 +19,7 @@ class Player {
                 stunTime:1,
                 weight:1
             },
-            {
-                weapon:true,
-                name:"mace",
-                damage:5,
-                stunTime:4,
-                weight:1,
-                type:{
-                    blunt:true
-                },
-                jab:{
-                    damage:1,
-                    stunTime:1,
-                    weight:1,
-                }
-            },/*
+            /*
             {
                 weapon:true,
                 name:"shortSword",

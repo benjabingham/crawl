@@ -236,13 +236,29 @@ class Display{
 
         if(item.weapon){
             $('#inventory-description').append(
-                $('<div>').addClass('item-damage').text('Damage: '+item.damage)
+                $('<div>').addClass('item-damage').attr('id','item-damage-'+item.slot).text('Damage: '+item.damage)
             ).append(
-                $('<div>').addClass('item-stun').text('stun: '+item.stunTime)
+                $('<div>').addClass('item-stun').attr('id','item-stun-'+item.slot).text('stun: '+item.stunTime)
             ).append(
-                $('<div>').addClass('item-weight').text('weight: '+item.weight)
+                $('<div>').addClass('item-weight').attr('id','item-weight-'+item.slot).text('weight: '+item.weight)
             )
         }
+
+        ['jab','swing','strafe'].forEach(function(val){
+            console.log(val);
+            if(item[val]){
+                let special = item[val];
+                $('#inventory-description').append(
+                    $('<div>').addClass('special-title').text(val+":")
+                ).append(
+                    $('<div>').addClass('item-damage').text('Damage: '+special.damage)
+                ).append(
+                    $('<div>').addClass('item-stun').text('stun: '+special.stunTime)
+                ).append(
+                    $('<div>').addClass('item-weight').text('weight: '+special.weight)
+                )
+            }
+        })
     }
     
     giveReminderTextBehavior(){

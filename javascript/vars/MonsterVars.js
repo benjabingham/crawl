@@ -92,5 +92,19 @@ let monsterVars = {
         damage:8,
         inventorySlots: 0,
     },
+    chest:{
+        name:"chest",
+        symbol:"C",
+        behavior:"",
+        hitDice:0,
+        damage:4,
+        inventorySlots: 10,
+        loot:{
+            weapon:{
+                chance:100,
+                tier:2
+            }
+        }
+    },
 
 }

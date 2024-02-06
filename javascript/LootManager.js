@@ -54,6 +54,12 @@ class LootManager{
                     damage:2
                 }
             },
+            silver:{
+                name:'silver',
+                edged:{
+                    damage:-1
+                }
+            },
             gold:{
                 name:'gold',
                 weight:1,
@@ -150,20 +156,14 @@ class LootManager{
 
     getWeaponMaterial(tier){
         let materials = Object.keys(this.weaponMaterials);
-        console.log(materials);
         let nMaterials = materials.length;
         let nRolls = tier-3;
-        console.log(nRolls);
         let maxMinFunc = (nRolls > 0) ? Math.max : Math.min;
-        console.log(maxMinFunc);
         nRolls = Math.abs(nRolls);
         let materialIndex = this.roll(0,nMaterials-1);
-        console.log(materialIndex);
         for(let i = 0; i < nRolls; i++){
             let newIndex = this.roll(0,nMaterials-1);
-            console.log(newIndex);
             materialIndex = maxMinFunc(materialIndex,newIndex);
-            console.log(materialIndex);
         }
         let key = materials[materialIndex];
         let material = this.weaponMaterials[key];
@@ -186,11 +186,16 @@ class LootManager{
         let key = weapons[weaponIndex];
         let weapon = itemVars.weapons[key];
 
+        console.log(weapon);
+
         return JSON.parse(JSON.stringify(weapon));
     }
 
-    applyWeaponModifier(weapon, modifier){
-        console.log(modifier);
+    applyWeaponModifier(weapon, modifier, recursion = false){
+        console.log({
+            weapon:weapon,
+            modifier:modifier
+        })
         for (const [key, value] of Object.entries(modifier)){
             switch(key){
                 case 'name':
@@ -207,12 +212,21 @@ class LootManager{
                     break;
                 case 'blunt':
                 case 'edged':
-                    if(weapon.type[key] == true){
-                        this.applyWeaponModifier(weapon, value);
+                    if(weapon.type[key] || (weapon.type['sword'] && key == 'edged')){
+                        this.applyWeaponModifier(weapon, value,true);
                     }
                     break;
             }
         }
+        let lootManager = this;
+        //apply modifier to special strikes
+        ['jab','swing','strafe'].forEach(function(val){
+            //only do this once!
+            if(weapon[val] && !recursion){
+                lootManager.applyWeaponModifier(weapon[val], modifier);
+            }
+        })
+        console.log(weapon);
     }
 
     roll(min,max){

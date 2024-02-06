@@ -620,6 +620,7 @@ class EntityManager{
         }
         this.entities[this.entityCounter] = item;
         this.entityCounter++;
+        console.log(item);
     }
 
     dropItems(entity){
