@@ -70,8 +70,6 @@ class Player {
     }
 
     changeStamina(n){
-        console.log(n);
-        console.log(this.stamina);
         this.stamina = Math.max(0,this.stamina)
         this.stamina = this.stamina+n;
         this.stamina = Math.min(this.staminaMax,this.stamina);

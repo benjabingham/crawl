@@ -76,7 +76,7 @@ class Display{
                         boardString += '.';
                     }
                 }else{
-                    boardString += '?';
+                    boardString += '▓';
                 }
                 boardString += ' ';            
             }

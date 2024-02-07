@@ -139,6 +139,7 @@ class EntityManager{
                     }
                     console.log(weight);
                     this.player.changeStamina(weight * -1);
+                    
                 }
             }
         }
@@ -148,6 +149,7 @@ class EntityManager{
         }
         if (this.player.stamina < 0){
             this.cancelAction();
+            console.log('ACTION CANCELLED');
         }
     }
 
@@ -159,7 +161,7 @@ class EntityManager{
         if(lastSwordPos.rotation != sword.rotation){
             return "swing";
         }
-        if(((sword.rotation+1)%2 && (lastSwordPos.x == ownerPos.x || lastSwordPos.y == ownerPos.y)) || (lastOwnerPos.x == ownerPos.x && lastOwnerPos.y == ownerPos.y)){
+        if((lastSwordPos.x == ownerPos.x || lastSwordPos.y == ownerPos.y) || (lastOwnerPos.x == ownerPos.x && lastOwnerPos.y == ownerPos.y)){
             return "jab";
         }
 
@@ -174,6 +176,8 @@ class EntityManager{
         if(this.board.isSpace(x,y) && this.board.isOpenSpace(x,y)){
             this.setPosition(id,x,y);
             return true;
+        }else if(this.board.itemAt(x,y) && this.board.itemAt(x,y).container){
+            this.lootContainer(entity,this.board.itemAt(x,y));
         }else if(!this.board.isSpace(x,y) && id == "player"){
             this.gameMaster.travel(x,y);
         }
@@ -237,7 +241,7 @@ class EntityManager{
             this.attack(entity,targetItem);
         }
 
-        if(targetItem.behavior == "sword" && entity.behaviorInfo.beat){
+        if(targetItem.behavior == "sword"){
             this.beat(entity,targetItem);
         }
     
@@ -428,16 +432,31 @@ class EntityManager{
         }
     }
 
+    //has beat% chance to beat sword out of way.
+    //also beats sword out of way if damage exceeds player stamina.
     beat(entity, sword){
-        if(!entity.behaviorInfor){
-            return;
+        console.log(entity);
+        if(sword.owner == 'player'){
+            this.transmitMessage(entity.name+" attacks your weapon...");
+            let damage = this.roll(0,entity.damage);
+            this.player.changeStamina(damage * -1);
+            console.log(this.player.stamina);
+            console.log(damage);
         }
-        let beatChance = entity.behaviorInfo.beat;
+        let beatChance = 0;
+        if(entity.behaviorInfor){
+            beatChance = entity.behaviorInfo.beat;
+        }
 
         let random = this.roll(1,100);
-        if(random <= beatChance){
-            this.transmitMessage(entity.name+" knocks your sword out of the way!");
+        console.log(this.player.stamina < 0);
+        if(random <= beatChance || this.player.stamina < 0){
+            this.player.changeStamina(0);
+            this.transmitMessage(entity.name+" knocks your weapon out of the way!");
             this.knockSword(sword.id);
+        }else{
+            this.transmitMessage("You hold steady!");
+
         }
     }
 
@@ -503,7 +522,7 @@ class EntityManager{
 
 
 
-            if((entity.mortal - entity.threshold) >= entity.threshold && !entity.obliterated){
+            if((entity.mortal - entity.threshold) >= entity.threshold/2 && !entity.obliterated){
                 //console.log('obliterated');
                 this.dropItems(entity);
                 entity.obliterated = true;
@@ -521,6 +540,7 @@ class EntityManager{
                 this.setProperty(k,'behavior', 'dead');
                 this.setProperty(k,'tempSymbol', 'x');
                 this.setProperty(k,'stunned', 0);
+                this.setProperty(k,'container',true);
                 if(entity.tiny){
                     entity.item = true;
                     entity.walkable = true;
@@ -635,6 +655,31 @@ class EntityManager{
 
         inventory.forEach((item) =>{
             this.dropItem(item, entity.x, entity.y);
+        })
+    }
+
+    lootContainer(looter,container){
+        if(!container.inventory){
+            return false;
+        }
+        console.log(looter);
+        if(looter.id == 'player'){
+            looter = this.player;
+        }
+        if(!looter.inventory){
+            looter.inventory = [];
+        }
+        container.inventory.forEach((i,item) =>{
+            if(looter.inventory.length < looter.inventorySlots){
+                let obj = container.inventory.pop();
+                let obliterated = {id:obj.id, obliterated:true, x:-1, y:-1};
+                this.entities[obj.id] = obliterated;
+                container.inventory[i] = false;
+                obj.walkable = false;
+                obj.inventory = false;
+                obj.item = false;
+                looter.inventory.push(obj);
+            }
         })
     }
 
