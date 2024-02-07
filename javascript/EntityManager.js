@@ -669,23 +669,23 @@ class EntityManager{
         if(!looter.inventory){
             looter.inventory = [];
         }
-        container.inventory.forEach((i,item) =>{
-            if(looter.inventory.length < looter.inventorySlots){
-                let obj = container.inventory.pop();
+        container.inventory.forEach((item,i) =>{
+            if(item && (looter.inventory.length < looter.inventorySlots)){
+                let obj = item;
                 let obliterated = {id:obj.id, obliterated:true, x:-1, y:-1};
                 this.entities[obj.id] = obliterated;
-                container.inventory[i] = false;
+                console.log(obj);
                 obj.walkable = false;
                 obj.inventory = false;
                 obj.item = false;
                 looter.inventory.push(obj);
+                container.inventory[i] = false;
             }
         })
     }
 
     pickUpItem(entity,item){
         if(!entity || entity.behavior == 'sword' || (item.dropTurn >= this.log.turnCounter && !entity.item) || this.skipBehaviors){
-            console.log(false);
             return false;
         }
         if(entity.id == 'player'){
@@ -703,7 +703,6 @@ class EntityManager{
         }
 
         items.push(item);
-        console.log(items);
         
         if(!entity.inventory){
             entity.inventory = [];
