@@ -186,14 +186,35 @@ html{
     height:fit-content;
 }
 
+#inventory-description-title{
+    text-align:center;
+    width:100%;
+}
+
 #inventory-description{
     outline:1px solid black;
     margin-left:auto;
-    width:300px;
+    width:250px;
     padding:5px;
 }
 
-.special-title{
+#inventory-description-body{
+    height:110px;
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0px;
+    grid-auto-rows: 2rem;
+}
+
+.item-stats-normal{
+    height:fit-content;
+}
+
+.item-value{
+    bottom:0px;
+}
+
+.item-title{
     font-weight:800;
 }
 

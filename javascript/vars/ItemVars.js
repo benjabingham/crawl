@@ -9,79 +9,84 @@ let itemVars = {
             type:{
                 blunt:true,
                 long:true
-            }
+            },
+            value:2
         },
         club:{
             weapon:true,
             name:"club",
-            damage:5,
-            stunTime:4,
+            damage:4,
+            stunTime:3,
             weight:1,
             type:{
                 blunt:true
             },
             jab:{
                 damage:2,
-                stunTime:4,
+                stunTime:2,
                 weight:1,
                 type:{
                     blunt:true
                 }
-            }
+            },
+            value:1
         },
         mace:{
             weapon:true,
             name:"mace",
             damage:5,
-            stunTime:4,
+            stunTime:3,
             weight:1,
             type:{
                 blunt:true
             },
             jab:{
-                damage:1,
-                stunTime:1,
+                damage:2,
+                stunTime:2,
                 weight:1,
                 type:{
                     blunt:true
                 }
-            }
+            },
+            value:4
         },
         hammer:{
             weapon:true,
             name:"hammer",
             damage:8,
-            stunTime:6,
+            stunTime:5,
             weight:2,
             type:{
                 blunt:true
             },
             jab:{
                 damage:2,
-                stunTime:3,
+                stunTime:4,
                 weight:1,
                 type:{
                     blunt:true
                 }
-            }
+            },
+            value:5
         },
         maul:{
             weapon:true,
             name:"maul",
             damage:12,
-            stunTime:8,
+            stunTime:7,
             weight:3,
             type:{
                 blunt:true
             },
             jab:{
                 damage:2,
-                stunTime:4,
+                stunTime:5,
                 weight:2,
                 type:{
                     blunt:true
                 }
-            }
+            },
+            value:7
         },
         rapier:{
             weapon:true,
@@ -99,7 +104,8 @@ let itemVars = {
                 type:{
                     sword:true,
                 },
-            }
+            },
+            value:7
         },
         shortsword:{
             weapon:true,
@@ -110,7 +116,8 @@ let itemVars = {
             type:{
                 sword:true,
                 edged:true
-            }
+            },
+            value:4
         },
         longsword:{
             weapon:true,
@@ -121,7 +128,8 @@ let itemVars = {
             type:{
                 sword:true,
                 edged:true
-            }
+            },
+            value:7
         },
         greatsword:{
             weapon:true,
@@ -132,7 +140,8 @@ let itemVars = {
             type:{
                 sword:true,
                 edged:true
-            }
+            },
+            value:10
         },
         handaxe:{
             weapon:true,
@@ -150,7 +159,8 @@ let itemVars = {
                 type:{
                     edged:true
                 }
-            }
+            },
+            value:4
         },
         greataxe:{
             weapon:true,
@@ -168,7 +178,8 @@ let itemVars = {
                 type:{
                     edged:true
                 }
-            }
+            },
+            value:9
         },
         halberd:{
             weapon:true,
@@ -188,7 +199,8 @@ let itemVars = {
                     edged:true,
                     long:true
                 }
-            }
+            },
+            value:7
         },
     },
     fuel:{

@@ -10,7 +10,8 @@ class LootManager{
                 },
                 blunt:{
                     damage:-1
-                }
+                },
+                value:.25
             },
             stone:{
                 name:'stone',
@@ -22,7 +23,8 @@ class LootManager{
                 },
                 edged:{
                     damage:2
-                }
+                },
+                value:.2
             },
             lead:{
                 name:'lead',
@@ -33,20 +35,23 @@ class LootManager{
                 },
                 edged:{
                     damage:3
-                }
+                },
+                value:.75
             },
             steel:{
                 name:'steel',
                 edged:{
                     damage:2
-                }
+                },
+                value:1
             },
             ironwood:{
                 name:'ironwood',
                 stunTime:2,
                 blunt:{
                     damage:2
-                }
+                },
+                value:1.4
             },
             lightsteel:{
                 name:'lightsteel',
@@ -57,13 +62,15 @@ class LootManager{
                 },
                 edged:{
                     damage:2
-                }
+                },
+                value:1.7
             },
             silver:{
                 name:'silver',
                 edged:{
                     damage:-1
-                }
+                },
+                value:2
             },
             gold:{
                 name:'gold',
@@ -75,14 +82,16 @@ class LootManager{
                 },
                 blunt:{
                     damage:2
-                }
+                },
+                value:3
             },
             Adamantine:{
                 name:'adamantine',
                 weight:-1,
                 edged:{
                     damage:2
-                }
+                },
+                value:5
             }
         }
 
@@ -95,7 +104,8 @@ class LootManager{
                 },
                 blunt:{
                     damage:-1
-                }
+                },
+                value:.7
             },
             craftTiers:{
                 poor:{
@@ -221,6 +231,12 @@ class LootManager{
                         this.applyWeaponModifier(weapon, value,true);
                     }
                     break;
+                case 'value':
+                    if(weapon[key]){
+                        weapon[key] *= value;
+                        weapon[key] += .5;
+                        weapon[key] = Math.floor(weapon[key]);
+                    }
             }
         }
         let lootManager = this;
