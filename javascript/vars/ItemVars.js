@@ -212,11 +212,45 @@ let itemVars = {
             uses:3
         }
     },
-    loot:{
-        vase:{
+    treasure:{
+        thimble:{
+            name:"thimble",
+            value:1
+        },
+        ring:{
+            name:"ring",
+            value:2
+        },
+        cup:{
+            name:"cup",
+            value:3
+        },
+        plate:{
+            name:"plate",
             value:5
         },
+        vase:{
+            name:"vase",
+            value:7
+        },
         pendant:{
+            name:"pendant",
+            value:3
+        },
+        statuette:{
+            name:"statuette",
+            value:8
+        },
+        crown:{
+            name:"crown",
+            value:15
+        },
+        tiara:{
+            name:"tiara",
+            value:12
+        },
+        coinPouch:{
+            name:"coin pouch",
             value:10
         }
     }

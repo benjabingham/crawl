@@ -15,6 +15,10 @@ let monsterVars = {
             weapon:{
                 chance:5,
                 tier:1
+            },
+            treasure:{
+                chance:5,
+                tier:1
             }
         }
     },
@@ -34,7 +38,11 @@ let monsterVars = {
         inventorySlots: 10,
         loot:{
             weapon:{
-                chance:80,
+                chance:50,
+                tier:2
+            },
+            treasure:{
+                chance:50,
                 tier:2
             }
         }
@@ -108,6 +116,10 @@ let monsterVars = {
         container: true,
         loot:{
             weapon:{
+                chance:100,
+                tier:2
+            },
+            treasure:{
                 chance:100,
                 tier:2
             }

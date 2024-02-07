@@ -13,6 +13,15 @@ class LootManager{
                 },
                 value:.25
             },
+            bone:{
+                name:'bone',
+                flimsy:true,
+                stunTime:-1,
+                edged:{
+                    damage:-1
+                },
+                value:.15
+            },
             stone:{
                 name:'stone',
                 flimsy:true,
@@ -95,6 +104,53 @@ class LootManager{
             }
         }
 
+        this.treasureMaterials = {
+            paper:{
+                name:"tattered paper",
+                value:.05
+            },
+            bone:{
+                name:"bone",
+                value:0.2
+            },
+            wood:{
+                name:'wooden',
+                value:0.3
+            },
+            stone:{
+                name:'stone',
+                value:0.4
+            },
+            iron:{
+                name:'iron',
+                value:.7
+            },
+            steel:{
+                name:'steel',
+                value:1.2
+            },
+            lead:{
+                name:'lead',
+                value:1.4
+            },
+            sterling:{
+                name:'sterling silver',
+                value:2
+            },
+            silver:{
+                name:'silver',
+                value:3.5
+            },
+            gold:{
+                name:'gold',
+                value:6
+            },
+            platinum:{
+                name:'platinum',
+                value:10
+            }
+        }
+
         this.weaponModifiers = {
             worn:{
                 name:'worn',
@@ -114,28 +170,32 @@ class LootManager{
                     variance:{
                         positive:0,
                         negative:50
-                    }
+                    },
+                    value:.4
                 },
                 rustic:{
                     name:'rustic',
                     variance:{
                         positive:20,
                         negative:50
-                    }
+                    },
+                    value:.7
                 },
                 artisan:{
                     name:'artisan',
                     variance:{
                         positive:30,
                         negative:30
-                    }
+                    },
+                    value:1.2
                 },
-                materwork:{
+                masterwork:{
                     name:'masterwork',
                     variance:{
                         positive:50,
                         negative:10
-                    }
+                    },
+                    value:5
                 }
             }
         }
@@ -154,16 +214,40 @@ class LootManager{
                 entity.inventory.push(this.getWeaponLoot(weaponLoot.tier));
             }
         }
+
+        let treasureLoot = entity.loot.treasure;
+        if(treasureLoot){
+            if(this.roll(1,99) < treasureLoot.chance){
+                entity.inventory.push(this.getTreasureLoot(treasureLoot.tier));
+            }
+        }
     }
 
     getTreasureLoot(tier){
+        let nRolls = tier-3;
+        let greater = (nRolls > 0);
+        nRolls = Math.abs(nRolls);
 
+        let treasure = this.getTreasure();
+        let treasureMaterial = this.getTreasureMaterial();
+        this.applyModifier(treasure, treasureMaterial);
+
+        for(let i = 0; i < nRolls; i++){
+            let newTreasure = this.getTreasure();
+            treasureMaterial = this.getTreasureMaterial();
+            this.applyModifier(newTreasure, treasureMaterial);
+            if((greater && newTreasure.value > treasure.value) || (!greater && newTreasure.value < treasure.value)){
+                treasure = newTreasure;
+            }
+        }
+
+        return treasure;
     }
 
     getWeaponLoot(tier){
         let weapon = this.getWeapon();
         let weaponMaterial = this.getWeaponMaterial(tier);
-        this.applyWeaponModifier(weapon, weaponMaterial);
+        this.applyModifier(weapon, weaponMaterial);
         this.getIsWorn(weapon, tier);
 
         return weapon;
@@ -186,10 +270,20 @@ class LootManager{
         return material;
     }
 
+    getTreasureMaterial(){
+        let materials = Object.keys(this.treasureMaterials);
+        let nMaterials = materials.length;
+        let materialIndex = this.roll(0,nMaterials-1);
+        let key = materials[materialIndex];
+        let material = this.treasureMaterials[key];
+
+        return material;
+    }
+
     getIsWorn(weapon, tier){
         let nonWornChance = 20 * tier;
         if(this.roll(0,99) >= nonWornChance){
-            this.applyWeaponModifier(weapon,this.weaponModifiers.worn);
+            this.applyModifier(weapon,this.weaponModifiers.worn);
         }
     }
 
@@ -206,36 +300,47 @@ class LootManager{
         return JSON.parse(JSON.stringify(weapon));
     }
 
-    applyWeaponModifier(weapon, modifier, recursion = false){
-        console.log({
-            weapon:weapon,
-            modifier:modifier
-        })
+    getTreasure(){
+        let treasures = Object.keys(itemVars.treasure);
+        let nTreasures = treasures.length;
+        let treasureIndex = this.roll(0,nTreasures-1);
+        
+        let key = treasures[treasureIndex];
+        let treasure = itemVars.treasure[key];
+
+        console.log(treasure);
+
+        return JSON.parse(JSON.stringify(treasure));
+    }
+
+    applyModifier(item, modifier, recursion = false){
         for (const [key, value] of Object.entries(modifier)){
             switch(key){
                 case 'name':
-                    weapon[key] = value + ' ' + weapon[key];
+                    item[key] = value + ' ' + item[key];
                     break;
                 case 'damage':
                 case 'stunTime':
                 case 'weight':
-                    weapon[key] += value;
-                    weapon[key] = Math.max(1,weapon[key]);
+                    if(item[key]){
+                        item[key] += value;
+                        item[key] = Math.max(1,item[key]);
+                    }
                     break;
                 case 'flimsy':
-                    weapon[key] = true;
+                    item[key] = true;
                     break;
                 case 'blunt':
                 case 'edged':
-                    if(weapon.type[key] || (weapon.type['sword'] && key == 'edged')){
-                        this.applyWeaponModifier(weapon, value,true);
+                    if(item.type[key] || (item.type['sword'] && key == 'edged')){
+                        this.applyModifier(item, value,true);
                     }
                     break;
                 case 'value':
-                    if(weapon[key]){
-                        weapon[key] *= value;
-                        weapon[key] += .5;
-                        weapon[key] = Math.floor(weapon[key]);
+                    if(item[key]){
+                        item[key] *= value;
+                        item[key] += .5;
+                        item[key] = Math.floor(item[key]);
                     }
             }
         }
@@ -243,11 +348,10 @@ class LootManager{
         //apply modifier to special strikes
         ['jab','swing','strafe'].forEach(function(val){
             //only do this once!
-            if(weapon[val] && !recursion){
-                lootManager.applyWeaponModifier(weapon[val], modifier);
+            if(item[val] && !recursion){
+                lootManager.applyModifier(item[val], modifier);
             }
         })
-        console.log(weapon);
     }
 
     roll(min,max){
