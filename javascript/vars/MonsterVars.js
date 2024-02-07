@@ -73,8 +73,8 @@ let monsterVars = {
         inventorySlots: 0,
     },
     wolf:{
-        name:"dire wolf",
-        symbol:"D",
+        name:"wolf",
+        symbol:"O",
         behavior:"chase",
         behaviorInfo:{
             focus:25,

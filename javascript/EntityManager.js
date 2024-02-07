@@ -685,6 +685,7 @@ class EntityManager{
 
     pickUpItem(entity,item){
         if(!entity || entity.behavior == 'sword' || (item.dropTurn >= this.log.turnCounter && !entity.item) || this.skipBehaviors){
+            console.log(false);
             return false;
         }
         if(entity.id == 'player'){
@@ -702,12 +703,13 @@ class EntityManager{
         }
 
         items.push(item);
+        console.log(items);
         
         if(!entity.inventory){
             entity.inventory = [];
         }
         items.forEach((obj)=>{
-            if(entity.inventory.length < entity.inventorySlots){
+            if(entity.inventory.length < entity.inventorySlots || entity.item){
                 let obliterated = {id:obj.id, obliterated:true, x:-1, y:-1};
                 this.entities[obj.id] = obliterated;
                 obj.walkable = false;

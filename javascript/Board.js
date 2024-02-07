@@ -44,9 +44,11 @@ class Board{
                 }
                 if(!this.isOccupiedSpace(x,y) || entity.behavior == 'sword' || itemCase){
                     if(itemCase){
+                        console.log(entity);
                         if(this.itemAt(x,y).item){
                             this.entityManager.pickUpItem(entity,this.itemAt(x,y));
                             this.placeEntity(entity, x, y);
+                            console.log(entity);
                         }else if(entity.item && this.itemAt(x,y)){
                             this.entityManager.pickUpItem(this.itemAt(x,y),entity);
                         }else{
