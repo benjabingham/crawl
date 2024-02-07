@@ -199,7 +199,7 @@ class EntityManager{
         //creature is less focused the further they are
         let focus = behaviorInfo.focus;
         focus -= this.getDistance(entity, playerEntity);
-        if(!this.hasPlayerLos){
+        if(!this.hasPlayerLos(entity)){
             focus -= 20;
         }
         focus =  Math.max(focus, 4);
@@ -241,7 +241,7 @@ class EntityManager{
             this.attack(entity,targetItem);
         }
 
-        if(targetItem.behavior == "sword"){
+        if(targetItem.behavior == "sword" && !this.board.wallAt(targetX, targetY)){
             this.beat(entity,targetItem);
         }
     
@@ -857,6 +857,10 @@ class EntityManager{
     }
 
     addMortality(id, mortal){
+        console.log({
+            entity:this.getEntity(id),
+            mortality:mortal
+        })
         mortal += Math.max(this.getProperty(id, 'mortal'),0);
         this.setProperty(id, 'mortal', mortal);
     }

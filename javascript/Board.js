@@ -4,6 +4,7 @@ class Board{
         this.height = height;
 
         this.boardArray = [];
+        this.wallArray = [];
         this.losArray = [];
         this.boardInit();
 
@@ -13,11 +14,14 @@ class Board{
 
     boardInit(){
         this.boardArray = [];
+        this.wallArray = [];
         //this.LosInit();
         for(let i=0;i<this.height;i++){
             this.boardArray[i] = [];
+            this.wallArray[i] = [];
             for(let j=0;j<this.width;j++){
                 this.boardArray[i][j] = false;
+                this.wallArray[i][j] = false;
             }
         }
     }
@@ -33,6 +37,11 @@ class Board{
             let y = entity.y;
             if(this.itemAt(x,y).id != entity.id && this.isSpace(x,y)){
                 let itemCase = this.itemAt(x,y).item  || entity.item;
+                if(entity.behavior == 'wall'){
+                    this.wallArray[y][x] = true;
+                }else{
+                    //this.wallArray[y][x] = false;
+                }
                 if(!this.isOccupiedSpace(x,y) || entity.behavior == 'sword' || itemCase){
                     if(itemCase){
                         if(this.itemAt(x,y).item){
@@ -117,7 +126,7 @@ class Board{
                 this.setLineOfSight(point.x, point.y, lineOfSight);
             }
             
-            if(this.itemAt(point.x,point.y).behavior == 'wall'){
+            if(this.wallAt(point.x,point.y)){
                 lineOfSight = false;
             }
 
@@ -182,6 +191,13 @@ class Board{
 
         return line;
 
+    }
+
+    wallAt(x,y){
+        if(!this.isSpace(x,y)){
+            return false;
+        }
+        return this.wallArray[y][x];
     }
 
     setLineOfSight(x,y, los){
