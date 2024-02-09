@@ -204,6 +204,7 @@ class GameMaster{
         this.reset();
 
         if(destination.type == "town"){
+            this.shop.restockInventory();
             this.display.showTownScreen(this);
         }else if(destination.type == "dungeon"){
             this.getRoom(destination.name);
