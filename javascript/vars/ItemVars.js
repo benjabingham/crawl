@@ -209,7 +209,8 @@ let itemVars = {
             name: "oil flask",
             fuel:true,
             light:2,
-            uses:3
+            uses:3,
+            value:5
         }
     },
     treasure:{

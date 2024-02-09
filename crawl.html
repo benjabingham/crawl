@@ -12,6 +12,7 @@
     <script src="javascript/vars/ItemVars.js"></script>
     <script src="javascript/vars/MonsterVars.js"></script>
     <script src="javascript/LootManager.js"></script>
+    <script src="javascript/Shop.js"></script>
     <script src="javascript/Save.js"></script>
     <script src="javascript/GameMaster.js"></script>
     <script src="javascript/EntityManager.js"></script>
@@ -35,6 +36,14 @@
                 <option>Choose a map</option>
             </select>
         </div>
+        <div id = "shop-wrapper" class="inventory-wrapper">
+            Shop
+            <div id="shop" class="inventory">
+                <div id ="shop-list" class="inventory-list"></div>
+                <div id ="shop-description" class="inventory-description"></div>
+            </div>
+            <!--<div id="shop-gold-div" class="gold-div"></div>-->
+        </div>
     </div>
     <div id="dungeon-screen">
         <div id = "resources">
@@ -54,14 +63,7 @@
                 <div id="log"></div>
             </div>
         </div>
-        <div id = "inventory-wrapper">
-            Inventory
-            <div id="inventory">
-                <div id ="inventory-list"></div>
-                <div id ="inventory-description"></div>
-            </div>
-        </div>
-        
+        <!--
         <div id = "controls">
             <div id="weapon-select-div">
                 <label for="weapon-select">Weapon select</label>
@@ -93,6 +95,15 @@
                 
             </div>
         </div>
+    -->
+    </div>
+    <div id = "inventory-wrapper" class="inventory-wrapper">
+        Inventory
+        <div id="inventory" class="inventory">
+            <div id ="inventory-list" class="inventory-list"></div>
+            <div id ="inventory-description" class="inventory-description"></div>
+        </div>
+        <div id="gold-div"class="gold-div"></div>
     </div>
     
     <div id = 'instructions-div'>

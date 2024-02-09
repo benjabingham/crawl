@@ -13,43 +13,6 @@ class Player {
         this.inventorySlots = 10;
         this.inventory = [
             {
-                weapon:true,
-                name:"stick",
-                damage:1,
-                stunTime:1,
-                weight:1
-            },
-            /*
-            {
-                weapon:true,
-                name:"shortSword",
-                damage:3,
-                stunTime:2,
-                weight:1
-            },
-            {
-                weapon:true,
-                name:"longsword",
-                damage:8,
-                stunTime:3,
-                weight:2,
-                type:{
-                    sword:true,
-                    edged:true
-                }
-            },
-            {
-                weapon:true,
-                name:"greatsword",
-                damage:12,
-                stunTime:4,
-                weight:3,
-                type:{
-                    sword:true,
-                    edged:true
-                }
-            },*/
-            {
                 usable:true,
                 name: "oil flask",
                 fuel:true,
@@ -57,6 +20,8 @@ class Player {
                 uses:3
             }
         ];
+        this.inventoryCleanup();
+        this.gold = 15;
         this.equipped = false;
         console.log('new player');
     }

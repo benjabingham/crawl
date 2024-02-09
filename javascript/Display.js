@@ -12,7 +12,7 @@ class Display{
         this.giveReminderTextBehavior();
         this.enemyControlInit();
         this.boardDisplayInit();
-        this.DisplayDungeonInventory();
+        this.displayInventory(true);
     }
 
     showHomeScreen(gameMaster){
@@ -26,12 +26,15 @@ class Display{
         this.hideAllScreens();
         $('#town-screen').show();
         this.populateMapSelectDropdown(gameMaster);
+        this.displayInventory(false);
+        this.displayShop();
     }
 
     hideAllScreens(){
         $('#town-screen').hide();
         $('#home-screen').hide();
         $('#dungeon-screen').hide();
+        $('#inventory-wrapper').hide();
     }
 
     giveSaveButtonsBehavior(gameMaster){
@@ -75,10 +78,11 @@ class Display{
                     }else{
                         boardString += '.';
                     }
+                    boardString += ' ';  
                 }else{
-                    boardString += '▓';
+                    boardString += '▓▓';
                 }
-                boardString += ' ';            
+                          
             }
             boardString += "\n";
         }
@@ -170,90 +174,136 @@ class Display{
         this.populateEnemySelectDropdown();
     }
 
-    DisplayDungeonInventory(){
+    displayInventory(dungeonMode=true){
         $('#inventory-wrapper').show();
         $('#inventory-list').html('');
-        let slot = 0;
         let inventory = this.entityManager.player.inventory;
         inventory.forEach((item) =>{
-            item.slot = slot;
-            this.addInventoryItem(item);
-            slot++
+            this.addInventoryItem(item, dungeonMode, 'inventory');
         })
+        this.displayGold();
     }
 
-    addInventoryItem(item){
+    displayShop(){
+        let shop = this.entityManager.gameMaster.shop;
+        console.log(shop);
+        $('#shop-wrapper').show();
+        $('#shop-list').html('');
+        let inventory = shop.getInventory();
+        inventory.forEach((item) =>{
+            this.addInventoryItem(item, false, 'shop');
+        })
+        this.displayGold();
+    }
+
+    displayGold(){
+        let player = this.entityManager.player;
+        $('.gold-div').text(player.gold+" gold");
+    }
+
+    addInventoryItem(item, dungeonMode, inventory="inventory"){
         let slot = item.slot;
         let display = this;
         let player = this.entityManager.player;
         let gameMaster = this.entityManager.gameMaster;
+        let shop = gameMaster.shop;
+        let itemValue = item.value;
+        if(!itemValue){
+            itemValue = '0';
+        }
         
-        $('#inventory-list').append(
-            $('<div>').addClass('inventory-slot').attr('id','inventory-slot-'+slot).append(
-                $('<div>').text(slot+1).addClass('item-slot-number')
+        $('#'+inventory+'-list').append(
+            $('<div>').addClass('inventory-slot').attr('id',inventory+'-slot-'+slot).append(
+                (inventory == 'inventory') ? $('<div>').text(slot+1).addClass('item-slot-number') : ''
             ).append(
-                $('<div>').attr('id','item-name-'+slot).addClass('item-name').text(item.name)
+                $('<div>').attr('id',inventory+'-item-name-'+slot).addClass('item-name').text(item.name)
             ).on('click',function(){
-                display.displayItemInfo(item);
+                display.displayItemInfo(item, inventory);
             }).append(
-                $('<div>').addClass('item-buttons').attr('id','item-buttons-'+slot)
+                $('<div>').addClass('item-buttons').attr('id',inventory+'-item-buttons-'+slot)
             )
         )
 
         if(item.uses){
-            $('#item-name-'+slot).append("("+item.uses+")")
+            $('#'+inventory+'-item-name-'+slot).append("("+item.uses+")")
         }
 
-        if(item.weapon && !player.equipped){
-            $('#item-buttons-'+slot).append(
-                $('<button>').addClass('item-button').text('equip').on('click',function(){
-                    //spoof button press...
-                    gameMaster.resolvePlayerInput({originalEvent:{key:slot+1,location:0}});
+        if(dungeonMode){
+            if(item.weapon && !player.equipped){
+                $('#'+inventory+'-item-buttons-'+slot).append(
+                    $('<button>').addClass('item-button').text('equip').on('click',function(){
+                        //spoof button press...
+                        gameMaster.resolvePlayerInput({originalEvent:{key:slot+1,location:0}});
+                    })
+                )
+            }
+            if(item.weapon && player.equipped && player.equipped.slot == slot){
+                $('#'+inventory+'-item-buttons-'+slot).append(
+                    $('<button>').addClass('item-button').text('unequip').on('click',function(){
+                        gameMaster.resolvePlayerInput({originalEvent:{key:slot+1,location:0}});
+                    })
+                )
+            }
+            if(item.usable){
+                $('#'+inventory+'-item-buttons-'+slot).append(
+                    $('<button>').addClass('item-button').text('use').on('click',function(){
+                        gameMaster.resolvePlayerInput({originalEvent:{key:slot+1,location:0}});
+                    })
+                )
+            }
+        }else if (inventory == 'inventory'){
+            $('#'+inventory+'-item-buttons-'+slot).append(
+                $('<button>').addClass('item-button').text('sell - '+itemValue).on('click',function(){
+                    shop.sellItem(slot);
+                    display.displayShop();
+                    display.displayInventory(false);
+                })
+            )
+        }else if(inventory == 'shop'){
+            $('#'+inventory+'-item-buttons-'+slot).append(
+                $('<button>').addClass('item-button').text('buy - '+item.price).on('click',function(){
+                    shop.buyItem(slot);
+                    display.displayShop();
+                    display.displayInventory(false);
                 })
             )
         }
-        if(item.weapon && player.equipped && player.equipped.slot == slot){
-            $('#item-buttons-'+slot).append(
-                $('<button>').addClass('item-button').text('unequip').on('click',function(){
-                    gameMaster.resolvePlayerInput({originalEvent:{key:slot+1,location:0}});
-                })
-            )
-        }
-
-        if(item.usable){
-            $('#item-buttons-'+slot).append(
-                $('<button>').addClass('item-button').text('use').on('click',function(){
-                    gameMaster.resolvePlayerInput({originalEvent:{key:slot+1,location:0}});
-                })
-            )
-        }
+        
     }
 
-    displayItemInfo(item){
-        $('#inventory-description').html('').append(
-            $('<div>').addClass('item-name').attr('id','inventory-description-title').text(item.name)
+    displayItemInfo(item, inventory){
+        console.log({
+            item:item,
+            inventory:inventory
+        })
+        let itemValue = item.value;
+        if(!itemValue){
+            itemValue = '0';
+        }
+        $('#'+inventory+'-description').html('').append(
+            $('<div>').addClass('item-name').attr('id',inventory+'-description-title').addClass('inventory-description-title').text(item.name)
         ).append(
-            $('<div>').attr('id','inventory-description-body')
+            $('<div>').attr('id',inventory+'-description-body').addClass('inventory-description-body')
         )
 
-        if(item.value){
-            $('#inventory-description').append(
+        if(itemValue){
+            $('#'+inventory+'-description').append(
                 $('<div>').addClass('item-value').append(
-                    $('<div>').addClass('item-title').text('Value:').append(item.value)
+                    $('<div>').addClass('item-title').text('Value:').append(itemValue)
                 )
             )
         }
 
         if(item.weapon){
-            $('#inventory-description-body').append(
+            $('#'+inventory+'-description-body').append(
                 $('<div>').addClass('item-stats-normal').append(
                     $('<div>').addClass('item-title').text('Normal:')
                 ).append(
-                    $('<div>').addClass('item-damage').attr('id','item-damage-'+item.slot).text('Damage: '+item.damage)
+                    $('<div>').addClass('item-damage').attr('id',inventory+'-item-damage-'+item.slot).text('Damage: '+item.damage)
                 ).append(
-                    $('<div>').addClass('item-stun').attr('id','item-stun-'+item.slot).text('stun: '+item.stunTime)
+                    $('<div>').addClass('item-stun').attr('id',inventory+'-item-stun-'+item.slot).text('stun: '+item.stunTime)
                 ).append(
-                    $('<div>').addClass('item-weight').attr('id','item-weight-'+item.slot).text('weight: '+item.weight)
+                    $('<div>').addClass('item-weight').attr('id',inventory+'-item-weight-'+item.slot).text('weight: '+item.weight)
                 )
             )            
         }
@@ -262,7 +312,7 @@ class Display{
             console.log(val);
             if(item[val]){
                 let special = item[val];
-                $('#inventory-description-body').append(
+                $('#'+inventory+'-description-body').append(
                     $('<div>').addClass('item-stats-normal').append(
                         $('<div>').addClass('item-title').text(val+":")
                     ).append(

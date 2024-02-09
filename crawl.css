@@ -133,19 +133,19 @@ html{
     width:fit-content
 }
 
-#inventory-wrapper{
+.inventory-wrapper{
     margin:auto;
     width:875px;
 }
 
-#inventory{
+.inventory{
     background-color: #ddd;
     color: #222;
     display:flex;
     height:10rem;
 }
 
-#inventory-list{
+.inventory-list{
     width:600px;
     display:grid;
     grid-template-columns: repeat(2, 1fr);
@@ -186,19 +186,19 @@ html{
     height:fit-content;
 }
 
-#inventory-description-title{
+.inventory-description-title{
     text-align:center;
     width:100%;
 }
 
-#inventory-description{
+.inventory-description{
     outline:1px solid black;
     margin-left:auto;
     width:250px;
     padding:5px;
 }
 
-#inventory-description-body{
+.inventory-description-body{
     height:110px;
     display:grid;
     grid-template-columns: repeat(2, 1fr);

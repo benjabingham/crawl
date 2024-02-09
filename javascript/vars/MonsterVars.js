@@ -71,6 +71,10 @@ let monsterVars = {
         hitDice:1,
         damage:4,
         inventorySlots: 0,
+        inventory:[{
+            name:"dire rat pelt",
+            value:1
+        }]
     },
     wolf:{
         name:"wolf",

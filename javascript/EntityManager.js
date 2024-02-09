@@ -633,6 +633,9 @@ class EntityManager{
     }
 
     dropItem(item,x,y){
+        if(!item){
+            return false;
+        }
         item.x = x;
         item.y = y;
         item.item = true;

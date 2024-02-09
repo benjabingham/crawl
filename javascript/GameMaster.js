@@ -7,6 +7,7 @@ class GameMaster{
         this.board = this.entityManager.board;
         this.display = new Display(this.entityManager, this.board);
         this.dungeonId = 0;
+        this.shop = new Shop(this);
     }
 
     reset(){
@@ -67,7 +68,7 @@ class GameMaster{
         this.board.placeEntities(this.log);
         this.display.printBoard(board.boardArray);
         this.player.inventoryCleanup();
-        this.display.DisplayDungeonInventory();
+        this.display.displayInventory(true);
 
         this.display.fillBars(this.player);
         this.entityManager.saveSnapshot();
