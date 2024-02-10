@@ -51,4 +51,35 @@ class Save{
         console.log(this);
     }
 
+    mapInit(json){
+        let roomString = json.name;
+        let board = json.board;
+        let values = json.values;
+        json.roster = [];
+        let roster = json.roster;
+        let counter = 0;
+        let x = 0;
+        let y = 0;
+        //get roster
+        board.forEach((row)=>{
+            row.forEach((item)=>{
+                if(item){
+                    roster.push({
+                        code:item,
+                        value:values[item],
+                        index:counter,
+                        alive:true,
+                        x:x,
+                        y:y
+                    })
+                }
+                x++;
+            })
+            y++;
+            x=0;
+        })
+        this.maps[roomString] = json;
+        console.log('loaded');
+    }
+
 }

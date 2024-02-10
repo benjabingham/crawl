@@ -21,6 +21,8 @@ class EntityManager{
         this.gameMaster = gameMaster;
 
         this.lootManager = new LootManager();
+
+        this.currentMap;
     }
 
     wipeEntities(){
@@ -65,13 +67,12 @@ class EntityManager{
         this.entities[id] = entity;
         //console.log(entity);
     
-        return id;
+        return this.entities[id];
     }
 
     swordInit(owner, rotation = 3){
-        let id = this.entityInit('*', 'sword', -1,-1);
-        let sword = this.getEntity(id);
-
+        let sword = this.entityInit('*', 'sword', -1,-1);
+        let id = sword.id;
         sword.owner = owner;
         sword.equipped = this.player.equipped;
         sword.rotation = rotation;
@@ -535,17 +536,7 @@ class EntityManager{
     reapWounded(){
         for (const [k,entity] of Object.entries(this.entities)){
             if (entity.mortal > entity.threshold && entity.behavior != 'dead'){
-                this.transmitMessage(entity.name+" is slain!");
-                entity.name += " corpse";
-                this.setProperty(k,'behavior', 'dead');
-                this.setProperty(k,'tempSymbol', 'x');
-                this.setProperty(k,'stunned', 0);
-                this.setProperty(k,'container',true);
-                if(entity.tiny){
-                    entity.item = true;
-                    entity.walkable = true;
-                    entity.tempSymbol = '*';
-                }
+                this.kill(entity);
             }
         }
         //console.log(player.health);
@@ -557,28 +548,22 @@ class EntityManager{
         //console.log('Stamina: ' +player.stamina);
         //console.log('Health: ' + player.health);
     }
-/*
-    switchWeapon(weaponName){
-        let id = this.getProperty("player", "sword");
-        let sword = this.getEntity(id);
-        let x = sword.x;
-        let y = sword.y;
-        let rotation = sword.rotation;
-        let owner = sword.owner;
-        let symbol = sword.symbol;
-        
-        this.entities[id] = JSON.parse(JSON.stringify(itemVars.weapons[weaponName]));    
-        sword = this.getEntity(id);
 
-        sword.x = x;
-        sword.y = y;
-        sword.rotation = rotation;
-        sword.owner = owner;
-        sword.symbol = symbol;
-        sword.id = id;
-        this.transmitMessage('equipped weapon: '+weaponName);
-        console.log(sword);
-    }*/
+    kill(entity){
+        this.transmitMessage(entity.name+" is slain!");
+        entity.name += " corpse";
+        this.setProperty(k,'behavior', 'dead');
+        this.setProperty(k,'tempSymbol', 'x');
+        this.setProperty(k,'stunned', 0);
+        this.setProperty(k,'container',true);
+        if(entity.tiny){
+            entity.item = true;
+            entity.walkable = true;
+            entity.tempSymbol = '*';
+        }
+        let roster = this.currentMap.roster;
+        roster[entity.index].alive = false;
+    };
 
     equipWeapon(weapon){
         let id = this.getProperty("player", "sword");
@@ -630,6 +615,8 @@ class EntityManager{
         this.lootManager.giveMonsterLoot(monster);
 
         this.entities[id] = monster;
+
+        return this.entities[id];
     }
 
     dropItem(item,x,y){
@@ -791,22 +778,25 @@ class EntityManager{
         this.board.boardInit();
         console.log(json.destinations);
         this.board.destinations = json.destinations;
-        for(let y=0;y<this.board.height;y++){
-            for(let x=0;x<this.board.width;x++){
-                let entityCode = json.board[y][x];
-                if(entityCode){
-                    let entity = json.values[entityCode];
-                    if(entity == "player"){
-                        this.playerInit(x, y)
-                    }else if(entity.monster){
-                        this.monsterInit(entity.monster,x,y);
-                    }else{
-                        this.entityInit(entity.symbol, entity.behavior, x, y, entity.hitDice,entity.damage, entity.behaviorInfo, entity.name);
-                    }
-
-                }
+        json.roster.forEach((entity)=>{
+            console.log(entity);
+            let value = entity.value;
+            let entityObj;
+            let x = entity.x;
+            let y = entity.y;
+            if(value == "player"){
+                this.playerInit(x, y)
+            }else if(value.monster){
+                entityObj = this.monsterInit(value.monster,x,y);
+            }else{
+                entityObj = this.entityInit(value.symbol, value.behavior, x, y, value.hitDice,value.damage, value.behaviorInfo, value.name);
             }
-        }
+            if(entityObj){
+                entityObj.index = entity.index;
+            }
+        })
+
+        this.currentMap = json;
         
     }
 

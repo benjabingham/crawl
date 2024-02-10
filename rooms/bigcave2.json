@@ -1,4 +1,5 @@
 {
+    "name":"bigcave2.json",
     "width":30,
     "height":20,
     "board":[
@@ -33,12 +34,42 @@
         },
         "2":"player",
         
-        "3":{"monster":"rat"},
-        "4":{"monster":"direRat"},
-        "5":{"monster":"ogre"},
-        "6":{"monster":"goblin"},
-        "7":{"monster":"chest"},
-        "8":{"monster":"wolf"}
+        "3":{
+            "monster":"rat",
+            "code":"3",
+            "spawnChance":80,
+            "respawnChance":20
+        },
+        "4":{
+            "monster":"direRat",
+            "code":"4",
+            "spawnChance":60,
+            "respawnChance":10
+        },
+        "5":{
+            "monster":"ogre",
+            "code":"5",
+            "spawnChance":60,
+            "respawnChance":5
+        },
+        "6":{
+            "monster":"goblin",
+            "code":"6",
+            "spawnChance":80,
+            "respawnChance":10
+        },
+        "7":{
+            "monster":"chest",
+            "code":"7",
+            "spawnChance":100,
+            "respawnChance":0
+        },
+        "8":{
+            "monster":"wolf",
+            "code":"8",
+            "spawnChance":90,
+            "respawnChance":10
+        }
     },
     "destinations":{
         "left":{

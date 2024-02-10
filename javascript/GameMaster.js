@@ -175,10 +175,9 @@ class GameMaster{
             fetch('./rooms/'+roomString)
             .then((response) => response.json())
             .then((json) => {
-                console.log('loaded');
-                this.save.maps[roomString] = json;
+                this.save.mapInit(json);
                 console.log(this.save);
-                this.entityManager.loadRoom(json)
+                this.entityManager.loadRoom(this.save.maps[roomString]);
                 this.startGame();
             })
         }
