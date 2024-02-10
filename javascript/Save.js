@@ -72,6 +72,7 @@ class Save{
                         x:x,
                         y:y
                     })
+                    counter++;
                 }
                 x++;
             })

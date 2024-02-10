@@ -552,10 +552,10 @@ class EntityManager{
     kill(entity){
         this.transmitMessage(entity.name+" is slain!");
         entity.name += " corpse";
-        this.setProperty(k,'behavior', 'dead');
-        this.setProperty(k,'tempSymbol', 'x');
-        this.setProperty(k,'stunned', 0);
-        this.setProperty(k,'container',true);
+        entity.behavior = 'dead';
+        entity.tempSymbol = 'x';
+        entity.stunned = 0;
+        entity.container = true;
         if(entity.tiny){
             entity.item = true;
             entity.walkable = true;
@@ -787,9 +787,13 @@ class EntityManager{
             if(value == "player"){
                 this.playerInit(x, y)
             }else if(value.monster){
-                entityObj = this.monsterInit(value.monster,x,y);
+                if(entity.alive){
+                    entityObj = this.monsterInit(value.monster,x,y);
+                }
             }else{
-                entityObj = this.entityInit(value.symbol, value.behavior, x, y, value.hitDice,value.damage, value.behaviorInfo, value.name);
+                if(entity.alive){
+                    entityObj = this.entityInit(value.symbol, value.behavior, x, y, value.hitDice,value.damage, value.behaviorInfo, value.name);
+                }
             }
             if(entityObj){
                 entityObj.index = entity.index;
