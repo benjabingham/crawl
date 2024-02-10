@@ -191,6 +191,10 @@ html{
     width:100%;
 }
 
+.fresh-true{
+    background-color: #dfcd9c;
+}
+
 .inventory-description{
     outline:1px solid black;
     margin-left:auto;

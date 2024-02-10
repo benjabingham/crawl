@@ -56,6 +56,7 @@ class Shop{
             if(item.tier == 'fuel'){
                 let fuel = this.getFuel();
                 fuel.slot = slot;
+                fuel.fresh = true;
                 this.inventory[slot] = fuel;
             }else{
                 let restockChance = Math.max(50-(item.tier*10),2);
@@ -65,8 +66,12 @@ class Shop{
                     let priceMultiplier = this.lootManager.roll(1,4) + item.tier;
                     newItem.price = Math.max(newItem.value,1) * priceMultiplier;
                     newItem.slot = slot;
+                    newItem.fresh = true;
                     this.inventory[slot] = newItem;
                 }
+            }
+            if(item.fresh){
+                item.fresh = false;
             }
         })
     }

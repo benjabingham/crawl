@@ -213,7 +213,7 @@ class Display{
         }
         
         $('#'+inventory+'-list').append(
-            $('<div>').addClass('inventory-slot').attr('id',inventory+'-slot-'+slot).append(
+            $('<div>').addClass('inventory-slot fresh-'+item.fresh).attr('id',inventory+'-slot-'+slot).append(
                 (inventory == 'inventory') ? $('<div>').text(slot+1).addClass('item-slot-number') : ''
             ).append(
                 $('<div>').attr('id',inventory+'-item-name-'+slot).addClass('item-name').text(item.name)
