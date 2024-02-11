@@ -2,6 +2,7 @@ class Save{
     constructor(){
         this.maps = {};
         this.player = new Player;
+        this.day = 0;
     }
 
     newSave(){

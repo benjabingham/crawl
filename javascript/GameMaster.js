@@ -203,6 +203,7 @@ class GameMaster{
         this.reset();
 
         if(destination.type == "town"){
+            this.save.day++;
             this.shop.restockInventory();
             this.display.showTownScreen(this);
         }else if(destination.type == "dungeon"){

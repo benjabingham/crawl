@@ -25,6 +25,7 @@ class Display{
     showTownScreen(gameMaster){
         this.hideAllScreens();
         $('#town-screen').show();
+        $('#day-div').text('day '+gameMaster.save.day);
         this.populateMapSelectDropdown(gameMaster);
         this.displayInventory(false);
         this.displayShop();
