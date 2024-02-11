@@ -84,4 +84,30 @@ class Save{
         console.log('loaded');
     }
 
+    catchUpMap(mapString){
+        let day = this.day;
+        let map = this.maps[mapString];
+        for(let i = map.lastDay; i < day; i++){
+            console.log(i);
+            this.mapRespawn(mapString);
+        }
+        map.lastDay = day;
+    }
+
+    mapRespawn(mapString){
+        let map = this.maps[mapString];
+        map.roster.forEach((entity)=>{
+            if(!entity.alive && entity.value.respawnChance){
+                let random = this.roll(0,99);
+                if(random < entity.value.respawnChance){
+                    entity.alive = true;
+                }
+            }
+        })
+    }
+
+    roll(min,max){
+        return Math.floor(Math.random()*(max-min+1))+min;
+    }
+
 }

@@ -774,12 +774,13 @@ class EntityManager{
 
     loadRoom(json){
         console.log(json);
+        this.gameMaster.save.catchUpMap(json.name);
         this.board.setDimensions(json.width,json.height)
         this.board.boardInit();
         console.log(json.destinations);
         this.board.destinations = json.destinations;
         json.roster.forEach((entity)=>{
-            console.log(entity);
+            //console.log(entity);
             let value = entity.value;
             let entityObj;
             let x = entity.x;
@@ -855,10 +856,6 @@ class EntityManager{
     }
 
     addMortality(id, mortal){
-        console.log({
-            entity:this.getEntity(id),
-            mortality:mortal
-        })
         mortal += Math.max(this.getProperty(id, 'mortal'),0);
         this.setProperty(id, 'mortal', mortal);
     }
