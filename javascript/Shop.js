@@ -95,6 +95,7 @@ class Shop{
         if(slot != -1){
             this.inventory[slot] = {purchased:true,tier:item.tier};
         }
+        item.fresh = false;
         player.inventory.push(item);
         player.inventoryCleanup();
         this.inventoryCleanup();

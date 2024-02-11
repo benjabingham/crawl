@@ -45,14 +45,14 @@ class LootManager{
                 edged:{
                     damage:3
                 },
-                value:.75
+                value:1
             },
             steel:{
                 name:'steel',
                 edged:{
                     damage:2
                 },
-                value:1
+                value:1.2
             },
             ironwood:{
                 name:'ironwood',
@@ -60,7 +60,7 @@ class LootManager{
                 blunt:{
                     damage:2
                 },
-                value:1.4
+                value:1.7
             },
             lightsteel:{
                 name:'lightsteel',
@@ -72,14 +72,14 @@ class LootManager{
                 edged:{
                     damage:2
                 },
-                value:1.7
+                value:2
             },
             silver:{
                 name:'silver',
                 edged:{
                     damage:-1
                 },
-                value:2
+                value:4
             },
             gold:{
                 name:'gold',
@@ -92,7 +92,7 @@ class LootManager{
                 blunt:{
                     damage:2
                 },
-                value:3
+                value:6
             },
             Adamantine:{
                 name:'adamantine',
@@ -100,7 +100,7 @@ class LootManager{
                 edged:{
                     damage:2
                 },
-                value:5
+                value:10
             }
         }
 
@@ -131,23 +131,23 @@ class LootManager{
             },
             lead:{
                 name:'lead',
-                value:1.4
+                value:2
             },
             sterling:{
                 name:'sterling silver',
-                value:2
+                value:5
             },
             silver:{
                 name:'silver',
-                value:3.5
+                value:8
             },
             gold:{
                 name:'gold',
-                value:6
+                value:10
             },
             platinum:{
                 name:'platinum',
-                value:10
+                value:20
             }
         }
 
