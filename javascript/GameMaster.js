@@ -206,6 +206,8 @@ class GameMaster{
             this.save.day++;
             this.shop.restockInventory();
             this.display.showTownScreen(this);
+            this.player.changeStamina(100);
+            this.player.light = 0;
         }else if(destination.type == "dungeon"){
             this.getRoom(destination.name);
         }

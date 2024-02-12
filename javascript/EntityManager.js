@@ -785,14 +785,16 @@ class EntityManager{
             let entityObj;
             let x = entity.x;
             let y = entity.y;
+            let random = this.roll(0,99);
+            let spawn = (random < entity.spawnChance || !entity.spawnChance);
             if(value == "player"){
                 this.playerInit(x, y)
             }else if(value.monster){
-                if(entity.alive){
+                if(entity.alive && spawn){
                     entityObj = this.monsterInit(value.monster,x,y);
                 }
             }else{
-                if(entity.alive){
+                if(entity.alive && spawn){
                     entityObj = this.entityInit(value.symbol, value.behavior, x, y, value.hitDice,value.damage, value.behaviorInfo, value.name);
                 }
             }

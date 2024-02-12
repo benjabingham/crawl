@@ -101,6 +101,7 @@ class Player {
         let slot = fuel.slot;
         this.light += fuel.light;
         this.light = Math.min(this.lightMax, this.light);
+        this.lightTime = 0;
 
         this.consume(slot);
     }
@@ -120,7 +121,7 @@ class Player {
         }
         this.lightTime += this.light;
         let random = Math.random()*1000;
-        if (random < this.lightTime-100){
+        if (random < this.lightTime-150){
             this.light--;
             this.lightTime = 0;
             log.addMessage('Your light dims...');
