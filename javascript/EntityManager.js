@@ -612,8 +612,6 @@ class EntityManager{
         monster.stunned = 0;
         monster.mortal = 0;
 
-        this.lootManager.giveMonsterLoot(monster);
-
         this.entities[id] = monster;
 
         return this.entities[id];
@@ -800,11 +798,27 @@ class EntityManager{
             }
             if(entityObj){
                 entityObj.index = entity.index;
+                if(!entity.inventory){
+                    this.lootManager.giveMonsterLoot(entityObj);
+                    entity.inventory = entityObj.inventory;
+                }else{
+                    entityObj.inventory = entity.inventory;
+                }
+
             }
         })
 
         this.currentMap = json;
         
+    }
+
+    updateSavedInventories(){
+        for (const [key, entity] of Object.entries(this.entities)) { 
+            if(entity.index){
+                let entitySave = this.currentMap.roster[entity.index];
+                entitySave.inventory = entity.inventory;
+            }
+        }
     }
 
     setProperty(id, Property, value){

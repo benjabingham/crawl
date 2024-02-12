@@ -11,6 +11,7 @@ class GameMaster{
     }
 
     reset(){
+        this.entityManager.updateSavedInventories();
         this.log.wipeLog();
         this.entityManager.wipeEntities();
     }
