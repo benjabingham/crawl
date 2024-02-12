@@ -22,7 +22,7 @@
     ],
     "values":{
         "1":{
-            "symbol":"W",
+            "symbol":"▓▓",
             "behavior":"wall",
             "hitDice":"100",
             "name":"wall"

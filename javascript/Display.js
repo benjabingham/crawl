@@ -58,13 +58,13 @@ class Display{
 
     boardDisplayInit(){
         let boardDiv = $("#board");
-        boardDiv.css('width',this.board.width*1.8+"rem");
+        boardDiv.css('width',17*1.8+"rem");
         let gameWindow = $("#game-window");
-        gameWindow.css('height',this.board.height*2+"rem");
-        $('#log').css('height',this.board.height*2-1.5+"rem");
+        gameWindow.css('height',17*2+"rem");
+        $('#log').css('height',17*2-1.5+"rem");
     }
     
-    printBoard(){
+    printBoardOld(){
         let boardArray = this.board.boardArray;
         let player = this.entityManager.player;
         let boardString = "";
@@ -83,6 +83,44 @@ class Display{
                 }else{
                     boardString += '▓▓';
                 }
+                          
+            }
+            boardString += "\n";
+        }
+        //console.log(boardString);
+        $("#board").text(boardString);
+    }
+
+    printBoard(){
+        let boardArray = this.board.boardArray;
+        let player = this.entityManager.player;
+        let playerPos = this.entityManager.getEntity('player');
+        let boardString = "";
+        
+        for(let displayY=0; displayY<17; displayY++){
+            //boardString += '|'
+            for(let displayX=0; displayX<17; displayX++){
+                let symbol = false;
+                let x = (displayX-8) + playerPos.x;
+                let y = (displayY-8) + playerPos.y;
+                if( x < 0 || y < 0 || y >= boardArray.length || x >= boardArray[y].length){
+                    boardString += '▒▒';
+                }else if(this.board.hasPlayerLos({x:x, y:y})){
+                    if(boardArray[y][x]){
+                        symbol = boardArray[y][x].tempSymbol ? boardArray[y][x].tempSymbol : boardArray[y][x].symbol;
+                        boardString += symbol;
+                    }else{
+                        boardString += '.';
+                    }
+                    if(!symbol || symbol.length < 2){
+                        boardString += ' ';  
+                    }
+                }else{
+                    
+                    boardString += '▒▒';
+                }
+
+                
                           
             }
             boardString += "\n";
