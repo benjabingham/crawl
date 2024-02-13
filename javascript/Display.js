@@ -64,33 +64,6 @@ class Display{
         $('#log').css('height',17*2-1.5+"rem");
     }
     
-    printBoardOld(){
-        let boardArray = this.board.boardArray;
-        let player = this.entityManager.player;
-        let boardString = "";
-        let symbol;
-        for(let i=0; i<boardArray.length; i++){
-            //boardString += '|'
-            for(let j=0; j<boardArray[i].length; j++){
-                if(this.board.hasPlayerLos({x:j, y:i})){
-                    if(boardArray[i][j]){
-                        symbol = boardArray[i][j].tempSymbol ? boardArray[i][j].tempSymbol : boardArray[i][j].symbol;
-                        boardString += symbol;
-                    }else{
-                        boardString += '.';
-                    }
-                    boardString += ' ';  
-                }else{
-                    boardString += '▓▓';
-                }
-                          
-            }
-            boardString += "\n";
-        }
-        //console.log(boardString);
-        $("#board").text(boardString);
-    }
-
     printBoard(){
         let boardArray = this.board.boardArray;
         let player = this.entityManager.player;
@@ -104,7 +77,7 @@ class Display{
                 let x = (displayX-8) + playerPos.x;
                 let y = (displayY-8) + playerPos.y;
                 if( x < 0 || y < 0 || y >= boardArray.length || x >= boardArray[y].length){
-                    boardString += '▒▒';
+                    boardString += '▓▓';
                 }else if(this.board.hasPlayerLos({x:x, y:y})){
                     if(boardArray[y][x]){
                         symbol = boardArray[y][x].tempSymbol ? boardArray[y][x].tempSymbol : boardArray[y][x].symbol;
@@ -116,8 +89,7 @@ class Display{
                         boardString += ' ';  
                     }
                 }else{
-                    
-                    boardString += '▒▒';
+                    boardString += '▓▓';
                 }
 
                 

@@ -154,9 +154,13 @@ class Board{
 
     calculateLosArray(player){
         this.LosInit();
-        for(let y=0;y<this.height;y++){
-            for(let x=0;x<this.width;x++){
-                if(x == 0 || y == 0 || x == this.width-1 || y == this.height-1){
+        for(let displayY=0;displayY<17;displayY++){
+            for(let displayX=0;displayX<17;displayX++){
+                let x = (displayX-8) + player.x;
+                let y = (displayY-8) + player.y;
+                //this.drawLos(player.x, player.y, x, y);
+                console.log({x:x,y:y})
+                if(displayX == 0 || displayY == 0 || displayX == 16 || displayY == 16){
                     this.drawLos(player.x, player.y, x, y);
                 }
             }
@@ -185,7 +189,7 @@ class Board{
             y += yIncrement;
 
             line.push({
-                x:Math.floor(x), y:Math.floor(y)
+                x:Math.floor(x+.5), y:Math.floor(y+.5)
             });
         }
 
