@@ -297,10 +297,16 @@ class Display{
             $('<div>').attr('id',inventory+'-description-body').addClass('inventory-description-body')
         )
 
+        if(item.flimsy){
+            $('#'+inventory+'-description').append(
+                $('<div>').addClass('item-break-chance').text('Degrade chance: '+item.flimsy+'%')
+            )
+        }
+
         if(itemValue){
             $('#'+inventory+'-description').append(
                 $('<div>').addClass('item-value').append(
-                    $('<div>').addClass('item-title').text('Value:').append(itemValue)
+                    $('<div>').text('Sell Value:').append(itemValue)
                 )
             )
         }

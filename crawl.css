@@ -203,7 +203,7 @@ html{
 }
 
 .inventory-description-body{
-    height:110px;
+    height:100px;
     display:grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 0px;

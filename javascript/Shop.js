@@ -32,11 +32,17 @@ class Shop{
     }
 
     stockInventory(){
-        let tiers = [0,1,1,2,3];
+        let tiers = [0,0,3,4,4];
         let slot = 0;
+        let unallowed = ['stone','bone','lead','silver','gold','adamantine','lightsteel','ironwood'];
         tiers.forEach((tier)=>{
             let priceMultiplier = this.lootManager.roll(1,4) + tier;
             let item = this.lootManager.getWeaponLoot(tier);
+            
+            while(!this.itemAllowed(item,unallowed)){
+                item = this.lootManager.getWeaponLoot(tier);                
+            }
+            
             item.price = Math.max(item.value,1) * priceMultiplier;
             item.slot = slot;
             item.tier = tier;
@@ -50,7 +56,22 @@ class Shop{
         slot++;
     }
 
+    itemAllowed(item,unallowed){
+        
+        let name = item.name;
+        let result = true;
+        unallowed.forEach((value)=>{
+            if (name.includes(value)){
+                result = false;
+            }
+        })
+        
+
+        return result;
+    }
+
     restockInventory(){
+        let unallowed = ['stone','bone','lead','silver','gold'];
         this.inventory.forEach((item)=>{
             let slot = item.slot;
             if(item.tier == 'fuel'){
@@ -62,11 +83,15 @@ class Shop{
                 let restockChance = Math.max(50-(item.tier*10),2);
                 let random = this.lootManager.roll(1,99);
                 if(random < restockChance || item.purchased){
-                    let newItem = this.lootManager.getWeaponLoot(item.tier)
+                    let newItem = this.lootManager.getWeaponLoot(item.tier);
+                    while(!this.itemAllowed(newItem,unallowed)){
+                        newItem = this.lootManager.getWeaponLoot(item.tier);                
+                    }
                     let priceMultiplier = this.lootManager.roll(1,4) + item.tier;
                     newItem.price = Math.max(newItem.value,1) * priceMultiplier;
                     newItem.slot = slot;
                     newItem.fresh = true;
+                    newItem.tier = item.tier;
                     this.inventory[slot] = newItem;
                 }
             }

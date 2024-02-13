@@ -124,11 +124,12 @@ class Board{
             //console.log(point);
             if(lineOfSight){
                 this.setLineOfSight(point.x, point.y, lineOfSight);
+                if(this.wallAt(point.x,point.y)){
+                    lineOfSight = false;
+                }
             }
             
-            if(this.wallAt(point.x,point.y)){
-                lineOfSight = false;
-            }
+            
 
         })
 
@@ -154,13 +155,14 @@ class Board{
 
     calculateLosArray(player){
         this.LosInit();
-        for(let displayY=0;displayY<17;displayY++){
-            for(let displayX=0;displayX<17;displayX++){
-                let x = (displayX-8) + player.x;
-                let y = (displayY-8) + player.y;
-                //this.drawLos(player.x, player.y, x, y);
-                console.log({x:x,y:y})
-                if(displayX == 0 || displayY == 0 || displayX == 16 || displayY == 16){
+        let losDistance = 25
+        let losMin = 8-losDistance
+        let losMax = 8+losDistance
+        for(let displayY=losMin;displayY<=losMax;displayY++){
+            for(let displayX=losMin;displayX<=losMax;displayX++){
+                if(displayX == losMin || displayY == losMin || displayX == losMax || displayY == losMax){
+                    let x = (displayX-8) + player.x;
+                    let y = (displayY-8) + player.y;
                     this.drawLos(player.x, player.y, x, y);
                 }
             }

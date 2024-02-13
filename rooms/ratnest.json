@@ -19,7 +19,7 @@
     "values":{
         "1":"player",
         "2":{
-            "symbol":"W",
+            "symbol":"▒▒",
             "behavior":"wall",
             "hitDice":"100",
             "name":"wall"

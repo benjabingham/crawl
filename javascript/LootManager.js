@@ -3,7 +3,7 @@ class LootManager{
         this.weaponMaterials = {
             wood:{
                 name:'wooden',
-                flimsy:true,
+                flimsy:5,
                 stunTime: -1,
                 edged:{
                     damage:-2
@@ -15,7 +15,7 @@ class LootManager{
             },
             bone:{
                 name:'bone',
-                flimsy:true,
+                flimsy:8,
                 stunTime:-1,
                 edged:{
                     damage:-1
@@ -24,7 +24,7 @@ class LootManager{
             },
             stone:{
                 name:'stone',
-                flimsy:true,
+                flimsy:5,
                 weight:2,
                 stunTime:3,
                 blunt:{
@@ -37,6 +37,7 @@ class LootManager{
             },
             lead:{
                 name:'lead',
+                flimsy:3,
                 weight:1,
                 stunTime:2,
                 blunt:{
@@ -47,12 +48,22 @@ class LootManager{
                 },
                 value:1
             },
+            bronze:{
+                name:'bronze',
+                flimsy:2,
+                value:1
+            },
+            iron:{
+                name:'iron',
+                flimsy:1,
+                value:1.2,
+            },
             steel:{
                 name:'steel',
                 edged:{
                     damage:2
                 },
-                value:1.2
+                value:1.4
             },
             ironwood:{
                 name:'ironwood',
@@ -76,6 +87,7 @@ class LootManager{
             },
             silver:{
                 name:'silver',
+                flimsy:5,
                 edged:{
                     damage:-1
                 },
@@ -85,7 +97,7 @@ class LootManager{
                 name:'gold',
                 weight:1,
                 stunTime:2,
-                flimsy:true,
+                flimsy:8,
                 edged:{
                     damage:-2
                 },
@@ -154,19 +166,16 @@ class LootManager{
         this.weaponModifiers = {
             worn:{
                 name:'worn',
-                flimsy:true,
+                flimsy:1,
                 edged:{
-                    damage:-3
-                },
-                blunt:{
                     damage:-1
                 },
-                value:.7
+                value:.4
             },
             craftTiers:{
                 poor:{
                     name:'poor',
-                    flimsy:true,
+                    flimsy:3,
                     variance:{
                         positive:0,
                         negative:50
@@ -175,6 +184,7 @@ class LootManager{
                 },
                 rustic:{
                     name:'rustic',
+                    flimsy:1,
                     variance:{
                         positive:20,
                         negative:50
@@ -314,6 +324,7 @@ class LootManager{
     }
 
     applyModifier(item, modifier, recursion = false){
+        item[modifier.name] = true;
         for (const [key, value] of Object.entries(modifier)){
             switch(key){
                 case 'name':
@@ -328,7 +339,10 @@ class LootManager{
                     }
                     break;
                 case 'flimsy':
-                    item[key] = true;
+                    if(!item[key]){
+                        item[key] = 0;
+                    }
+                    item[key]+= value;
                     break;
                 case 'blunt':
                 case 'edged':
@@ -341,6 +355,7 @@ class LootManager{
                         item[key] *= value;
                         item[key] += .5;
                         item[key] = Math.floor(item[key]);
+                        item[key] = Math.max(item[key], 1);
                     }
             }
         }
@@ -352,6 +367,14 @@ class LootManager{
                 lootManager.applyModifier(item[val], modifier);
             }
         })
+    }
+
+    breakWeapon(item){
+        item.name += " (broken)";
+        item.weapon = false;
+        item.value *= 0.7;
+        item.value = Math.floor(item.value);
+        item.value = Math.max(item.value,1);
     }
 
     roll(min,max){

@@ -10,7 +10,7 @@ let itemVars = {
                 blunt:true,
                 long:true
             },
-            value:2
+            value:3
         },
         club:{
             weapon:true,
@@ -29,7 +29,7 @@ let itemVars = {
                     blunt:true
                 }
             },
-            value:1
+            value:2
         },
         mace:{
             weapon:true,
@@ -154,7 +154,7 @@ let itemVars = {
             },
             swing:{
                 damage:6,
-                stunTime:3,
+                stunTime:4,
                 weight:1,
                 type:{
                     edged:true
@@ -200,7 +200,7 @@ let itemVars = {
                     long:true
                 }
             },
-            value:7
+            value:8
         },
     },
     fuel:{

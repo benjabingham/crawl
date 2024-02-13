@@ -82,7 +82,7 @@ class EntityManager{
         this.setProperty(owner,'sword', id);
 
         if(sword.equipped){
-            this.equipWeapon(this.player.equipped);
+            //this.equipWeapon(this.player.equipped);
         }
         
         //this.switchWeapon('stick');
@@ -108,7 +108,6 @@ class EntityManager{
         let sword = this.getEntity(id);
         console.log(sword);
         if(!sword.equipped){
-            console.log(sword.equipped);
             return;
         }
         let ownerId = sword.owner;
@@ -127,6 +126,7 @@ class EntityManager{
             if(target.id != id && target.behavior != 'wall'){
                 this.attack(sword,target);
                 if (ownerId == 'player'){
+                    
                     let strikeType = this.getStrikeType(sword);
                     let weight;
                     if(sword[strikeType]){
@@ -145,12 +145,30 @@ class EntityManager{
             }
         }
         //if sword hasn't been placed somewhere else as result of attack...
-        if(rotation == sword.rotation && sword.x == swordPosition.x && sword.y == swordPosition.y){
+        if(rotation == sword.rotation && sword.x == swordPosition.x && sword.y == swordPosition.y && sword.equipped){
             this.setPosition(id,x,y);
         }
         if (this.player.stamina < 0){
             this.cancelAction();
             console.log('ACTION CANCELLED');
+        }
+    }
+
+    degradeItem(item, modifier = 0, multiplier = 1){
+        let degradeChance = (item.flimsy) + modifier;
+        let random = (Math.random()*100) * (1/multiplier);
+        if(random < degradeChance){
+            if(!item.worn){
+                this.lootManager.applyModifier(this.player.equipped,this.lootManager.weaponModifiers.worn);
+                this.lootManager.applyModifier(item,this.lootManager.weaponModifiers.worn);
+
+                this.transmitMessage(item.name + ' is showing wear!');
+            }else{
+                this.lootManager.breakWeapon(this.player.equipped);
+                this.player.unequipWeapon(this.gameMaster);
+                this.transmitMessage(item.name + ' has broken!');
+                this.removeEntity(item.id);
+            }
         }
     }
 
@@ -287,6 +305,11 @@ class EntityManager{
             this.sturdy(attacker,target);
             console.log(target);
         }
+
+        if(attacker.owner == 'player'){
+            this.degradeItem(attacker,0,0.25);
+        }
+        
     }
 
     knock(knockedId, knockerId){
@@ -441,8 +464,9 @@ class EntityManager{
             this.transmitMessage(entity.name+" attacks your weapon...");
             let damage = this.roll(0,entity.damage);
             this.player.changeStamina(damage * -1);
-            console.log(this.player.stamina);
-            console.log(damage);
+            if(damage < 1){
+                this.degradeItem(sword, damage*0.25, 1);
+            }
         }
         let beatChance = 0;
         if(entity.behaviorInfor){
@@ -455,10 +479,11 @@ class EntityManager{
             this.player.changeStamina(0);
             this.transmitMessage(entity.name+" knocks your weapon out of the way!");
             this.knockSword(sword.id);
-        }else{
+        }else if(this.player.equipped){
             this.transmitMessage("You hold steady!");
 
         }
+        
     }
 
     sturdy(attacker,target){
@@ -729,9 +754,13 @@ class EntityManager{
         let snapshot = this.history.pop();
         this.entities = snapshot.entities;
         this.board.placeEntities(this.log);
+        
         //console.log(snapshot.player);
 
         this.player.setPlayerInfo(snapshot.player);
+        if(this.player.equipped){
+            this.player.equipped = this.player.inventory[this.player.equipped.slot];
+        }
     }
 
     cancelAction(){
