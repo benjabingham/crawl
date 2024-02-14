@@ -1,7 +1,7 @@
 let monsterVars = {
     goblin:{
         name:"goblin",
-        symbol:"G",
+        symbol:"Go",
         behavior:"chase",
         behaviorInfo:{
             focus:15,
@@ -10,7 +10,7 @@ let monsterVars = {
         },
         hitDice:1,
         damage:4,
-        inventorySlots: 10,
+        inventorySlots: 1,
         loot:{
             weapon:{
                 chance:5,
@@ -24,7 +24,7 @@ let monsterVars = {
     },
     ogre:{
         name:"ogre",
-        symbol:"O",
+        symbol:"Og",
         behavior:"chase",
         behaviorInfo:{
             focus:7,
@@ -38,18 +38,18 @@ let monsterVars = {
         inventorySlots: 10,
         loot:{
             weapon:{
-                chance:50,
-                tier:2
+                chance:20,
+                tier:1
             },
             treasure:{
-                chance:50,
+                chance:30,
                 tier:2
             }
         }
     },
     rat:{
         name:"rat",
-        symbol:"R",
+        symbol:"Ra",
         behavior:"chase",
         behaviorInfo:{
             focus:15,
@@ -61,7 +61,7 @@ let monsterVars = {
     },
     direRat:{
         name:"dire rat",
-        symbol:"D",
+        symbol:"Dr",
         behavior:"chase",
         behaviorInfo:{
             focus:20,
@@ -78,7 +78,7 @@ let monsterVars = {
     },
     wolf:{
         name:"wolf",
-        symbol:"O",
+        symbol:"Wo",
         behavior:"chase",
         behaviorInfo:{
             focus:25,
@@ -88,10 +88,14 @@ let monsterVars = {
         hitDice:1,
         damage:5,
         inventorySlots: 0,
+        inventory:[{
+            name:"wolf pelt",
+            value:2
+        }]
     },
     direWolf:{
         name:"dire wolf",
-        symbol:"D",
+        symbol:"Dw",
         behavior:"chase",
         behaviorInfo:{
             focus:25,
@@ -101,10 +105,14 @@ let monsterVars = {
         hitDice:3,
         damage:8,
         inventorySlots: 0,
+        inventory:[{
+            name:"dire wolf pelt",
+            value:4
+        }]
     },
     dummy:{
         name:"dummy",
-        symbol:"D",
+        symbol:"Du",
         behavior:"",
         hitDice:100,
         damage:8,
@@ -112,7 +120,7 @@ let monsterVars = {
     },
     chest:{
         name:"chest",
-        symbol:"C",
+        symbol:"Ch",
         behavior:"",
         hitDice:0,
         damage:4,
@@ -120,8 +128,8 @@ let monsterVars = {
         container: true,
         loot:{
             weapon:{
-                chance:100,
-                tier:2
+                chance:50,
+                tier:1
             },
             treasure:{
                 chance:100,

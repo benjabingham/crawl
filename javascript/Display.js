@@ -8,9 +8,6 @@ class Display{
         console.log('showDungeonScreen');
         this.hideAllScreens();
         $('#dungeon-screen').show();
-        this.populateWeaponSelectDropdown();
-        this.giveReminderTextBehavior();
-        this.enemyControlInit();
         this.boardDisplayInit();
         this.displayInventory(true);
     }
@@ -29,6 +26,9 @@ class Display{
         this.populateMapSelectDropdown(gameMaster);
         this.displayInventory(false);
         this.displayShop();
+        this.restButton();
+        this.fillBars(gameMaster.player);
+        this.nourishmentDiv(gameMaster.player);
     }
 
     hideAllScreens(){
@@ -100,35 +100,49 @@ class Display{
         //console.log(boardString);
         $("#board").text(boardString);
     }
-    
+
+    nourishmentDiv(player){
+        let nourishmentLevels = {0:'starving',1:'hungry',2:'sated',3:'well fed'}
+        let display = this;
+        $('#nourishment-level-div').text('you are '+nourishmentLevels[player.nourishmentLevel]);
+
+        let meals = [
+            {name:'meager meal',cost:3,nourishment:3},
+            {name:'proper meal',cost:4,nourishment:5},
+            {name:'exquisite meal',cost:6,nourishment:8},
+        ]
+
+        $('#meals-div').html('');
+
+        meals.forEach((meal)=>{
+            $('#meals-div').append(
+                $('<button>').text('buy '+meal.name+' - '+meal.cost).on('click',()=>{
+                    if(player.gold >= meal.cost){
+                        player.changeNourishment(meal.nourishment);
+                        player.gold-= meal.cost;
+                        display.nourishmentDiv(player);
+                        display.displayGold();
+                    }
+                })
+            )
+        })
+    }
     
     fillBars(player){
         let staminaPercent = player.staminaPercent;
         $('#stamina-level').css('width',staminaPercent+"px");
+
         let healthPercent = player.healthPercent;
-        //console.log(healthPercent);
         $('#health-level').css('width',healthPercent+"px");
-    }
-    
-    populateWeaponSelectDropdown(){
-        let weapons = ['stick','shortsword','longsword','rapier','greatsword','club','maul']
-        let entityManager = this.entityManager;
-        weapons.forEach((element =>{
-            $('#weapon-select').append(
-                $("<option />").val(element).text(element)
-            )
-        }))
-    
-        $('#weapon-select').on('change',function(){
-            entityManager.switchWeapon(this.value);
-        })
-    
-        $('#weapon-select-div').show();
+
+        let luckPercent = player.luckPercent;
+        $('#luck-level').css('width',luckPercent+"px");
+
     }
     
     populateMapSelectDropdown(gameMaster){
         $('#map-select').html('');
-        let maps = ['choose a map','ratnest','bigcave','trainingHall','trainingHallNoOgre']
+        let maps = ['choose a map','cave','trainingHall','trainingHallNoOgre']
         maps.forEach((element =>{
             $('#map-select').append(
                 $("<option />").val(element+".json").text(element)
@@ -140,49 +154,12 @@ class Display{
             gameMaster.getRoom(this.value)
         })
     }
-    
-    populateEnemySelectDropdown(){
-        $('#enemy-spawn').show();
-        let enemies = ['goblin','ogre','rat','dire wolf','dire rat','dummy']
-        enemies.forEach((element =>{
-            $('#enemy-select').append(
-                $("<option />").val(element).text(element)
-            )
-        }))
-    
-        $('#enemy-spawn-button').on('click',function(){
-            let x = parseInt($('#enemy-x-input').val());
-            let y = parseInt($('#enemy-y-input').val());
-            let name  = $('#enemy-select').val();    
 
-            this.entityManager.monsterInit(name,x,y);
-            this.board.placeEntities(this.entityManager.entities);
-            printBoard();
-        });
-    
-       
-    }
-    
-    populateCustomEnemySelectDropdown(){
-        $('#custom-enemy-spawn-button').on('click',function(){
-            let x = parseInt($('#custom-enemy-x-input').val());
-            let y = parseInt($('#custom-enemy-y-input').val());
-            let hp = parseInt($('#enemy-hp-input').val());
-            let damage = parseInt($('#enemy-damage-input').val());
-            if(!this.board.isSpace(x,y)){
-                return;
-            }
-    
-            let id = this.entityManager.entityInit('O','chase',x,y,hp,damage);
-            board.placeEntities(this.entityManager.entities);
-            this.printBoard();
+    restButton(){
+        let gameMaster = this.entityManager.gameMaster;
+        $('#rest-button').off().on('click',()=>{
+            gameMaster.loadTown();
         })
-    }
-    
-    enemyControlInit(){
-        $('#enemy-control-div').show();
-        this.populateCustomEnemySelectDropdown();
-        this.populateEnemySelectDropdown();
     }
 
     displayInventory(dungeonMode=true){
@@ -344,13 +321,4 @@ class Display{
         })
     }
     
-    giveReminderTextBehavior(){
-        $('#focus-reminder').show()
-    
-        $('#board').on('focus',function(){
-            $('#focus-reminder').hide()
-        }).on('focusout',function(){
-            $('#focus-reminder').show()
-        })
-    }
 }

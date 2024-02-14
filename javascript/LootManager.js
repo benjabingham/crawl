@@ -48,10 +48,29 @@ class LootManager{
                 },
                 value:1
             },
+            rubber:{
+                name:'rubber',
+                blunt:{
+                    damage:-5,
+                    stunTime:2
+                },
+                edged:{
+                    damage:-8
+                },
+                value:.5
+            },
+            glass:{
+                name:'glass',
+                flimsy:40,
+                value:2,
+                edged:{
+                    damage:6
+                }
+            },
             bronze:{
                 name:'bronze',
                 flimsy:2,
-                value:1
+                value:1.5
             },
             iron:{
                 name:'iron',
@@ -63,7 +82,7 @@ class LootManager{
                 edged:{
                     damage:2
                 },
-                value:1.4
+                value:2
             },
             ironwood:{
                 name:'ironwood',
@@ -71,7 +90,15 @@ class LootManager{
                 blunt:{
                     damage:2
                 },
-                value:1.7
+                value:3
+            },
+            crystal:{
+                name:'crystal',
+                flimsy:20,
+                value:6,
+                edged:{
+                    damage:8
+                }
             },
             lightsteel:{
                 name:'lightsteel',
@@ -83,7 +110,7 @@ class LootManager{
                 edged:{
                     damage:2
                 },
-                value:2
+                value:3
             },
             silver:{
                 name:'silver',
@@ -91,7 +118,7 @@ class LootManager{
                 edged:{
                     damage:-1
                 },
-                value:4
+                value:5
             },
             gold:{
                 name:'gold',
@@ -133,17 +160,34 @@ class LootManager{
                 name:'stone',
                 value:0.4
             },
+            
             iron:{
                 name:'iron',
-                value:.7
+                value:.6
             },
             steel:{
                 name:'steel',
+                value:1
+            },
+            bronze:{
+                name:'bronze',
                 value:1.2
             },
             lead:{
                 name:'lead',
                 value:2
+            },
+            copper:{
+                name:'copper',
+                value:3
+            },
+            nickel:{
+                name:'nickel',
+                value:3.5
+            },
+            tin:{
+                name:'tin',
+                value:4
             },
             sterling:{
                 name:'sterling silver',

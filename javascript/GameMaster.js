@@ -131,7 +131,7 @@ class GameMaster{
                 }
                 break;
             case "5_3":
-                this.player.changeStamina(2);
+                this.player.gainStamina();
                 break;
             case "0_0":
             case "1_0":
@@ -205,14 +205,23 @@ class GameMaster{
         this.reset();
 
         if(destination.type == "town"){
-            this.save.day++;
-            this.shop.restockInventory();
-            this.display.showTownScreen(this);
-            this.player.changeStamina(100);
-            this.player.light = 0;
+            this.loadTown();
         }else if(destination.type == "dungeon"){
             this.getRoom(destination.name);
         }
+    }
+
+    loadTown(){
+        this.nextDay();
+        this.shop.restockInventory();
+        this.display.showTownScreen(this);
+        this.player.changeStamina(100);
+        this.player.light = 0;
+    }
+
+    nextDay(){
+        this.save.day++
+        this.player.rest();  
     }
     
 }

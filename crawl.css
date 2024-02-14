@@ -72,6 +72,19 @@ html{
     border:1px solid gray;
 }
 
+#luck-bar{
+    border:1px solid #bbbbbb;
+    height:20px;
+    width:100px;
+}
+
+#luck-level{
+    background-color: green;
+    height:20px;
+    width:100px;
+    border:1px solid gray;
+}
+
 #health-bar{
     border:1px solid #bbbbbb;
     height:20px;

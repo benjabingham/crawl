@@ -675,7 +675,6 @@ class EntityManager{
         if(!container.inventory){
             return false;
         }
-        console.log(looter);
         if(looter.id == 'player'){
             looter = this.player;
         }
@@ -746,10 +745,11 @@ class EntityManager{
     }
 
     canRewind(){
-        return this.history.length > 1;
+        return this.history.length > 1 && this.player.luck > 0;
     }
 
     rewind(){
+        let luck = this.player.luck-1;
         this.history.pop();
         let snapshot = this.history.pop();
         this.entities = snapshot.entities;
@@ -761,6 +761,7 @@ class EntityManager{
         if(this.player.equipped){
             this.player.equipped = this.player.inventory[this.player.equipped.slot];
         }
+        this.player.luck = Math.max(0,luck);
     }
 
     cancelAction(){

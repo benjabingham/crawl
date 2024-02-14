@@ -31,6 +31,11 @@
     <div id="town-screen">
         You are in town.
         <div id="day-div"></div>
+        <button id="rest-button">rest</button>
+        <div id="nourishment-div">
+            <div id="nourishment-level-div"></div>
+            <div id="meals-div"></div>
+        </div>
         <div id="map-select-div">
             <label for="map-select">Map select</label>
             <select name="map-select" id="map-select">
@@ -46,15 +51,18 @@
             <!--<div id="shop-gold-div" class="gold-div"></div>-->
         </div>
     </div>
-    <div id="dungeon-screen">
-        <div id = "resources">
-            <div id = "health-bar">
-                <div id = "health-level"></div>
-            </div>
-            <div id = "stamina-bar">
-                <div id = "stamina-level"></div>
-            </div>
+    <div id = "resources">
+        <div id = "health-bar">
+            <div id = "health-level"></div>
         </div>
+        <div id = "stamina-bar">
+            <div id = "stamina-level"></div>
+        </div>
+        <div id = "luck-bar">
+            <div id = "luck-level"></div>
+        </div>
+    </div>
+    <div id="dungeon-screen">
         <div id="game-window">
             <div>
                 <div id="board" tabindex="0"></div> 
