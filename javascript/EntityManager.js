@@ -828,13 +828,17 @@ class EntityManager{
             }
             if(entityObj){
                 entityObj.index = entity.index;
-                if(!entity.inventory){
-                    this.lootManager.giveMonsterLoot(entityObj);
-                    entity.inventory = entityObj.inventory;
-                }else{
+                if(entityObj.behavior != 'wall'){
+                    console.log(entity);
+                    if(!entity.inventory || entity.inventory.length == 0){
+                        console.log('give inventory');
+                        this.lootManager.giveMonsterLoot(entityObj);
+                        entity.inventory = entityObj.inventory;
+                    }
+                    console.log('take inventory');
                     entityObj.inventory = entity.inventory;
+                    
                 }
-
             }
         })
 
