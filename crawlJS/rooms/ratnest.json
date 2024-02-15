@@ -1,9 +1,10 @@
 {
+    "name":"ratnest.json",
     "width":20,
     "height":11,
     "board":[
         [0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-        [0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 4, 4, 2, 2],
+        [0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 7, 4, 4, 2, 2],
         [1, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 5, 0, 2, 2, 0, 0, 0, 2, 2],
         [0, 0, 2, 2, 0, 0, 0, 2, 2, 2, 2, 0, 2, 2, 2, 2, 0, 0, 0, 2],
         [0, 0, 2, 2, 0, 0, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 2],
@@ -18,14 +19,51 @@
     "values":{
         "1":"player",
         "2":{
-            "symbol":"W",
+            "symbol":"▒▒",
             "behavior":"wall",
-            "hitDice":"24",
+            "hitDice":"100",
             "name":"wall"
         },
-        "3":{"monster":"rat"},
-        "4":{"monster":"dire rat"},
-        "5":{"monster":"ogre"},
-        "6":{"monster":"goblin"}
+        "3":{
+            "monster":"rat",
+            "code":"3",
+            "spawnChance":80,
+            "respawnChance":20
+        },
+        "4":{
+            "monster":"direRat",
+            "code":"4",
+            "spawnChance":60,
+            "respawnChance":10
+        },
+        "5":{
+            "monster":"ogre",
+            "code":"5",
+            "spawnChance":60,
+            "respawnChance":5
+        },
+        "6":{
+            "monster":"goblin",
+            "code":"6",
+            "spawnChance":80,
+            "respawnChance":10
+        },
+        "7":{
+            "monster":"chest",
+            "code":"7",
+            "spawnChance":100,
+            "respawnChance":0
+        },
+        "8":{
+            "monster":"wolf",
+            "code":"8",
+            "spawnChance":90,
+            "respawnChance":10
+        }
+    },
+    "destinations":{
+        "left":{
+            "type":"town"
+        }
     }
 }

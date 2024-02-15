@@ -1,5 +1,5 @@
 class EntityManager{
-    constructor(player){
+    constructor(player, log, gameMaster){
         this.entities = {};
         this.entityCounter = 0;
         this.translations = [
@@ -12,13 +12,24 @@ class EntityManager{
             {x:-1,y:0},
             {x:-1,y:-1}
         ];
-        this.board = new Board();
+        this.board = new Board(this);
         this.player = player;
         this.log = log;
         this.history = [];
         this.historyLimit = 10;
-    
 
+        this.gameMaster = gameMaster;
+
+        this.lootManager = new LootManager();
+
+        this.currentMap;
+    }
+
+    wipeEntities(){
+        this.entities = {};
+        this.entityCounter = 0;
+        this.history = [];
+        this.historyLimit = 10;
     }
 
     playerInit(x=0,y=0){
@@ -32,7 +43,7 @@ class EntityManager{
     }
     
 
-    entityInit(symbol, behavior, x=0,y=0, hitDice=1, damage=0, behaviorInfo = {}, name = ""){
+    entityInit(symbol, behavior, x=0,y=0, hitDice=1, damage=0, behaviorInfo = {}, name = "", inventorySlots = 10){
         let threshold = Math.max(this.rollN(hitDice,1,8),1);
         let id = this.entityCounter;
         if (!name){
@@ -49,27 +60,32 @@ class EntityManager{
             mortal:0,
             threshold:threshold,
             damage:damage,
-            name:name
+            name:name,
+            inventorySlots:inventorySlots
         }
         this.entityCounter++;
         this.entities[id] = entity;
         //console.log(entity);
     
-        return id;
+        return this.entities[id];
     }
 
     swordInit(owner, rotation = 3){
-        let id = this.entityInit('*', 'sword');
-        let sword = this.getEntity(id);
-
+        let sword = this.entityInit('*', 'sword', -1,-1);
+        let id = sword.id;
         sword.owner = owner;
+        sword.equipped = this.player.equipped;
         sword.rotation = rotation;
 
         this.setEntity(id, sword);
 
         this.setProperty(owner,'sword', id);
+
+        if(sword.equipped){
+            //this.equipWeapon(this.player.equipped);
+        }
         
-        this.switchWeapon('stick');
+        //this.switchWeapon('stick');
         this.placeSword(id, this.player);
     
         return id;
@@ -90,6 +106,10 @@ class EntityManager{
 
     placeSword(id){
         let sword = this.getEntity(id);
+        console.log(sword);
+        if(!sword.equipped){
+            return;
+        }
         let ownerId = sword.owner;
         let owner = this.getEntity(ownerId);
         let swordPosition = {x:sword.x, y:sword.y};
@@ -106,17 +126,65 @@ class EntityManager{
             if(target.id != id && target.behavior != 'wall'){
                 this.attack(sword,target);
                 if (ownerId == 'player'){
-                    this.player.changeStamina(sword.weight * -1);
+                    
+                    let strikeType = this.getStrikeType(sword);
+                    let weight;
+                    if(sword[strikeType]){
+                        weight = sword[strikeType].weight;
+                        console.log("..."+weight);
+
+                    }else{
+                        weight = sword.weight;
+                        console.log(weight);
+
+                    }
+                    console.log(weight);
+                    this.player.changeStamina(weight * -1);
+                    
                 }
             }
         }
         //if sword hasn't been placed somewhere else as result of attack...
-        if(rotation == sword.rotation && sword.x == swordPosition.x && sword.y == swordPosition.y){
+        if(rotation == sword.rotation && sword.x == swordPosition.x && sword.y == swordPosition.y && sword.equipped){
             this.setPosition(id,x,y);
         }
         if (this.player.stamina < 0){
             this.cancelAction();
+            console.log('ACTION CANCELLED');
         }
+    }
+
+    degradeItem(item, modifier = 0, multiplier = 1){
+        let degradeChance = (item.flimsy) + modifier;
+        let random = (Math.random()*100) * (1/multiplier);
+        if(random < degradeChance){
+            if(!item.worn){
+                this.lootManager.applyModifier(this.player.equipped,this.lootManager.weaponModifiers.worn);
+                this.lootManager.applyModifier(item,this.lootManager.weaponModifiers.worn);
+
+                this.transmitMessage(item.name + ' is showing wear!');
+            }else{
+                this.lootManager.breakWeapon(this.player.equipped);
+                this.player.unequipWeapon(this.gameMaster);
+                this.transmitMessage(item.name + ' has broken!');
+                this.removeEntity(item.id);
+            }
+        }
+    }
+
+    getStrikeType(sword){
+        let owner = sword.owner;
+        let ownerPos = this.getEntity(owner);
+        let lastSwordPos = this.history[this.history.length-1].entities[sword.id];
+        let lastOwnerPos = this.history[this.history.length-1].entities[owner];
+        if(lastSwordPos.rotation != sword.rotation){
+            return "swing";
+        }
+        if((lastSwordPos.x == ownerPos.x || lastSwordPos.y == ownerPos.y) || (lastOwnerPos.x == ownerPos.x && lastOwnerPos.y == ownerPos.y)){
+            return "jab";
+        }
+
+        return "strafe";
     }
 
     moveEntity(id, x, y){
@@ -127,6 +195,10 @@ class EntityManager{
         if(this.board.isSpace(x,y) && this.board.isOpenSpace(x,y)){
             this.setPosition(id,x,y);
             return true;
+        }else if(this.board.itemAt(x,y) && this.board.itemAt(x,y).container){
+            this.lootContainer(entity,this.board.itemAt(x,y));
+        }else if(!this.board.isSpace(x,y) && id == "player"){
+            this.gameMaster.travel(x,y);
         }
 
         return false;
@@ -146,7 +218,7 @@ class EntityManager{
         //creature is less focused the further they are
         let focus = behaviorInfo.focus;
         focus -= this.getDistance(entity, playerEntity);
-        if(!this.hasPlayerLos){
+        if(!this.hasPlayerLos(entity)){
             focus -= 20;
         }
         focus =  Math.max(focus, 4);
@@ -188,7 +260,7 @@ class EntityManager{
             this.attack(entity,targetItem);
         }
 
-        if(targetItem.behavior == "sword" && entity.behaviorInfo.beat){
+        if(targetItem.behavior == "sword" && !this.board.wallAt(targetX, targetY)){
             this.beat(entity,targetItem);
         }
     
@@ -200,11 +272,24 @@ class EntityManager{
     }
 
     attack(attacker,target){
-        let stunTime = 0;
-        if (attacker.stunTime){
-            stunTime = this.roll(1,attacker.stunTime);
+        let damage = attacker.damage;
+        let stunTime = attacker.stunTime;
+        if(attacker.behavior == 'sword'){
+            let strikeType = this.getStrikeType(attacker);
+            if(attacker[strikeType]){
+                damage = attacker[strikeType].damage;
+                stunTime = attacker[strikeType].stunTime;
+            }
         }
-        let mortality = this.roll(0,attacker.damage);
+        let damageDice = 1;
+        if(target.stunned){
+            damageDice=2;
+        }
+        let stunAdded = 0;
+        if (stunTime){
+            stunAdded = this.roll(1,stunTime);
+        }
+        let mortality = this.rollN(damageDice,0,damage);
 
         if (target.id == 'player'){
             this.transmitMessage(attacker.name+" attacks you!");
@@ -213,12 +298,18 @@ class EntityManager{
             this.addMortality(target.id, mortality);
         }else{
             this.transmitMessage(target.name+" is struck!");
-            this.addStunTime(target.id,stunTime);
+            this.addStunTime(target.id,stunAdded);
             this.addMortality(target.id, mortality);
             this.knock(target.id, attacker.id);
             this.enrageAndDaze(target);   
             this.sturdy(attacker,target);
+            console.log(target);
         }
+
+        if(attacker.owner == 'player'){
+            this.degradeItem(attacker,0,0.25);
+        }
+        
     }
 
     knock(knockedId, knockerId){
@@ -330,6 +421,9 @@ class EntityManager{
     }
 
     enrageAndDaze(entity){
+        if(!entity.behaviorInfo){
+            return;
+        }
         let enrageChance = entity.behaviorInfo.enrage;
         let dazeChance = entity.behaviorInfo.daze;
 
@@ -338,32 +432,64 @@ class EntityManager{
             this.transmitMessage(entity.name+" is enraged!");
             entity.behaviorInfo.focus += 5;
             entity.behaviorInfo.slow -= 3;
+            if(!entity.behaviorInfo.beat){
+                entity.behaviorInfo.beat = 0;
+            }
             entity.behaviorInfo.beat += 5;
+            if(!entity.behaviorInfo.sturdy){
+                entity.behaviorInfo.sturdy = 0;
+            }
             entity.sturdy += 5;
             entity.stunned -= Math.max(this.roll(0,entity.stunned),0);
         }
         random = this.roll(1,100);
         if(random <= dazeChance){
             this.transmitMessage(entity.name+" is dazed!");
-            entity.behaviorInfo.focus -= 5;
-            entity.behaviorInfo.slow += 5;
-            entity.sturdy -= 5;
-            entity.beat -=5;
+            entity.behaviorInfo.focus -= 7;
+            if(!entity.behaviorInfo.slow){
+                entity.behaviorInfo.slow = 0;
+            }
+            entity.behaviorInfo.slow += 7;
+            entity.sturdy -= 7;
+            entity.beat -=7;
             entity.stunned ++;
         }
     }
 
+    //has beat% chance to beat sword out of way.
+    //also beats sword out of way if damage exceeds player stamina.
     beat(entity, sword){
-        let beatChance = entity.behaviorInfo.beat;
+        console.log(entity);
+        if(sword.owner == 'player'){
+            this.transmitMessage(entity.name+" attacks your weapon...");
+            let damage = this.roll(0,entity.damage);
+            this.player.changeStamina(damage * -1);
+            if(damage < 1){
+                this.degradeItem(sword, damage*0.25, 1);
+            }
+        }
+        let beatChance = 0;
+        if(entity.behaviorInfor){
+            beatChance = entity.behaviorInfo.beat;
+        }
 
         let random = this.roll(1,100);
-        if(random <= beatChance){
-            this.transmitMessage(entity.name+" knocks your sword out of the way!");
+        console.log(this.player.stamina < 0);
+        if(random <= beatChance || this.player.stamina < 0){
+            this.player.changeStamina(0);
+            this.transmitMessage(entity.name+" knocks your weapon out of the way!");
             this.knockSword(sword.id);
+        }else if(this.player.equipped){
+            this.transmitMessage("You hold steady!");
+
         }
+        
     }
 
     sturdy(attacker,target){
+        if(!target.behaviorInfor){
+            return;
+        }
         let sturdyChance = target.behaviorInfo.sturdy;
 
         let random = this.roll(1,100);
@@ -401,7 +527,7 @@ class EntityManager{
                         //player = this.placeSword(k,board, player);
                         break;
                     case "dead":
-                        entity.tempSymbol = 'x';
+                        //entity.tempSymbol = 'x';
                         break;
                     default:
                 }
@@ -417,13 +543,14 @@ class EntityManager{
                     entity.tempSymbol = false;
                 }
             }else{
-                entity.tempSymbol = 'x';
+                //entity.tempSymbol = 'x';
             }
 
 
 
-            if((entity.mortal - entity.threshold) >= entity.threshold && !entity.obliterated){
+            if((entity.mortal - entity.threshold) >= entity.threshold/2 && !entity.obliterated){
                 //console.log('obliterated');
+                this.dropItems(entity);
                 entity.obliterated = true;
                 this.setPosition(entity.id,-1,-1);
 
@@ -433,12 +560,8 @@ class EntityManager{
 
     reapWounded(){
         for (const [k,entity] of Object.entries(this.entities)){
-            if (entity.stunned+entity.mortal > entity.threshold && entity.behavior != 'dead'){
-                this.transmitMessage(entity.name+" is slain!");
-                entity.name += " corpse";
-                this.setProperty(k,'behavior', 'dead');
-                this.setProperty(k,'tempSymbol', 'x');
-                this.setProperty(k,'stunned', 0);
+            if (entity.mortal > entity.threshold && entity.behavior != 'dead'){
+                this.kill(entity);
             }
         }
         //console.log(player.health);
@@ -451,124 +574,162 @@ class EntityManager{
         //console.log('Health: ' + player.health);
     }
 
-    switchWeapon(weaponName){
+    kill(entity){
+        this.transmitMessage(entity.name+" is slain!");
+        entity.name += " corpse";
+        entity.behavior = 'dead';
+        entity.tempSymbol = 'x';
+        entity.stunned = 0;
+        entity.container = true;
+        if(entity.tiny){
+            entity.item = true;
+            entity.walkable = true;
+            entity.tempSymbol = '*';
+        }
+        let roster = this.currentMap.roster;
+        roster[entity.index].alive = false;
+    };
+
+    equipWeapon(weapon){
         let id = this.getProperty("player", "sword");
         let sword = this.getEntity(id);
-        switch(weaponName){
-            case "stick":
-                sword.damage = 1;
-                sword.stunTime = 1;
-                sword.weight = 1;
-                break;
-            case "shortsword":
-                sword.damage = 3;
-                sword.stunTime = 2;
-                sword.weight = 1;
-                break;
-            case "longsword":
-                sword.damage = 4;
-                sword.stunTime = 3;
-                sword.weight = 2;
-                break;
-            case "rapier":
-                sword.damage = 5;
-                sword.stunTime = 2;
-                sword.weight = 0;
-                break;
-            case "greatsword":
-                sword.damage = 4;
-                sword.stunTime = 6;
-                sword.weight = 3;
-                break;
-            case "club":
-                sword.damage = 1;
-                sword.stunTime = 6;
-                sword.weight = 2;
-                break;
-            case "maul":
-                sword.damage = 3;
-                sword.stunTime = 8;
-                sword.weight = 3;
-                break;
-        }
+
+        let x = sword.x;
+        let y = sword.y;
+        let rotation = sword.rotation;
+        let owner = sword.owner;
+        let symbol = sword.symbol;
+        let behavior = sword.behavior;
+
+        console.log(owner);
+
+        this.entities[id] = JSON.parse(JSON.stringify(weapon));
+        sword = this.getEntity(id);
+        sword.x = x;
+        sword.y = y;
+        sword.rotation = rotation;
+        sword.owner = owner;
+        sword.symbol = symbol;
+        sword.id = id;
+        sword.behavior = behavior;
+        sword.equipped = true;
+        console.log(sword);
         
-        this.setEntity(id, sword);
-        this.transmitMessage('equipped weapon: '+weaponName);
+        this.transmitMessage('equipped weapon: '+weapon.name);
+    }
+
+    unequipWeapon(){
+        let sword = this.getEntity(this.entities.player.sword);
+        sword.equipped = false;
     }
 
     monsterInit(monsterName,x,y){
-        let behavior = "chase";
-        let symbol;
-        let hitDice;
-        let behaviorInfo;
-        let damage;
-        let name;
-        switch(monsterName){
-            case "goblin":
-                symbol = "G";
-                hitDice = 1;
-                damage = 3;
-                name = 'goblin';
-                behaviorInfo = {
-                    focus:15,
-                    enrage:20,
-                    daze:30
-                }
-                break;
-            case "ogre":
-                symbol = "O";
-                hitDice = 3;
-                damage = 8;
-                name = 'ogre';
-                behaviorInfo = {
-                    focus:7,
-                    enrage:75,
-                    slow: 40,
-                    beat:30,
-                    sturdy:30
-                }
-                break;
-            case "rat":
-                symbol = "R";
-                hitDice = 0;
-                damage = 1;
-                name = "rat";
-                behaviorInfo = {
-                    focus:15,   
-                }
-                break;
-            case "dire wolf":
-                symbol = "D";
-                hitDice = 2;
-                damage = 8;
-                name = "dire wolf";
-                behaviorInfo = {
-                    focus:25,
-                    enrage:75,
-                    daze:15
-                }
-                break;
-            case "dire rat":
-                symbol = "D";
-                hitDice = 1;
-                damage = 4;
-                name = "dire rat";
-                behaviorInfo = {
-                    focus:20,
-                    enrage:30,
-                    daze:30
-                }
-                break;
-            case "dummy":
-                symbol = "D";
-                hitDice = 10;
-                damage = 0;
-                name = "dummy";
-                behavior = "dummy";
-                break;
+        let id = this.entityCounter;
+        this.entityCounter++;
+        let monster = JSON.parse(JSON.stringify(monsterVars[monsterName]));
+
+        let threshold = Math.max(this.rollN(monster.hitDice,1,8),1);
+
+        monster.x = x;
+        monster.y = y;
+        monster.id = id;
+        monster.threshold = threshold;
+        monster.stunned = 0;
+        monster.mortal = 0;
+
+        this.entities[id] = monster;
+
+        return this.entities[id];
+    }
+
+    dropItem(item,x,y){
+        if(!item){
+            return false;
+        }
+        item.x = x;
+        item.y = y;
+        item.item = true;
+        item.walkable = true;
+        item.id = this.entityCounter;
+        item.dropTurn = this.log.turnCounter;
+        if (!item.symbol){
+            item.symbol = '*';
+        }
+        this.entities[this.entityCounter] = item;
+        this.entityCounter++;
+        console.log(item);
+    }
+
+    dropItems(entity){
+        let inventory = entity.inventory
+        if(!inventory){
+            return false;
         }
 
-        let id = this.entityInit(symbol, behavior,x, y, hitDice, damage, behaviorInfo, name)
+        inventory.forEach((item) =>{
+            this.dropItem(item, entity.x, entity.y);
+        })
+    }
+
+    lootContainer(looter,container){
+        if(!container.inventory){
+            return false;
+        }
+        if(looter.id == 'player'){
+            looter = this.player;
+        }
+        if(!looter.inventory){
+            looter.inventory = [];
+        }
+        container.inventory.forEach((item,i) =>{
+            if(item && (looter.inventory.length < looter.inventorySlots)){
+                let obj = item;
+                let obliterated = {id:obj.id, obliterated:true, x:-1, y:-1};
+                this.entities[obj.id] = obliterated;
+                console.log(obj);
+                obj.walkable = false;
+                obj.inventory = false;
+                obj.item = false;
+                looter.inventory.push(obj);
+                container.inventory[i] = false;
+            }
+        })
+    }
+
+    pickUpItem(entity,item){
+        if(!entity || entity.behavior == 'sword' || (item.dropTurn >= this.log.turnCounter && !entity.item) || this.skipBehaviors){
+            return false;
+        }
+        if(entity.id == 'player'){
+            entity = this.player;
+        }
+        //console.log('pickup');
+        //console.log(JSON.parse(JSON.stringify(item)));
+        let items = [];
+        if(item.inventory){
+            item.inventory.forEach((obj) =>{
+                if(!obj.obliterated){
+                    items.push(obj);
+                }
+            })
+        }
+
+        items.push(item);
+        
+        if(!entity.inventory){
+            entity.inventory = [];
+        }
+        items.forEach((obj)=>{
+            if(entity.inventory.length < entity.inventorySlots || entity.item){
+                let obliterated = {id:obj.id, obliterated:true, x:-1, y:-1};
+                this.entities[obj.id] = obliterated;
+                obj.walkable = false;
+                obj.inventory = false;
+                obj.item = false;
+                entity.inventory.push(obj);
+            }
+        })
+        console.log(entity);
     }
 
     saveSnapshot(){
@@ -584,30 +745,36 @@ class EntityManager{
     }
 
     canRewind(){
-        //console.log(this.history);
-        return this.history.length > 1;
+        return this.history.length > 1 && this.player.luck > 0;
     }
 
     rewind(){
+        let luck = this.player.luck-1;
         this.history.pop();
         let snapshot = this.history.pop();
         this.entities = snapshot.entities;
-        this.board.placeEntities(this.entities);
+        this.board.placeEntities(this.log);
+        
         //console.log(snapshot.player);
 
         this.player.setPlayerInfo(snapshot.player);
+        if(this.player.equipped){
+            this.player.equipped = this.player.inventory[this.player.equipped.slot];
+        }
+        this.player.luck = Math.max(0,luck);
     }
 
     cancelAction(){
         let snapshot = this.history.pop();
         this.entities = snapshot.entities;
-        this.board.placeEntities(this.entities);
+        this.board.placeEntities(this.log);
         //console.log(snapshot.player);
 
         this.player.setPlayerInfo(snapshot.player);  
         this.skipBehaviors = true; 
 
         let swordId = this.getEntity('player').sword;
+        this.board.calculateLosArray(this.getEntity('player'));
         this.placeSword(swordId);
     }
 
@@ -622,7 +789,7 @@ class EntityManager{
     }
 
     roll(min,max){
-        return Math.floor(Math.random()*(max+1))+min;
+        return Math.floor(Math.random()*(max-min+1))+min;
     }
     
     rollN(n, min,max){
@@ -634,25 +801,58 @@ class EntityManager{
     }
 
     loadRoom(json){
+        console.log(json);
+        this.gameMaster.save.catchUpMap(json.name);
         this.board.setDimensions(json.width,json.height)
-        this.board.boardInit;
-        for(let y=0;y<this.board.height;y++){
-            for(let x=0;x<this.board.width;x++){
-                let entityCode = json.board[y][x];
-                if(entityCode){
-                    let entity = json.values[entityCode];
-                    if(entity == "player"){
-                        this.playerInit(x, y)
-                    }else if(entity.monster){
-                        this.monsterInit(entity.monster,x,y);
-                    }else{
-                        this.entityInit(entity.symbol, entity.behavior, x, y, entity.hitDice,entity.damage, entity.behaviorInfo, entity.name);
-                    }
-
+        this.board.boardInit();
+        console.log(json.destinations);
+        this.board.destinations = json.destinations;
+        json.roster.forEach((entity)=>{
+            //console.log(entity);
+            let value = entity.value;
+            let entityObj;
+            let x = entity.x;
+            let y = entity.y;
+            let random = this.roll(0,99);
+            let spawn = (random < entity.spawnChance || !entity.spawnChance);
+            if(value == "player"){
+                this.playerInit(x, y)
+            }else if(value.monster){
+                if(entity.alive && spawn){
+                    entityObj = this.monsterInit(value.monster,x,y);
+                }
+            }else{
+                if(entity.alive && spawn){
+                    entityObj = this.entityInit(value.symbol, value.behavior, x, y, value.hitDice,value.damage, value.behaviorInfo, value.name);
                 }
             }
-        }
+            if(entityObj){
+                entityObj.index = entity.index;
+                if(entityObj.behavior != 'wall'){
+                    console.log(entity);
+                    if(!entity.inventory || entity.inventory.length == 0){
+                        console.log('give inventory');
+                        this.lootManager.giveMonsterLoot(entityObj);
+                        entity.inventory = entityObj.inventory;
+                    }
+                    console.log('take inventory');
+                    entityObj.inventory = entity.inventory;
+                    
+                }
+            }
+        })
+
+        this.currentMap = json;
         
+    }
+
+    updateSavedInventories(){
+        for (const [key, entity] of Object.entries(this.entities)) { 
+            if(entity.index){
+                let entitySave = this.currentMap.roster[entity.index];
+                entitySave.inventory = entity.inventory;
+            }
+        }
     }
 
     setProperty(id, Property, value){
@@ -693,9 +893,11 @@ class EntityManager{
 
     removeEntity(id){
         let entity = this.getEntity(id);
-        this.board.clearSpace(entity.x, entity.y);
+        let x = entity.x;
+        let y = entity.y;
+        this.board.clearSpace(x, y);
         this.setPosition(id,-1,-1);
-        this.board.placeEntities(this.entities);
+        this.board.updateSpace(x,y);
     }
 
     addStunTime(id, stunTime){

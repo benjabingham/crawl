@@ -72,6 +72,19 @@ html{
     border:1px solid gray;
 }
 
+#luck-bar{
+    border:1px solid #bbbbbb;
+    height:20px;
+    width:100px;
+}
+
+#luck-level{
+    background-color: green;
+    height:20px;
+    width:100px;
+    border:1px solid gray;
+}
+
 #health-bar{
     border:1px solid #bbbbbb;
     height:20px;
@@ -114,15 +127,11 @@ html{
     background-color:rgba(252, 244, 233, 0.562);
 }
 
-#log-window{
-    display:none;
-}
-
-#resources{
-    display:none;
-}
-
 #weapon-select-div{
+    display:none;
+}
+
+#dungeon-screen{
     display:none;
 }
 
@@ -135,4 +144,98 @@ html{
     height:2rem;
     margin:auto;
     width:fit-content
+}
+
+.inventory-wrapper{
+    margin:auto;
+    width:875px;
+}
+
+.inventory{
+    background-color: #ddd;
+    color: #222;
+    display:flex;
+    height:10rem;
+}
+
+.inventory-list{
+    width:600px;
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0px;
+    grid-auto-rows: 2rem;
+}
+
+.inventory-slot{
+    padding:5px;
+    display:flex;
+    height:fit-content;
+    /*border:1px solid gray*/
+}
+
+.inventory-slot:hover{
+    cursor: pointer;
+    background-color: #bbbbbb;
+}
+
+/*
+.inventory-slot{
+    width:280px;
+    height:120px;
+    border:1px solid #BBBBBB;
+    background-color: #ddd;
+    color: #222;
+}
+*/
+
+.item-name{
+    font-weight:800;
+    width:fit-content;
+}
+
+.item-buttons{
+    margin-left:auto;
+    width:fit-content;
+    height:fit-content;
+}
+
+.inventory-description-title{
+    text-align:center;
+    width:100%;
+}
+
+.fresh-true{
+    background-color: #dfcd9c;
+}
+
+.inventory-description{
+    outline:1px solid black;
+    margin-left:auto;
+    width:250px;
+    padding:5px;
+}
+
+.inventory-description-body{
+    height:100px;
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0px;
+    grid-auto-rows: 2rem;
+}
+
+.item-stats-normal{
+    height:fit-content;
+}
+
+.item-value{
+    bottom:0px;
+}
+
+.item-title{
+    font-weight:800;
+}
+
+.item-slot-number{
+    padding-right:5px;
+    /*border-right:1px solid black*/
 }
