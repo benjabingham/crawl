@@ -163,11 +163,12 @@ class Display{
     }
 
     displayInventory(dungeonMode=true){
-        $('#inventory-wrapper').show();
-        $('#inventory-list').html('');
+        let inventoryId = (dungeonMode) ? "dungeon-inventory" : "town-inventory";
+        //$('#inventory-wrapper').show();
+        $('#'+inventoryId+'-list').html('');
         let inventory = this.entityManager.player.inventory;
         inventory.forEach((item) =>{
-            this.addInventoryItem(item, dungeonMode, 'inventory');
+            this.addInventoryItem(item, dungeonMode, inventoryId);
         })
         this.displayGold();
     }
@@ -189,7 +190,7 @@ class Display{
         $('.gold-div').text(player.gold+" gold");
     }
 
-    addInventoryItem(item, dungeonMode, inventory="inventory"){
+    addInventoryItem(item, dungeonMode, inventory){
         let slot = item.slot;
         let display = this;
         let player = this.entityManager.player;
@@ -202,7 +203,7 @@ class Display{
         
         $('#'+inventory+'-list').append(
             $('<div>').addClass('inventory-slot fresh-'+item.fresh).attr('id',inventory+'-slot-'+slot).append(
-                (inventory == 'inventory') ? $('<div>').text(slot+1).addClass('item-slot-number') : ''
+                (inventory != 'shop') ? $('<div>').text(slot+1).addClass('item-slot-number') : ''
             ).append(
                 $('<div>').attr('id',inventory+'-item-name-'+slot).addClass('item-name').text(item.name)
             ).on('click',function(){
@@ -239,7 +240,7 @@ class Display{
                     })
                 )
             }
-        }else if (inventory == 'inventory'){
+        }else if (inventory != 'shop'){
             $('#'+inventory+'-item-buttons-'+slot).append(
                 $('<button>').addClass('item-button').text('sell - '+itemValue).on('click',function(){
                     shop.sellItem(slot);
