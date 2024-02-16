@@ -21,6 +21,7 @@ class Display{
 
     showTownScreen(gameMaster){
         this.hideAllScreens();
+        $('#hud-div').show();
         $('#town-screen').show();
         $('#day-div').text('day '+gameMaster.save.day);
         this.populateMapSelectDropdown(gameMaster);
@@ -60,8 +61,8 @@ class Display{
         let boardDiv = $("#board");
         boardDiv.css('width',17*1.8+"rem");
         let gameWindow = $("#game-window");
-        gameWindow.css('height',17*2+"rem");
-        $('#log').css('height',17*2-1.5+"rem");
+        //gameWindow.css('height',17*2+"rem");
+        $('#log').css('height',17*2-2.5+"rem");
     }
     
     printBoard(){
@@ -130,13 +131,18 @@ class Display{
     
     fillBars(player){
         let staminaPercent = player.staminaPercent;
-        $('#stamina-level').css('width',staminaPercent+"px");
+        $('#stamina-level').css('width',staminaPercent*1.5+"px");
+        $('#stamina-level').text(player.stamina+"/"+player.staminaMax);
 
         let healthPercent = player.healthPercent;
-        $('#health-level').css('width',healthPercent+"px");
+        $('#health-level').css('width',healthPercent*1.5+"px");
+        $('#health-level').text(player.health+"/"+player.healthMax);
+
 
         let luckPercent = player.luckPercent;
-        $('#luck-level').css('width',luckPercent+"px");
+        $('#luck-level').css('width',luckPercent*1.5+"px");
+        $('#luck-level').text(player.luck+"/"+player.luckMax);
+
 
     }
     

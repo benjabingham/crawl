@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>crawlJS</title>
-    <link rel="stylesheet" href="crawl.css">
+    <link rel="stylesheet" href="css/crawl.css">
+    <link rel="stylesheet" href="css/dungeon.css">
+    <link rel="stylesheet" href="css/hud.css">
+    <link rel="stylesheet" href="css/inventory.css">
   </head>
   <body>
     <script src="javascript/lib/jquery-3.7.1.js"></script>
@@ -21,18 +24,49 @@
     <script src="javascript/Log.js"></script>
     <script src="javascript/Display.js"></script>
 	<script src="javascript/crawl.js"></script>
+    </div>
     <div id ='home-screen'>
         <div id="save-manage-div">
             <button id="new-save-button">New Save</button>
             <input type="file" id="load-file-input" />
         </div>
     </div>
+    <div id="hud-div">
+        <div id="day-div"></div>
+        <div id = "resources">
+
+            <div class="resource-bar-containers">
+                <div id="hp-number-div" class="resource-number-divs"></div>
+                <div class="resource-label-divs">HP</div>
+                <div id = "health-bar" class="resource-bar-divs">
+                    <div id = "health-level" class="resource-level-divs"></div>
+                </div>
+            </div>
+            
+            <div class="resource-bar-containers">
+                <div id="stamina-number-div" class="resource-number-divs"></div>
+                <div class="resource-label-divs">Stamina</div>
+                <div id = "stamina-bar" class="resource-bar-divs">
+                    <div id = "stamina-level" class="resource-level-divs"></div>
+                </div>
+            </div>
+
+            <div class="resource-bar-containers">
+                <div id="luck-number-div" class="resource-number-divs"></div>
+                <div class="resource-label-divs">Luck</div>
+                <div id = "luck-bar" class="resource-bar-divs">
+                    <div id = "luck-level" class="resource-level-divs"></div>
+                </div>
+            </div>
+
+        </div>
+        <div id="nourishment-level-div"></div>
+
+    </div>
     <div id="town-screen">
         You are in town.
-        <div id="day-div"></div>
         <button id="rest-button">rest</button>
         <div id="nourishment-div">
-            <div id="nourishment-level-div"></div>
             <div id="meals-div"></div>
         </div>
         <div id="map-select-div">
@@ -59,17 +93,7 @@
         </div>
         <button id="download-save-button">Download Save</button>  
     </div>
-    <div id = "resources">
-        <div id = "health-bar">
-            <div id = "health-level"></div>
-        </div>
-        <div id = "stamina-bar">
-            <div id = "stamina-level"></div>
-        </div>
-        <div id = "luck-bar">
-            <div id = "luck-level"></div>
-        </div>
-    </div>
+    
     <div id="dungeon-screen">
         <div id="game-window">
             <div>
