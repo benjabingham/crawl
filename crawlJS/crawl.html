@@ -36,7 +36,6 @@
     <div id="hud-div">
         <div id="day-div"></div>
         <div id = "resources">
-
             <div class="resource-bar-containers">
                 <div id="hp-number-div" class="resource-number-divs"></div>
                 <div class="resource-label-divs">HP</div>
@@ -63,35 +62,42 @@
 
         </div>
         <div id="nourishment-level-div"></div>
+        <div id="gold-div"class="gold-div"></div>
+
 
     </div>
     <div id="town-screen">
-        You are in town.
-        <button id="rest-button">rest</button>
-        <div id="nourishment-div">
-            <div id="meals-div"></div>
-        </div>
-        <div id="map-select-div">
-            <label for="map-select">Map select</label>
-            <select name="map-select" id="map-select">
-                <option>Choose a map</option>
-            </select>
+        <div id="town-title-div">You are in town.</div>
+
+        <div id="tavern-wrapper-div">
+            Tavern
+            <div id="tavern-div">
+                
+                <div id="nourishment-div">
+                    <div id="meals-div"></div>
+                </div>
+                <div class="hint-text">
+                    being well fed increases your health gain per day, and your stamina gain per turn. Avoid eating and you will starve.
+                </div>
+                <button id="rest-button">rest</button>
+                <br>
+                <div class="hint-text">
+                    the day will end.
+                </div>
+            </div>
         </div>
         <div id = "shop-wrapper" class="inventory-wrapper">
-            Shop
+            <div class="inventory-title">Shop</div>
             <div id="shop" class="inventory">
                 <div id ="shop-list" class="inventory-list"></div>
                 <div id ="shop-description" class="inventory-description"></div>
             </div>
             <!--<div id="shop-gold-div" class="gold-div"></div>-->
         </div>
-        <div id = "town-inventory-wrapper" class="inventory-wrapper">
-            Inventory
-            <div id="town-inventory" class="inventory">
-                <div id ="town-inventory-list" class="inventory-list"></div>
-                <div id ="town-inventory-description" class="inventory-description"></div>
-            </div>
-            <div id="gold-div"class="gold-div"></div>
+        <div id="travel-locations-wrapper-div">
+            <div id="travel-locations-title-div">Nearby Dungeons</div>
+            <div id="travel-locations-hint-div" class="hint-text">Be sure you're prepared before traveling to a dungeon.</div>
+            <div name="travel-locations-div" id="travel-locations-div"></div>
         </div>
         <button id="download-save-button">Download Save</button>  
     </div>
@@ -107,13 +113,22 @@
             </div>
         </div>
         <div id = "dungeon-inventory-wrapper" class="inventory-wrapper">
-            Inventory
+            <div class="inventory-title">Inventory</div>
             <div id="dungeon-inventory" class="inventory">
                 <div id ="dungeon-inventory-list" class="inventory-list"></div>
                 <div id ="dungeon-inventory-description" class="inventory-description"></div>
             </div>
             <div id="gold-div"class="gold-div"></div>
         </div>
+    </div>
+
+    <div id = "town-inventory-wrapper" class="inventory-wrapper">
+        <div class="inventory-title">Inventory</div>
+        <div id="town-inventory" class="inventory">
+            <div id ="town-inventory-list" class="inventory-list"></div>
+            <div id ="town-inventory-description" class="inventory-description"></div>
+        </div>
+        <div id="gold-div"class="gold-div"></div>
     </div>
     
     

@@ -15,7 +15,7 @@ class Display{
     showHomeScreen(gameMaster){
         this.hideAllScreens();
         $('#home-screen').show();
-        this.populateMapSelectDropdown(gameMaster);
+        this.populateLocations(gameMaster);
         this.giveSaveButtonsBehavior(gameMaster);
     }
 
@@ -24,7 +24,9 @@ class Display{
         $('#hud-div').show();
         $('#town-screen').show();
         $('#day-div').text('day '+gameMaster.save.day);
-        this.populateMapSelectDropdown(gameMaster);
+        $('#town-inventory-wrapper').show();
+
+        this.populateLocations(gameMaster);
         this.displayInventory(false);
         this.displayShop();
         this.restButton();
@@ -34,6 +36,7 @@ class Display{
 
     hideAllScreens(){
         $('#town-screen').hide();
+        $('#town-inventory-wrapper').hide();
         $('#home-screen').hide();
         $('#dungeon-screen').hide();
         $('#inventory-wrapper').hide();
@@ -146,18 +149,18 @@ class Display{
 
     }
     
-    populateMapSelectDropdown(gameMaster){
-        $('#map-select').html('');
-        let maps = ['choose a map','cave','trainingHall','trainingHallNoOgre','andyDungeon']
-        maps.forEach((element =>{
-            $('#map-select').append(
-                $("<option />").val(element+".json").text(element)
+    populateLocations(gameMaster){
+        $('#travel-locations-div').html('');
+        let maps = ['cave','trainingHall','trainingHallNoOgre','andyDungeon']
+        maps.forEach((element) =>{
+            $('#travel-locations-div').append(
+                $("<div>").addClass('location-divs').append(
+                    $("<button>").text(element).on('click',function(){
+                        console.log(element);
+                        gameMaster.getRoom(element+".json")
+                    })
+                )
             )
-        }))
-
-        $('#map-select').off().on('change',function(){
-            console.log(this.value);
-            gameMaster.getRoom(this.value)
         })
     }
 
