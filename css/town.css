@@ -3,7 +3,6 @@
     margin:auto;
     background-color:#ddd;
     color:#222;
-    padding-bottom:1rem;
 }
 
 #town-title-div{
@@ -20,7 +19,6 @@
     button{
         margin:5px;
         padding:5px;
-        
     }
 }
 
@@ -29,4 +27,33 @@
     margin:auto;
     border:1px solid black;
     background-color: rgba(252, 143, 0, 0.164);
+}
+
+#download-save-button{
+    margin:15px;
+    margin-top:0px;
+}
+
+#travel-locations-wrapper-div{
+    margin:1rem;
+}
+
+#travel-locations-title-div{
+    font-weight:600;
+    text-align: center;
+}
+
+#travel-locations-hint-div{
+    text-align:center;
+}
+
+#travel-locations-div{
+    display:flex;
+    width:fit-content;
+    margin:auto;
+
+    button{
+        margin:5px;
+        padding:5px;
+    }
 }

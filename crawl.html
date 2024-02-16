@@ -36,7 +36,6 @@
     <div id="hud-div">
         <div id="day-div"></div>
         <div id = "resources">
-
             <div class="resource-bar-containers">
                 <div id="hp-number-div" class="resource-number-divs"></div>
                 <div class="resource-label-divs">HP</div>
@@ -63,6 +62,8 @@
 
         </div>
         <div id="nourishment-level-div"></div>
+        <div id="gold-div"class="gold-div"></div>
+
 
     </div>
     <div id="town-screen">
@@ -81,16 +82,9 @@
                 <button id="rest-button">rest</button>
                 <br>
                 <div class="hint-text">
-                    the day will end
+                    the day will end.
                 </div>
             </div>
-        </div>
-        
-        <div id="map-select-div">
-            <label for="map-select">Map select</label>
-            <select name="map-select" id="map-select">
-                <option>Choose a map</option>
-            </select>
         </div>
         <div id = "shop-wrapper" class="inventory-wrapper">
             <div class="inventory-title">Shop</div>
@@ -100,7 +94,11 @@
             </div>
             <!--<div id="shop-gold-div" class="gold-div"></div>-->
         </div>
-        
+        <div id="travel-locations-wrapper-div">
+            <div id="travel-locations-title-div">Nearby Dungeons</div>
+            <div id="travel-locations-hint-div" class="hint-text">Be sure you're prepared before traveling to a dungeon.</div>
+            <div name="travel-locations-div" id="travel-locations-div"></div>
+        </div>
         <button id="download-save-button">Download Save</button>  
     </div>
     

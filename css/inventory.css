@@ -28,18 +28,24 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 0px;
     grid-auto-rows: 2rem;
+    padding-top:2px;
 }
 
 .inventory-slot{
-    padding:5px;
+    padding:4px;
+    margin-left:3px;
     display:flex;
     height:fit-content;
+    background-image: linear-gradient(#ddcaa4,#c0aa73);
+    border: 1px solid rgb(124, 117, 52);
     /*border:1px solid gray*/
 }
 
 .inventory-slot:hover{
     cursor: pointer;
     background-color: #7272723d;
+    background-image: linear-gradient(#ddcaa4,#aa9665);
+
 }
 
 /*

@@ -8,6 +8,10 @@
     padding-bottom:5px;
     font-weight:600;
     display:none;
+
+    .gold-div{
+        text-align:center;
+    }
 }
 
 #day-div, #nourishment-level-div{
