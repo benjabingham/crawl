@@ -3,6 +3,12 @@ html{
     color: #ddd;
 }
 
+#instructions-div{
+    width:875px;
+    margin:auto;
+    padding:1rem;
+}
+
 
 
 
