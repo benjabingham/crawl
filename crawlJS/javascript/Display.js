@@ -148,7 +148,7 @@ class Display{
     
     populateMapSelectDropdown(gameMaster){
         $('#map-select').html('');
-        let maps = ['choose a map','cave','trainingHall','trainingHallNoOgre']
+        let maps = ['choose a map','cave','trainingHall','trainingHallNoOgre','andyDungeon']
         maps.forEach((element =>{
             $('#map-select').append(
                 $("<option />").val(element+".json").text(element)
