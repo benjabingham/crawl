@@ -24,6 +24,8 @@ class Display{
         $('#hud-div').show();
         $('#town-screen').show();
         $('#day-div').text('day '+gameMaster.save.day);
+        $('#town-inventory-wrapper').show();
+
         this.populateMapSelectDropdown(gameMaster);
         this.displayInventory(false);
         this.displayShop();
@@ -34,6 +36,7 @@ class Display{
 
     hideAllScreens(){
         $('#town-screen').hide();
+        $('#town-inventory-wrapper').hide();
         $('#home-screen').hide();
         $('#dungeon-screen').hide();
         $('#inventory-wrapper').hide();

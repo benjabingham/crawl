@@ -41,7 +41,7 @@
 }
 
 .resource-level-divs{
-    text-align:center;
+    /*text-align:center;*/
     height:20px;
     width:100px;
     border:1px solid gray;
