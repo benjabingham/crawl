@@ -90,28 +90,28 @@ class GameMaster{
         console.log(e);
         switch(key){
             case "6_3":
-                this.entityManager.moveEntity("player", 1, 0);
+                this.entityManager.movePlayer(1, 0);
                 break;
             case "4_3":
-                this.entityManager.moveEntity("player", -1, 0);
+                this.entityManager.movePlayer(-1, 0);
                 break;
             case "8_3":
-                this.entityManager.moveEntity("player", 0, -1);
+                this.entityManager.movePlayer(0, -1);
                 break;
             case "2_3":
-                this.entityManager.moveEntity("player", 0, 1);
+                this.entityManager.movePlayer(0, 1);
                 break;
             case "7_3":
-                this.entityManager.moveEntity("player", -1, -1);
+                this.entityManager.movePlayer(-1, -1);
                 break;
             case "9_3":
-                this.entityManager.moveEntity("player", 1, -1);
+                this.entityManager.movePlayer(1, -1);
                 break;
             case "1_3":
-                this.entityManager.moveEntity("player", -1, 1);
+                this.entityManager.movePlayer(-1, 1);
                 break;
             case "3_3":
-                this.entityManager.moveEntity("player", 1, 1);
+                this.entityManager.movePlayer(1, 1);
                 break; 
             case "/_3":
             case "q_0":

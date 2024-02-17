@@ -47,8 +47,7 @@
 */
 
 .notice{
-    background-color:rgb(250, 204, 0);
-    color:rgb(117, 80, 0);
+    background-color:yellow;
     font-weight: 600;
     text-align:center;
 }

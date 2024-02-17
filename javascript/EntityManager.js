@@ -149,7 +149,7 @@ class EntityManager{
             this.setPosition(id,x,y);
         }
         if (this.player.stamina < 0){
-            this.cancelAction();
+            this.cancelAction({insuficientStamina:true});
             console.log('ACTION CANCELLED');
         }
     }
@@ -197,11 +197,19 @@ class EntityManager{
             return true;
         }else if(this.board.itemAt(x,y) && this.board.itemAt(x,y).container){
             this.lootContainer(entity,this.board.itemAt(x,y));
+            return true;
         }else if(!this.board.isSpace(x,y) && id == "player"){
             this.gameMaster.travel(x,y);
+            return true;
         }
 
         return false;
+    }
+
+    movePlayer(x,y){
+        if(!this.moveEntity('player',x,y)){
+            this.cancelAction({blocked:true})
+        }
     }
 
     rotateSword(id, direction){
@@ -769,10 +777,15 @@ class EntityManager{
         this.player.luck = Math.max(0,luck);
     }
 
-    cancelAction(){
+    cancelAction(reason){
         this.log.addNotice('Action Halted');
-        if(this.player.stamina < 0){
+        if(reason.insuficientStamina){
             this.log.addNotice('Out Of Stamina')
+            this.log.addNotice('Press NUMPAD5 to recover')
+
+        }
+        if(reason.blocked){
+            this.log.addNotice('Path Blocked')
         }
         let snapshot = this.history.pop();
         this.entities = snapshot.entities;
@@ -908,6 +921,8 @@ class EntityManager{
         this.setPosition(id,-1,-1);
         this.board.updateSpace(x,y);
     }
+
+
 
     addStunTime(id, stunTime){
         stunTime +=this.getProperty(id, 'stunned');
