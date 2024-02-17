@@ -25,5 +25,30 @@
 }
 
 .message-urgent{
-    background-color:rgb(243, 94, 94)
+    background-color:rgba(250, 0, 0, 0.315);
+    color:rgb(117, 0, 0);
+    font-weight: 600;
+}
+
+.message-danger{
+    color:rgb(231, 46, 0);
+    font-weight:600;
+}
+
+.message-win{
+    font-weight:600;
+    color:rgb(153, 0, 255)
+}
+
+/*
+.message-pos{
+    font-weight:600;
+}
+*/
+
+.notice{
+    background-color:rgb(250, 204, 0);
+    color:rgb(117, 80, 0);
+    font-weight: 600;
+    text-align:center;
 }

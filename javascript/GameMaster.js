@@ -81,6 +81,7 @@ class GameMaster{
         }
         console.log(this.log.turnCounter);
         this.log.printLog();  
+        this.log.clearNotices();
     }
 
     playerAction(e, swordId){

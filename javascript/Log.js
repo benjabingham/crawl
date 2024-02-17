@@ -1,17 +1,26 @@
 class Log{
     constructor(){
         this.messages = {};
+        this.notices = [];
         this.turnCounter = 0;
     }
 
-    addMessage(message, urgent = false){
+    addNotice(notice){
+        this.notices.unshift(notice);
+    }
+
+    clearNotices(){
+        this.notices = [];
+    }
+
+    addMessage(message, messageClass = false){
         if(!this.messages[this.turnCounter]){
             this.messages[this.turnCounter] = [];
         }
         this.messages[this.turnCounter].unshift({
             message:message,
             fresh:true,
-            urgent: urgent
+            messageClass: messageClass
         });
     }
 
@@ -27,7 +36,7 @@ class Log{
             if(messages){
                 messages.forEach((message) => {
                     log.prepend(
-                        $('<p>').text("> "+message.message).addClass((message.fresh) ? 'message-fresh' : 'message-old').addClass((message.urgent) ? 'message-urgent' : '')
+                        $('<p>').text("> "+message.message).addClass((message.fresh) ? 'message-fresh' : 'message-old').addClass((message.messageClass) ? 'message-'+message.messageClass : '')
                     )
                     message.fresh = false;
                 })
@@ -36,6 +45,12 @@ class Log{
                 )
             }
         }
+
+        this.notices.forEach((notice)=>{
+            log.prepend(
+                $('<p>').text(notice).addClass('notice')
+            )
+        })
     }
 
     rewind(){
