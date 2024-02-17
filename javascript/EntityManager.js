@@ -439,7 +439,7 @@ class EntityManager{
 
         let random = this.roll(1,100);
         if(random <= enrageChance){
-            this.transmitMessage(entity.name+" is enraged!", 'danger');
+            this.transmitMessage(entity.name+" is enraged!", 'danger', ['enraged']);
             entity.behaviorInfo.focus += 5;
             entity.behaviorInfo.slow -= 3;
             if(!entity.behaviorInfo.beat){
@@ -454,7 +454,7 @@ class EntityManager{
         }
         random = this.roll(1,100);
         if(random <= dazeChance){
-            this.transmitMessage(entity.name+" is dazed!", 'pos');
+            this.transmitMessage(entity.name+" is dazed!", 'pos', ['dazed']);
             entity.behaviorInfo.focus -= 7;
             if(!entity.behaviorInfo.slow){
                 entity.behaviorInfo.slow = 0;
@@ -780,7 +780,7 @@ class EntityManager{
     cancelAction(reason){
         this.log.addNotice('Action Halted');
         if(reason.insuficientStamina){
-            this.log.addNotice('Out Of Stamina')
+            this.log.addNotice('Not Enough Stamina')
             this.log.addNotice('Press NUMPAD5 to recover')
 
         }
@@ -948,8 +948,8 @@ class EntityManager{
         return xdif + ydif;
     }
 
-    transmitMessage(message, messageClass = false, offset = 0){
-        this.log.addMessage(message, messageClass, offset);
+    transmitMessage(message, messageClass = false, keywords = false){
+        this.log.addMessage(message, messageClass, keywords);
         console.log(message);
     }
 

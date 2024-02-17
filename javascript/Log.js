@@ -13,14 +13,15 @@ class Log{
         this.notices = [];
     }
 
-    addMessage(message, messageClass = false){
+    addMessage(message, messageClass = false, keywords = false){
         if(!this.messages[this.turnCounter]){
             this.messages[this.turnCounter] = [];
         }
         this.messages[this.turnCounter].unshift({
             message:message,
             fresh:true,
-            messageClass: messageClass
+            messageClass: messageClass,
+            keywords: keywords
         });
     }
 
@@ -36,7 +37,17 @@ class Log{
             if(messages){
                 messages.forEach((message) => {
                     log.prepend(
-                        $('<p>').text("> "+message.message).addClass((message.fresh) ? 'message-fresh' : 'message-old').addClass((message.messageClass) ? 'message-'+message.messageClass : '')
+                        $('<p>').text("> "+message.message).addClass((message.fresh) ? 'message-fresh' : 'message-old').addClass((message.messageClass) ? 'message-'+message.messageClass : '').on('mouseenter',()=>{
+                            if(message.keywords){
+                                message.keywords.forEach((keyword)=>{
+                                    $('.hint-divs').append(
+                                        $('<p>').text(keywordVars[keyword].hintText)
+                                    )
+                                })
+                            }
+                        }).on('mouseleave',()=>{
+                            $('.hint-divs').html('');
+                        }).addClass((message.keywords) ? 'message-keyword' : '')
                     )
                     message.fresh = false;
                 })

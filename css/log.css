@@ -40,11 +40,16 @@
     color:rgb(153, 0, 255)
 }
 
-/*
-.message-pos{
+
+.message-fresh.message-pos{
+    color:blue;
     font-weight:600;
 }
-*/
+
+
+.message-keyword:hover{
+    cursor: pointer;
+}
 
 .notice{
     background-color:rgba(255, 196, 0, 0.452);
