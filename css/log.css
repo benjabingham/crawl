@@ -30,12 +30,12 @@
     font-weight: 600;
 }
 
-.message-danger{
+.message-fresh.message-danger{
     color:rgb(231, 46, 0);
     font-weight:600;
 }
 
-.message-win{
+.message-fresh.message-win{
     font-weight:600;
     color:rgb(153, 0, 255)
 }
@@ -47,7 +47,7 @@
 */
 
 .notice{
-    background-color:yellow;
+    background-color:rgba(255, 196, 0, 0.452);
     font-weight: 600;
     text-align:center;
 }
