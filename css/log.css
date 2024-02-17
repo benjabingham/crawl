@@ -1,0 +1,29 @@
+#log-window{
+    border:1px solid gray;
+    width:300px;
+}
+
+#log-title{
+    text-align:center;
+    font-weight: 600;
+}
+
+#log{
+    overflow-y:scroll;
+
+    p{
+        margin:0;
+    }
+
+    .turn-counter{
+        text-align:center;
+    }
+}
+
+.message-fresh{
+    background-color:rgba(252, 244, 233, 0.562);
+}
+
+.message-urgent{
+    background-color:rgb(243, 94, 94)
+}

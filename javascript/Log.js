@@ -4,13 +4,14 @@ class Log{
         this.turnCounter = 0;
     }
 
-    addMessage(message){
+    addMessage(message, urgent = false){
         if(!this.messages[this.turnCounter]){
             this.messages[this.turnCounter] = [];
         }
         this.messages[this.turnCounter].unshift({
             message:message,
-            fresh:true
+            fresh:true,
+            urgent: urgent
         });
     }
 
@@ -26,7 +27,7 @@ class Log{
             if(messages){
                 messages.forEach((message) => {
                     log.prepend(
-                        $('<p>').text("> "+message.message).addClass((message.fresh) ? 'message-fresh' : 'message-old')
+                        $('<p>').text("> "+message.message).addClass((message.fresh) ? 'message-fresh' : 'message-old').addClass((message.urgent) ? 'message-urgent' : '')
                     )
                     message.fresh = false;
                 })

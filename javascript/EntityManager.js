@@ -162,11 +162,11 @@ class EntityManager{
                 this.lootManager.applyModifier(this.player.equipped,this.lootManager.weaponModifiers.worn);
                 this.lootManager.applyModifier(item,this.lootManager.weaponModifiers.worn);
 
-                this.transmitMessage(item.name + ' is showing wear!');
+                this.transmitMessage(item.name + ' is showing wear!', true);
             }else{
                 this.lootManager.breakWeapon(this.player.equipped);
                 this.player.unequipWeapon(this.gameMaster);
-                this.transmitMessage(item.name + ' has broken!');
+                this.transmitMessage(item.name + ' has broken!', true);
                 this.removeEntity(item.id);
             }
         }
@@ -297,7 +297,9 @@ class EntityManager{
         }else if(target.behavior == 'wall'){
             this.addMortality(target.id, mortality);
         }else{
-            this.transmitMessage(target.name+" is struck!");
+            if(!target.dead){
+                this.transmitMessage(target.name+" is struck!");
+            }
             this.addStunTime(target.id,stunAdded);
             this.addMortality(target.id, mortality);
             this.knock(target.id, attacker.id);
@@ -421,7 +423,7 @@ class EntityManager{
     }
 
     enrageAndDaze(entity){
-        if(!entity.behaviorInfo){
+        if(!entity.behaviorInfo || entity.dead){
             return;
         }
         let enrageChance = entity.behaviorInfo.enrage;
@@ -504,7 +506,9 @@ class EntityManager{
             this.setToLastPosition(target.id);
             let lastSwordPos = this.history[this.history.length-1].entities[attacker.id];
             this.findSwordMiddle(attacker,target,lastSwordPos);
-            this.transmitMessage(target.name+" holds its footing!");
+            if(!target.dead){
+                this.transmitMessage(target.name+" holds its footing!");
+            }
         }
     }
 
@@ -568,7 +572,7 @@ class EntityManager{
         if(this.player.health <= 0){
             this.setProperty('player','symbol', 'x');
             this.setProperty('player','behavior', 'dead');
-            this.transmitMessage('you are dead.');
+            this.transmitMessage('you are dead.', true);
         }
         //console.log('Stamina: ' +player.stamina);
         //console.log('Health: ' + player.health);
@@ -578,6 +582,7 @@ class EntityManager{
         this.transmitMessage(entity.name+" is slain!");
         entity.name += " corpse";
         entity.behavior = 'dead';
+        entity.dead = true;
         entity.tempSymbol = 'x';
         entity.stunned = 0;
         entity.container = true;
@@ -924,8 +929,8 @@ class EntityManager{
         return xdif + ydif;
     }
 
-    transmitMessage(message){
-        this.log.addMessage(message);
+    transmitMessage(message, urgent = false){
+        this.log.addMessage(message, urgent);
         console.log(message);
     }
 
