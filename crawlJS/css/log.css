@@ -1,0 +1,58 @@
+#log-window{
+    border:1px solid gray;
+    width:300px;
+}
+
+#log-title{
+    text-align:center;
+    font-weight: 600;
+}
+
+#log{
+    overflow-y:scroll;
+
+    p{
+        margin:0;
+    }
+
+    .turn-counter{
+        text-align:center;
+    }
+}
+
+.message-fresh{
+    background-color:rgba(252, 244, 233, 0.562);
+}
+
+.message-urgent{
+    background-color:rgba(250, 0, 0, 0.315);
+    color:rgb(117, 0, 0);
+    font-weight: 600;
+}
+
+.message-fresh.message-danger{
+    color:rgb(231, 46, 0);
+    font-weight:600;
+}
+
+.message-fresh.message-win{
+    font-weight:600;
+    color:rgb(153, 0, 255)
+}
+
+
+.message-fresh.message-pos{
+    color:blue;
+    font-weight:600;
+}
+
+
+.message-keyword:hover{
+    cursor: pointer;
+}
+
+.notice{
+    background-color:rgba(255, 196, 0, 0.452);
+    font-weight: 600;
+    text-align:center;
+}

@@ -149,7 +149,7 @@ class EntityManager{
             this.setPosition(id,x,y);
         }
         if (this.player.stamina < 0){
-            this.cancelAction();
+            this.cancelAction({insuficientStamina:true});
             console.log('ACTION CANCELLED');
         }
     }
@@ -162,11 +162,11 @@ class EntityManager{
                 this.lootManager.applyModifier(this.player.equipped,this.lootManager.weaponModifiers.worn);
                 this.lootManager.applyModifier(item,this.lootManager.weaponModifiers.worn);
 
-                this.transmitMessage(item.name + ' is showing wear!');
+                this.transmitMessage(item.name + ' is showing wear!', 'urgent');
             }else{
                 this.lootManager.breakWeapon(this.player.equipped);
                 this.player.unequipWeapon(this.gameMaster);
-                this.transmitMessage(item.name + ' has broken!');
+                this.transmitMessage(item.name + ' has broken!', 'urgent');
                 this.removeEntity(item.id);
             }
         }
@@ -197,11 +197,19 @@ class EntityManager{
             return true;
         }else if(this.board.itemAt(x,y) && this.board.itemAt(x,y).container){
             this.lootContainer(entity,this.board.itemAt(x,y));
+            return true;
         }else if(!this.board.isSpace(x,y) && id == "player"){
             this.gameMaster.travel(x,y);
+            return true;
         }
 
         return false;
+    }
+
+    movePlayer(x,y){
+        if(!this.moveEntity('player',x,y)){
+            this.cancelAction({blocked:true})
+        }
     }
 
     rotateSword(id, direction){
@@ -297,7 +305,9 @@ class EntityManager{
         }else if(target.behavior == 'wall'){
             this.addMortality(target.id, mortality);
         }else{
-            this.transmitMessage(target.name+" is struck!");
+            if(!target.dead){
+                this.transmitMessage(target.name+" is struck!");
+            }
             this.addStunTime(target.id,stunAdded);
             this.addMortality(target.id, mortality);
             this.knock(target.id, attacker.id);
@@ -345,7 +355,7 @@ class EntityManager{
         }else if (backupSpace){
             this.setPosition(knockedId,backupSpace.x,backupSpace.y);
         }else{
-            this.transmitMessage(knocked.name + " is cornered!");
+            this.transmitMessage(knocked.name + " is cornered!", 'pos');
             if(knocker.behavior == 'sword'){
                 this.setToLastPosition(knocker.owner);
                 this.setToLastPosition(knockerId);
@@ -375,7 +385,7 @@ class EntityManager{
         }
 
         if(this.board.itemAt(x,y).behavior == 'wall' || !this.board.itemAt(x,y)){
-            this.transmitMessage('sword knocked!');
+            this.transmitMessage('sword knocked!', 'danger');
             sword.rotation = rotation;
             this.placeSword(sword.id);
             
@@ -421,7 +431,7 @@ class EntityManager{
     }
 
     enrageAndDaze(entity){
-        if(!entity.behaviorInfo){
+        if(!entity.behaviorInfo || entity.dead){
             return;
         }
         let enrageChance = entity.behaviorInfo.enrage;
@@ -429,7 +439,7 @@ class EntityManager{
 
         let random = this.roll(1,100);
         if(random <= enrageChance){
-            this.transmitMessage(entity.name+" is enraged!");
+            this.transmitMessage(entity.name+" is enraged!", 'danger', ['enraged']);
             entity.behaviorInfo.focus += 5;
             entity.behaviorInfo.slow -= 3;
             if(!entity.behaviorInfo.beat){
@@ -444,7 +454,7 @@ class EntityManager{
         }
         random = this.roll(1,100);
         if(random <= dazeChance){
-            this.transmitMessage(entity.name+" is dazed!");
+            this.transmitMessage(entity.name+" is dazed!", 'pos', ['dazed']);
             entity.behaviorInfo.focus -= 7;
             if(!entity.behaviorInfo.slow){
                 entity.behaviorInfo.slow = 0;
@@ -477,7 +487,7 @@ class EntityManager{
         console.log(this.player.stamina < 0);
         if(random <= beatChance || this.player.stamina < 0){
             this.player.changeStamina(0);
-            this.transmitMessage(entity.name+" knocks your weapon out of the way!");
+            this.transmitMessage(entity.name+" knocks your weapon out of the way!", 'danger');
             this.knockSword(sword.id);
         }else if(this.player.equipped){
             this.transmitMessage("You hold steady!");
@@ -504,7 +514,9 @@ class EntityManager{
             this.setToLastPosition(target.id);
             let lastSwordPos = this.history[this.history.length-1].entities[attacker.id];
             this.findSwordMiddle(attacker,target,lastSwordPos);
-            this.transmitMessage(target.name+" holds its footing!");
+            if(!target.dead){
+                this.transmitMessage(target.name+" holds its footing!", 'danger');
+            }
         }
     }
 
@@ -568,16 +580,17 @@ class EntityManager{
         if(this.player.health <= 0){
             this.setProperty('player','symbol', 'x');
             this.setProperty('player','behavior', 'dead');
-            this.transmitMessage('you are dead.');
+            this.transmitMessage('you are dead.', 'urgent');
         }
         //console.log('Stamina: ' +player.stamina);
         //console.log('Health: ' + player.health);
     }
 
     kill(entity){
-        this.transmitMessage(entity.name+" is slain!");
+        this.transmitMessage(entity.name+" is slain!", 'win');
         entity.name += " corpse";
         entity.behavior = 'dead';
+        entity.dead = true;
         entity.tempSymbol = 'x';
         entity.stunned = 0;
         entity.container = true;
@@ -764,7 +777,16 @@ class EntityManager{
         this.player.luck = Math.max(0,luck);
     }
 
-    cancelAction(){
+    cancelAction(reason){
+        this.log.addNotice('Action Halted');
+        if(reason.insuficientStamina){
+            this.log.addNotice('Not Enough Stamina')
+            this.log.addNotice('Press NUMPAD5 to recover')
+
+        }
+        if(reason.blocked){
+            this.log.addNotice('Path Blocked')
+        }
         let snapshot = this.history.pop();
         this.entities = snapshot.entities;
         this.board.placeEntities(this.log);
@@ -900,6 +922,8 @@ class EntityManager{
         this.board.updateSpace(x,y);
     }
 
+
+
     addStunTime(id, stunTime){
         stunTime +=this.getProperty(id, 'stunned');
         this.setProperty(id, 'stunned', stunTime);
@@ -924,8 +948,8 @@ class EntityManager{
         return xdif + ydif;
     }
 
-    transmitMessage(message){
-        this.log.addMessage(message);
+    transmitMessage(message, messageClass = false, keywords = false){
+        this.log.addMessage(message, messageClass, keywords);
         console.log(message);
     }
 

@@ -2,6 +2,9 @@ class Display{
     constructor(entityManager, board){
         this.entityManager = entityManager;
         this.board = board;
+
+        this.customControls = {};
+        this.setCustomControls();
     }
 
     showDungeonScreen(){
@@ -328,6 +331,17 @@ class Display{
                     )
                 )
             }
+        })
+    }
+
+    setCustomControls(){
+        let customControls = this.customControls;
+        let keys = ['upleft','up','upright','left','wait','right','downleft','down','downright'];
+        keys.forEach((key)=>{
+            $('#'+key+'-input').on('change',()=>{
+                customControls[key] = $('#'+key+'-input').val()+'_0';
+                console.log(customControls);
+            })
         })
     }
     
