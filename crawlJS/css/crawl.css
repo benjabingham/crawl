@@ -25,5 +25,18 @@ button:hover{
     font-style:italic;
 }
 
+.hint-divs{
+    text-align:center;
+    /*font-style:italic;*/
+    color:#ddd;
+
+    p{
+        margin:0px;
+    }
+}
+
+.control-inputs{
+    width:1rem;
+}
 
 

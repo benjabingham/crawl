@@ -10,12 +10,16 @@
     <link rel="stylesheet" href="css/hud.css">
     <link rel="stylesheet" href="css/inventory.css">
     <link rel="stylesheet" href="css/town.css">
+    <link rel="stylesheet" href="css/log.css">
+
 
   </head>
   <body>
     <script src="javascript/lib/jquery-3.7.1.js"></script>
     <script src="javascript/vars/ItemVars.js"></script>
     <script src="javascript/vars/MonsterVars.js"></script>
+    <script src="javascript/vars/KeywordVars.js"></script>
+
     <script src="javascript/LootManager.js"></script>
     <script src="javascript/Shop.js"></script>
     <script src="javascript/Save.js"></script>
@@ -112,6 +116,7 @@
                 <div id="log"></div>
             </div>
         </div>
+        <div class="hint-divs"></div>
         <div id = "dungeon-inventory-wrapper" class="inventory-wrapper">
             <div class="inventory-title">Inventory</div>
             <div id="dungeon-inventory" class="inventory">
@@ -155,8 +160,16 @@
         when in town, choose a map from the map select dropdown to venture off. Currently, the only dungeon is labeled "cave".
         <br><br>
         click 'new save' to begin
+    </div>
 
-
+    <div id="custom-controls-div">
+        enter custom controls:
+        <br>
+        <input id="upleft-input" class="control-inputs"><input id="up-input" class="control-inputs"><input id="upright-input" class="control-inputs">
+        <br>
+        <input id="left-input" class="control-inputs"><input id="wait-input" class="control-inputs"><input id="right-input" class="control-inputs">
+        <br>
+        <input id="downleft-input" class="control-inputs"><input id="down-input" class="control-inputs"><input id="downright-input" class="control-inputs">
     </div>
   </body>
 </html>

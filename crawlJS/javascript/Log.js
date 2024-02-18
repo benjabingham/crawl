@@ -1,16 +1,27 @@
 class Log{
     constructor(){
         this.messages = {};
+        this.notices = [];
         this.turnCounter = 0;
     }
 
-    addMessage(message){
+    addNotice(notice){
+        this.notices.unshift(notice);
+    }
+
+    clearNotices(){
+        this.notices = [];
+    }
+
+    addMessage(message, messageClass = false, keywords = false){
         if(!this.messages[this.turnCounter]){
             this.messages[this.turnCounter] = [];
         }
         this.messages[this.turnCounter].unshift({
             message:message,
-            fresh:true
+            fresh:true,
+            messageClass: messageClass,
+            keywords: keywords
         });
     }
 
@@ -26,7 +37,17 @@ class Log{
             if(messages){
                 messages.forEach((message) => {
                     log.prepend(
-                        $('<p>').text("> "+message.message).addClass((message.fresh) ? 'message-fresh' : 'message-old')
+                        $('<p>').text("> "+message.message).addClass((message.fresh) ? 'message-fresh' : 'message-old').addClass((message.messageClass) ? 'message-'+message.messageClass : '').on('mouseenter',()=>{
+                            if(message.keywords){
+                                message.keywords.forEach((keyword)=>{
+                                    $('.hint-divs').append(
+                                        $('<p>').text(keywordVars[keyword].hintText)
+                                    )
+                                })
+                            }
+                        }).on('mouseleave',()=>{
+                            $('.hint-divs').html('');
+                        }).addClass((message.keywords) ? 'message-keyword' : '')
                     )
                     message.fresh = false;
                 })
@@ -35,6 +56,12 @@ class Log{
                 )
             }
         }
+
+        this.notices.forEach((notice)=>{
+            log.prepend(
+                $('<p>').text(notice).addClass('notice')
+            )
+        })
     }
 
     rewind(){
