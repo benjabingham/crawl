@@ -1,49 +1,85 @@
 class Board{
-    constructor(width = 20,height = 20){
+    constructor(entityManager, width = 20,height = 20){
         this.width = width;
         this.height = height;
 
         this.boardArray = [];
+        this.wallArray = [];
         this.losArray = [];
         this.boardInit();
-    }
 
-    
+        this.entityManager = entityManager;
+        this.destinations = {};
+    }
 
     boardInit(){
         this.boardArray = [];
+        this.wallArray = [];
         //this.LosInit();
         for(let i=0;i<this.height;i++){
             this.boardArray[i] = [];
+            this.wallArray[i] = [];
             for(let j=0;j<this.width;j++){
                 this.boardArray[i][j] = false;
+                this.wallArray[i][j] = false;
             }
         }
     }
 
-    placeEntities(entities){
+    placeEntities(){
+        console.log('placeEntities');
+        let entities = this.entityManager.entities;
         this.boardInit();
         for (const [k,entity] of Object.entries(entities)){
+            //console.log(entity);
+            
             let x = entity.x;
             let y = entity.y;
-            if(this.itemAt(x,y).id != entity.id){
-                if(this.isSpace(x,y) && (!this.isOccupiedSpace(x,y))){
-                    this.placeEntity(entity, x, y);
+            if(this.itemAt(x,y).id != entity.id && this.isSpace(x,y)){
+                let itemCase = this.itemAt(x,y).item  || entity.item;
+                if(entity.behavior == 'wall'){
+                    this.wallArray[y][x] = true;
                 }else{
-                    //console.log("ENTITY OVERWRITE");
-                    //console.log(entity);
-                    //console.log(this.itemAt(x,y));
+                    //this.wallArray[y][x] = false;
+                }
+                if(!this.isOccupiedSpace(x,y) || entity.behavior == 'sword' || itemCase){
+                    if(itemCase){
+                        if(this.itemAt(x,y).item){
+                            this.entityManager.pickUpItem(entity,this.itemAt(x,y));
+                            this.placeEntity(entity, x, y);
+                        }else if(entity.item && this.itemAt(x,y)){
+                            this.entityManager.pickUpItem(this.itemAt(x,y),entity);
+                        }else{
+                            this.placeEntity(entity, x, y);
+                        }
+                    }else{
+                        this.placeEntity(entity, x, y);
+                    }
+                }else{
+                    console.log("ENTITY OVERWRITE");
+                    console.log(entity);
+                    console.log(this.itemAt(x,y));
                 }   
             } 
         };
     }
 
+    updateSpace(x,y){
+        let entities = this.entityManager.entities;
+        for (const [k,entity] of Object.entries(entities)){
+            //console.log(entity);
+            if(entity.x == x && entity.y == y){
+                this.placeEntity(entity,x,y);
+            }
+        }
+    }
+
     isOpenSpace(x,y){
-        return (this.isSpace(x,y) && !this.boardArray[y][x]);
+        return (this.isSpace(x,y) && (!this.itemAt(x,y) || this.itemAt(x,y).item));
     }
 
     isOccupiedSpace(x,y){
-        return (this.isSpace(x,y) && this.boardArray[y][x]);
+        return (this.isSpace(x,y) && this.itemAt(x,y) && !this.itemAt(x,y).item);
     }
 
     isSpace(x,y){
@@ -59,8 +95,9 @@ class Board{
     }
 
     placeEntity(entity, x, y){
+
         if (this.isSpace(x,y)){
-            if(entity && this.isOccupiedSpace(x,y)){
+            if(this.isOccupiedSpace(x,y) && !this.itemAt(x,y).item){
                 //console.log('ENTITY OVERWRITE');
                 //console.log(entity);
                 //console.log(this.itemAt(x,y));
@@ -87,11 +124,12 @@ class Board{
             //console.log(point);
             if(lineOfSight){
                 this.setLineOfSight(point.x, point.y, lineOfSight);
+                if(this.wallAt(point.x,point.y)){
+                    lineOfSight = false;
+                }
             }
             
-            if(this.itemAt(point.x,point.y).behavior == 'wall'){
-                lineOfSight = false;
-            }
+            
 
         })
 
@@ -117,9 +155,14 @@ class Board{
 
     calculateLosArray(player){
         this.LosInit();
-        for(let y=0;y<this.height;y++){
-            for(let x=0;x<this.width;x++){
-                if(x == 0 || y == 0 || x == this.width-1 || y == this.height-1){
+        let losDistance = 25
+        let losMin = 8-losDistance
+        let losMax = 8+losDistance
+        for(let displayY=losMin;displayY<=losMax;displayY++){
+            for(let displayX=losMin;displayX<=losMax;displayX++){
+                if(displayX == losMin || displayY == losMin || displayX == losMax || displayY == losMax){
+                    let x = (displayX-8) + player.x;
+                    let y = (displayY-8) + player.y;
                     this.drawLos(player.x, player.y, x, y);
                 }
             }
@@ -148,12 +191,19 @@ class Board{
             y += yIncrement;
 
             line.push({
-                x:Math.floor(x), y:Math.floor(y)
+                x:Math.floor(x+.5), y:Math.floor(y+.5)
             });
         }
 
         return line;
 
+    }
+
+    wallAt(x,y){
+        if(!this.isSpace(x,y)){
+            return false;
+        }
+        return this.wallArray[y][x];
     }
 
     setLineOfSight(x,y, los){
@@ -169,6 +219,29 @@ class Board{
     setDimensions(width,height){
         this.width = width;
         this.height = height;
+    }
+
+    getTrueDistance(pos1, pos2){
+        let a2 = Math.abs(pos1.x - pos2.x)**2;
+        let b2 = Math.abs(pos1.y - pos2.y)**2;
+        let distance = Math.sqrt(a2+b2);
+        //let line = this.getLine(pos1,pos2);
+        //return line.length;
+        return Math.floor(distance);
+    }
+
+    hasLight(pos){
+        let playerEntity = this.entityManager.getEntity('player');
+        let player = this.entityManager.player
+        let lightDistance = player.light+1;
+        let distance = this.getTrueDistance(pos,playerEntity);
+
+        return lightDistance >= distance;
+        
+    }
+
+    hasPlayerLos(pos){
+        return this.hasLight(pos) && this.getLineOfSight(pos.x, pos.y);
     }
     
 }

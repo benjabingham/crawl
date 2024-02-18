@@ -1,0 +1,59 @@
+#town-screen{
+    width:900px;
+    margin:auto;
+    background-color:#ddd;
+    color:#222;
+}
+
+#town-title-div{
+    width:fit-content;
+    margin:auto;
+    font-weight:600;
+}
+
+#tavern-wrapper-div{
+    text-align:center;
+    font-weight:600;
+    margin-top:1rem;
+
+    button{
+        margin:5px;
+        padding:5px;
+    }
+}
+
+#tavern-div{
+    width:875px;
+    margin:auto;
+    border:1px solid black;
+    background-color: rgba(252, 143, 0, 0.164);
+}
+
+#download-save-button{
+    margin:15px;
+    margin-top:0px;
+}
+
+#travel-locations-wrapper-div{
+    margin:1rem;
+}
+
+#travel-locations-title-div{
+    font-weight:600;
+    text-align: center;
+}
+
+#travel-locations-hint-div{
+    text-align:center;
+}
+
+#travel-locations-div{
+    display:flex;
+    width:fit-content;
+    margin:auto;
+
+    button{
+        margin:5px;
+        padding:5px;
+    }
+}
