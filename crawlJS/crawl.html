@@ -5,95 +5,171 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>crawlJS</title>
-    <link rel="stylesheet" href="crawl.css">
+    <link rel="stylesheet" href="css/crawl.css">
+    <link rel="stylesheet" href="css/dungeon.css">
+    <link rel="stylesheet" href="css/hud.css">
+    <link rel="stylesheet" href="css/inventory.css">
+    <link rel="stylesheet" href="css/town.css">
+    <link rel="stylesheet" href="css/log.css">
+
+
   </head>
   <body>
     <script src="javascript/lib/jquery-3.7.1.js"></script>
+    <script src="javascript/vars/ItemVars.js"></script>
+    <script src="javascript/vars/MonsterVars.js"></script>
+    <script src="javascript/vars/keywordVars.js"></script>
+
+    <script src="javascript/LootManager.js"></script>
+    <script src="javascript/Shop.js"></script>
+    <script src="javascript/Save.js"></script>
+    <script src="javascript/GameMaster.js"></script>
     <script src="javascript/EntityManager.js"></script>
     <script src="javascript/Board.js"></script>
     <script src="javascript/Player.js"></script>
     <script src="javascript/Log.js"></script>
+    <script src="javascript/Display.js"></script>
 	<script src="javascript/crawl.js"></script>
-    <div id = "resources">
-        <div id = "health-bar">
-            <div id = "health-level"></div>
-        </div>
-        <div id = "stamina-bar">
-            <div id = "stamina-level"></div>
+    </div>
+    <div id ='home-screen'>
+        <div id="save-manage-div">
+            <button id="new-save-button">New Save</button>
+            <input type="file" id="load-file-input" />
         </div>
     </div>
-    <div id="game-window">
-        <div>
-            <div id="board" tabindex="0"></div> 
-        </div>
-        <div id="log-window">
-            <div id="log-title">Log</div>
-            <div id="log"></div>
-        </div>
-    </div>
-    <div id="reminder-wrapper">
-        <div id="focus-reminder">Click on the game window for controls to register!</div>
-    </div>
-    <div id = "controls">
-        <div id="weapon-select-div">
-            <label for="weapon-select">Weapon select</label>
-            <select name="weapon-select" id="weapon-select"></select>
-        </div>
-        <div id="map-select-div">
-            <label for="map-select">Map select</label>
-            <select name="map-select" id="map-select">
-                <option>Choose a map</option>
-            </select>
-        </div>
-        <div id="enemy-control-div">
-            <div id="enemy-spawn">
-                Spawn Enemy:
-                <label for="enemy-x-input">x: </label>
-                <input id="enemy-x-input">
-                <label for="enemy-y-input">y: </label>
-                <input id="enemy-y-input">
-                <select name="enemy-select" id="enemy-select"></select>
-                <button id="enemy-spawn-button">Spawn</button>
+    <div id="hud-div">
+        <div id="day-div"></div>
+        <div id = "resources">
+            <div class="resource-bar-containers">
+                <div id="hp-number-div" class="resource-number-divs"></div>
+                <div class="resource-label-divs">HP</div>
+                <div id = "health-bar" class="resource-bar-divs">
+                    <div id = "health-level" class="resource-level-divs"></div>
+                </div>
             </div>
-            <div id="custom-enemy-spawn">
-                Spawn Custom Enemy:
-                <label for="custom-enemy-x-input">x: </label>
-                <input id="custom-enemy-x-input">
-                <label for="custom-enemy-y-input">y: </label>
-                <input id="custom-enemy-y-input">
-                <label for="enemy-hp-input">hp: </label>
-                <input id="enemy-hp-input">
-                <label for="enemy-damage-input">damage: </label>
-                <input id="enemy-damage-input">
-                <button id="custom-enemy-spawn-button">Spawn</button>
-            </div>
-            <br>
             
+            <div class="resource-bar-containers">
+                <div id="stamina-number-div" class="resource-number-divs"></div>
+                <div class="resource-label-divs">Stamina</div>
+                <div id = "stamina-bar" class="resource-bar-divs">
+                    <div id = "stamina-level" class="resource-level-divs"></div>
+                </div>
+            </div>
+
+            <div class="resource-bar-containers">
+                <div id="luck-number-div" class="resource-number-divs"></div>
+                <div class="resource-label-divs">Luck</div>
+                <div id = "luck-bar" class="resource-bar-divs">
+                    <div id = "luck-level" class="resource-level-divs"></div>
+                </div>
+            </div>
+
+        </div>
+        <div id="nourishment-level-div"></div>
+        <div id="gold-div"class="gold-div"></div>
+
+
+    </div>
+    <div id="town-screen">
+        <div id="town-title-div">You are in town.</div>
+
+        <div id="tavern-wrapper-div">
+            Tavern
+            <div id="tavern-div">
+                
+                <div id="nourishment-div">
+                    <div id="meals-div"></div>
+                </div>
+                <div class="hint-text">
+                    being well fed increases your health gain per day, and your stamina gain per turn. Avoid eating and you will starve.
+                </div>
+                <button id="rest-button">rest</button>
+                <br>
+                <div class="hint-text">
+                    the day will end.
+                </div>
+            </div>
+        </div>
+        <div id = "shop-wrapper" class="inventory-wrapper">
+            <div class="inventory-title">Shop</div>
+            <div id="shop" class="inventory">
+                <div id ="shop-list" class="inventory-list"></div>
+                <div id ="shop-description" class="inventory-description"></div>
+            </div>
+            <!--<div id="shop-gold-div" class="gold-div"></div>-->
+        </div>
+        <div id="travel-locations-wrapper-div">
+            <div id="travel-locations-title-div">Nearby Dungeons</div>
+            <div id="travel-locations-hint-div" class="hint-text">Be sure you're prepared before traveling to a dungeon.</div>
+            <div name="travel-locations-div" id="travel-locations-div"></div>
+        </div>
+        <button id="download-save-button">Download Save</button>  
+    </div>
+    
+    <div id="dungeon-screen">
+        <div id="game-window">
+            <div>
+                <div id="board" tabindex="0"></div> 
+            </div>
+            <div id="log-window">
+                <div id="log-title">Log</div>
+                <div id="log"></div>
+            </div>
+        </div>
+        <div class="hint-divs"></div>
+        <div id = "dungeon-inventory-wrapper" class="inventory-wrapper">
+            <div class="inventory-title">Inventory</div>
+            <div id="dungeon-inventory" class="inventory">
+                <div id ="dungeon-inventory-list" class="inventory-list"></div>
+                <div id ="dungeon-inventory-description" class="inventory-description"></div>
+            </div>
+            <div id="gold-div"class="gold-div"></div>
         </div>
     </div>
+
+    <div id = "town-inventory-wrapper" class="inventory-wrapper">
+        <div class="inventory-title">Inventory</div>
+        <div id="town-inventory" class="inventory">
+            <div id ="town-inventory-list" class="inventory-list"></div>
+            <div id ="town-inventory-description" class="inventory-description"></div>
+        </div>
+        <div id="gold-div"class="gold-div"></div>
+    </div>
+    
+    
     <div id = 'instructions-div'>
-        Welcome to crawlJS! (real name tbd...?)
+        Welcome to crawlJS! (thinking of another name....)
         use the numpad to move - you can move up, down, left, right, or diagonally.
-        use Q and W to rotate your sword clockwise or counter-clockwise.
-        The play area must be selected for the controls to work.
+        use Q and W (or the / and * on the numpad for one-handed play) to rotate your weapon clockwise or counter-clockwise.
         <br><br>
-        Fight monsters by navigating your sword onto them. If there is room, you will knock them backwards and may stun them.
-        Stunned enemies appear in lower case and are easier to kill.
+        Fight monsters by navigating your weapon onto them. If there is room, you will knock them backwards and may stun them.
+        Stunned enemies appear in lower case and take double damage. Many weapons deal different damage and stun depending on the type of strike - a SWING is when you hit an enemy by rotating your weapon. a JAB is when you advance on an enemy, thrusting your weapon into them.
         <br><br>
-        Striking an enemy costs STAMINA. Try not to run out - doing so can cost you a turn.
-        Take a turn off to regain stamina by pressing '5'
+        Striking an enemy costs STAMINA. Try not to run out!
+        Enemies can be blocked by placing your weapon in their way, but doing so causes them to damage your stamina. If you run out, they will knock your weapon aside and advance on you. (some enemies can do this even if your stamina is full... watch out!)
+        Take a turn off to regain stamina by pressing '5'. Stamina gain is affected by your hunger level.
         <br><br>
-        Some enemies may become more aggressive when harmed... 
-        Some enemies are more predictable than others... 
+        Luck can be used to undo an action by pressing BACKSPACE. this is a valuable resource! Use luck to undo a mistake, or to "reroll" an action with undesirable results (such as an attack that causes your weapon to break).
         <br><br>
-        If you make a mistake, press BACKSPACE to undo an aciton. You can travel up to 10 turns into the past in this way.
+        As days pass, luck and health will regenerate and nourishment will deplete. You may REST to pass a day without venturing into the dungeon.
         <br><br>
-        Larger weapons do more damage, but cost more stamina to attack with.
-        Blunt weapons do less damage but are more likely to stun.
+        resources can be gained by finding treasure in the dungeon and selling it in town. Make sure to keep your lantern full of oil and your stomach full of food, as a top priority.
         <br><br>
-        select a map above to begin.
+        items are represented by asterisks and can be collected by walking over them. Dead bodies and chests can be looted by pushing against them (or by smashing them). Items in your inventory can be used by pressing the numeral key corresponding to their slot (on the number bar, not the numpad). Items can be dropped by pressing the D key before pressing the corresponding number. Your tenth slot is currently inacessible, because there is no 10 key on the keyboard. Woops.
+        <br><br>
+        when in town, choose a map from the map select dropdown to venture off. Currently, the only dungeon is labeled "cave".
+        <br><br>
+        click 'new save' to begin
+    </div>
 
-
+    <div id="custom-controls-div">
+        enter custom controls:
+        <br>
+        <input id="upleft-input" class="control-inputs"><input id="up-input" class="control-inputs"><input id="upright-input" class="control-inputs">
+        <br>
+        <input id="left-input" class="control-inputs"><input id="wait-input" class="control-inputs"><input id="right-input" class="control-inputs">
+        <br>
+        <input id="downleft-input" class="control-inputs"><input id="down-input" class="control-inputs"><input id="downright-input" class="control-inputs">
     </div>
   </body>
 </html>

@@ -1,0 +1,72 @@
+#hud-div{
+    width:900px;
+    margin:auto;
+    margin-bottom:1rem;
+    background-color:#ddd;
+    background-image:linear-gradient(#a5a5a5,#ddd);
+    color:#222;
+    padding-bottom:5px;
+    font-weight:600;
+    display:none;
+
+    .gold-div{
+        text-align:center;
+    }
+}
+
+#day-div, #nourishment-level-div{
+    margin:auto;
+    width:fit-content;
+}
+
+.resource-label-divs{
+    padding-right:5px;
+    padding-top:2px;
+}
+
+#resources{
+    display:flex;
+    width:fit-content;
+    margin:auto;
+}
+
+#resources>div{
+    margin:5px;
+}
+
+.resource-bar-containers{
+    display:flex;
+}
+
+.resource-bar-divs{
+    background-color: #222;
+    border:1px solid #222;
+    height:20px;
+    width:150px;
+}
+
+.resource-level-divs{
+    /*text-align:center;*/
+    height:20px;
+    width:100px;
+    border:1px solid gray;
+    color:#222222a9
+
+}
+
+#stamina-level{
+    background-color: yellow;
+    color:rgb(110, 110, 0);
+} 
+
+#luck-level{
+    background-color: rgb(2, 184, 2);
+    color: rgb(0, 105, 0);
+}
+
+#health-level{
+    background-color: red;
+    color:rgb(117, 0, 0)
+
+}
+
