@@ -91,34 +91,42 @@ class GameMaster{
         console.log(e);
         switch(key){
             case this.customControls.right:
+            case "l_0":
             case "6_3":
                 this.entityManager.movePlayer(1, 0);
                 break;
             case this.customControls.left:
+            case "h_0":
             case "4_3":
                 this.entityManager.movePlayer(-1, 0);
                 break;
             case this.customControls.up:
+            case "j_0":
             case "8_3":
                 this.entityManager.movePlayer(0, -1);
                 break;
             case this.customControls.down:
+            case "k_0":
             case "2_3":
                 this.entityManager.movePlayer(0, 1);
                 break;
             case this.customControls.upleft:
+            case "u_0":
             case "7_3":
                 this.entityManager.movePlayer(-1, -1);
                 break;
             case this.customControls.upright:
+            case "i_0":
             case "9_3":
                 this.entityManager.movePlayer(1, -1);
                 break;
             case this.customControls.downleft:
+            case "b_0":
             case "1_3":
                 this.entityManager.movePlayer(-1, 1);
                 break;
             case this.customControls.downright:
+            case "n_0":
             case "3_3":
                 this.entityManager.movePlayer(1, 1);
                 break; 
