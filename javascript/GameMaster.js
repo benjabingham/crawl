@@ -8,6 +8,7 @@ class GameMaster{
         this.display = new Display(this.entityManager, this.board);
         this.dungeonId = 0;
         this.shop = new Shop(this);
+        this.customControls = this.display.customControls;
     }
 
     reset(){
@@ -89,27 +90,35 @@ class GameMaster{
         console.log(key);
         console.log(e);
         switch(key){
+            case this.customControls.right:
             case "6_3":
                 this.entityManager.movePlayer(1, 0);
                 break;
+            case this.customControls.left:
             case "4_3":
                 this.entityManager.movePlayer(-1, 0);
                 break;
+            case this.customControls.up:
             case "8_3":
                 this.entityManager.movePlayer(0, -1);
                 break;
+            case this.customControls.down:
             case "2_3":
                 this.entityManager.movePlayer(0, 1);
                 break;
+            case this.customControls.upleft:
             case "7_3":
                 this.entityManager.movePlayer(-1, -1);
                 break;
+            case this.customControls.upright:
             case "9_3":
                 this.entityManager.movePlayer(1, -1);
                 break;
+            case this.customControls.downleft:
             case "1_3":
                 this.entityManager.movePlayer(-1, 1);
                 break;
+            case this.customControls.downright:
             case "3_3":
                 this.entityManager.movePlayer(1, 1);
                 break; 
@@ -131,6 +140,7 @@ class GameMaster{
                     console.log(this.entityManager.entities);
                 }
                 break;
+            case this.customControls.wait:
             case "5_3":
                 this.player.gainStamina();
                 break;
